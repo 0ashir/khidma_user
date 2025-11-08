@@ -1,0 +1,548 @@
+{
+  "profile": "حساب تعريفي",
+  "contactUs": "اتصل بنا",
+  "explore": "يستكشف",
+  "aboutUs": "معلومات عنا",
+  "privacyAndPolicy": "سياسة الخصوصية",
+  "language": "لغة",
+  "booking": "الحجوزات",
+  "notification": "إشعارات",
+  "skip": "يتخطى",
+  "continueText": "يكمل",
+  "welcomeTo": "مرحبا بكم في",
+  "by_continue_agree": "من خلال الاستمرار ، أنت توافق على",
+  "resend_otp": "إعادة إرسال OTP",
+  "verified": "تم التحقق من OTP بنجاح",
+  "change": "يتغير",
+  "editProfile": "تحرير الملف الشخصي",
+  "office": "مكتب",
+  "username": "اسم المستخدم",
+  "terms_service": "شروط الخدمة",
+  "resend_otp_in": "إعادة إرسال OTP في",
+  "home": "بيت",
+  "other": "آخر",
+  "phoneNumber": "رقم التليفون",
+  "email": "بريد إلكتروني",
+  "awaiting": "في انتظار",
+  "confirmed": "مؤكد",
+  "saveChanges": "حفظ التغييرات",
+  "status": "حالة",
+  "all": "الجميع",
+  "delete": "يمسح",
+  "schedule": "جدول",
+  "address": "عنوان",
+  "pending": "قيد الانتظار",
+  "bookmark": "مرجعية",
+  "help": "يساعد",
+  "favorite": "مفضل",
+  "payment": "قسط",
+  "logout": "تسجيل الخروج",
+  "edit": "يحرر",
+  "instructions": "تعليمات",
+  "provider": "مزود",
+  "add": "يضيف",
+  "today": "اليوم",
+  "am": "أكون",
+  "popularity": "شعبية",
+  "saveAddress": "حفظ العنوان",
+  "termsofservice": "الشروط والأحكام",
+  "yourServiceWillHere": "ستكون خدمتك هنا",
+  "rescheduled": "إعادة جدولة",
+  "serviceAddress": "عنوان الخدمة",
+  "makePayment": "قم بالدفع عبر الإنترنت",
+  "writeDescriptionForProvider": "اكتب الوصف للمزود",
+  "createProfile": "إنشاء ملف تعريف",
+  "providerAddress": "عنوان المزود",
+  "enterCompleteAddress": "أدخل العنوان الكامل",
+  "setDefaultAddress": "تعيين كعنوان افتراضي.",
+  "dateAndTime": "التاريخ والوقت",
+  "network_request_failed": "حدث خطأ في الشبكة",
+  "invalid_phone_number": "بالنظر إلى رقم الهاتف المحمول غير صالح.",
+  "scheduleTime": "وقت الجدول",
+  "myBookings": "حجوزاتي",
+  "pm": "مساءً",
+  "invalid_verification_code": "رمز التحقق غير صالح. ",
+  "filter": "فلتر",
+  "budget": "ميزانية",
+  "sending_otp": "إرسال OTP ...",
+  "login_or_signup": "تسجيل الدخول أو التسجيل",
+  "onboarding_body_four": "استمتع بالنتائج عالية الجودة التي يتم تسليمها مباشرة إلى عتبة داركم أو المتجر. ",
+  "shareApp": "مشاركة التطبيق",
+  "no_country_foundSubTitle": "حاول إدخال اسم بلد مختلف.",
+  "otp_sent": "أرسل OTP بنجاح.",
+  "your_location": "موقعك",
+  "movePinToLocation": "انقل دبوس إلى موقعك الدقيق",
+  "otp_verification": "التحقق من OTP",
+  "rateApp": "قيم التطبيق",
+  "search_by_country_name": "ابحث عن طريق البلد ....",
+  "search_services_here": "خدمات البحث هنا",
+  "searchProviders": "البحث عن مقدمي الخدمة هنا",
+  "providersNearby": "مقدمو الخدمة القريبون",
+  "onboarding_heading_one": "طلب الخدمات",
+  "no_country_found": "🌍 لم يتم العثور على بلد",
+  "onboarding_heading_four": "تلقي نتائج الجودة",
+  "enter_verification_code": "لقد أرسلنا لك للتو OTP في رقم الهاتف المحمول الخاص بك",
+  "darkMode": "الوضع المظلم",
+  "too_many_requests": "الكثير من الطلبات من هذا الجهاز ، حاول مرة أخرى لاحقًا",
+  "onboarding_body_one": "اطلب بسهولة الخدمة التي تحتاجها مع بضعة صنابير فقط. ",
+  "select_your_country": "حدد بلدك",
+  "onboarding_body_three": "ابق على اطلاع على تقدم الخدمة في الوقت الفعلي. ",
+  "onboarding_body_two": "ابحث عن المزود المثالي لاحتياجات خدمتك. ",
+  "onboarding_heading_two": "تطابق مع مقدمي الخدمات",
+  "onboarding_heading_three": "مراقبة التقدم",
+  "rating": "تصنيف",
+  "location": "موقع",
+  "visitingCharge": "زيارة التهمة",
+  "cancel": "يلغي",
+  "logIn": "تسجيل الدخول",
+  "reviewers": "المراجعات",
+  "reviewer": "المراجع",
+  "close": "يغلق",
+  "percentageOff": "٪ عن",
+  "selectDate": "حدد التاريخ",
+  "sortBy": "فرز",
+  "applied": "مُطبَّق",
+  "totalAmount": "المبلغ الإجمالي",
+  "off": "عن",
+  "promoCode": "البنيمة",
+  "apply": "يتقدم",
+  "rejected": "مرفوض",
+  "tax": "ضريبة",
+  "confirmation": "تأكيد",
+  "person": "شخص",
+  "qty": "كتي",
+  "completed": "مكتمل",
+  "to": "ل",
+  "loading": "تحميل...",
+  "back": "خلف",
+  "selectLocation": "حدد الموقع",
+  "selectPayment": "حدد الدفع",
+  "item": "غرض",
+  "hintMobileNumber": "رقم الهاتف المحمول",
+  "service": "خدمة",
+  "goToHome": "اذهب إلى المنزل",
+  "rate": "معدل",
+  "selectLanguage": "حدد اللغة",
+  "noPromoCodeAvailableSubTitle": "لا توجد رموز ترويجية نشطة في الوقت الحالي.",
+  "otpVerifying": "التحقق",
+  "invoiceNumber": "فاتورة لا",
+  "payNow": "ادفع الآن",
+  "from": "من:",
+  "monthsAgo": "منذ أشهر",
+  "justNow": "الآن",
+  "city": "مدينة",
+  "mobileNumber": "رقم الهاتف المحمول",
+  "amount": "كمية",
+  "warning": "تحذير",
+  "deleteAccount": "حذف الحساب",
+  "message": "رسالة",
+  "guest": "مرحبًا! ",
+  "bookingId": "معرف الحجز",
+  "underMaintenance": "تحت الصيانة",
+  "updateAppTitle": "تحديث جديد متاح",
+  "enterLocationAreaCity": "أدخل الموقع ، اسم المنطقة ، اسم المدينة ، إلخ ..",
+  "update": "تحديث",
+  "notNow": "ليس الآن",
+  "compulsoryUpdateSubTitle": "الإصدار الحالي من هذا التطبيق لم يعد مدعومًا. ",
+  "noPromoCodeAvailable": "🏷 لا يوجد رمز ترويجي متاح",
+  "onlinePaymentNotAvailableNow": "الدفع عبر الإنترنت غير متوفر",
+  "pleaseSelectDateAndTime": "الرجاء تحديد التاريخ والوقت",
+  "searchProvider": "موفر البحث",
+  "pleaseSelectAddress": "الرجاء تحديد العنوان",
+  "bookingSuccessMessage": "تم تقديم الحجز الخاص بك بنجاح ، وستتلقى تأكيدًا قريبًا",
+  "writeReview": "اكتب المراجعة",
+  "pleaseLogin": "من فضلك قم بتسجيل الدخول !!",
+  "maximumLimitReached": "أُووبس! ",
+  "subTotal": "مجموع",
+  "profileUpdateSuccess": "تم تحديث ملف التعريف بنجاح",
+  "weAreNotAvailableHere": "📍 نحن لسنا متاحين هنا",
+  "payWithServiceAtStore": "ادفع مع الخدمة في المتجر",
+  "submitReview": "إرسال المراجعة",
+  "verificationIsInProgress": "التحقق من التقدم",
+  "offerValidOncePerCustomerDuringCampaignPeriod": "عرض صالح مرة واحدة لكل عميل خلال فترة الحملة",
+  "timesDuringCampaignPeriod": "أوقات خلال فترة الحملة",
+  "noLocationFoundSubTitle": "تمكين خدمات الموقع للمتابعة.",
+  "canceled": "ألغى",
+  "applyCouponAndGetExtraDiscount": "تطبيق القسيمة واحصل على خصم إضافي",
+  "somethingWentWrongTitle": "حدث شيء خاطئ !!",
+  "applicableMaximum": "الحد الأقصى المطبق",
+  "permissionRequired": "إذن مطلوب",
+  "showMore": "تظهر المزيد",
+  "noLocationFound": "📌 لم يتم العثور على موقع",
+  "seeAll": "انظر كل شيء",
+  "maximumInstantDiscountOf": "الحد الأقصى للخصم الفوري من",
+  "pleaseGiveRating": "يرجى إعطاء التقييم",
+  "payOnService": "دفع على الخدمة",
+  "useCurrentLocation": "الحصول على الموقع الحالي",
+  "applyCoupon": "تطبيق القسيمة",
+  "couponDiscount": "خصم القسيمة",
+  "aboutThisProvider": "حول هذا المزود",
+  "bookingFailureMessage": "كانت هناك مشكلة في خدمة الحجز ، يرجى المحاولة مرة أخرى.",
+  "offerIsApplicableOnMinimumValueOf": "العرض قابل للتطبيق على الحد الأدنى لقيمة الحجز",
+  "topRated": "أعلى تصنيف",
+  "reviewSubmittedSuccessfully": "المراجعة المقدمة بنجاح",
+  "weAreNotAvailableHereSubTitle": "نحن لسنا متوفرين في منطقتك.",
+  "somethingWentWrong": "حدث خطأ أثناء التواصل مع الخادم. ",
+  "others": "آحرون",
+  "payWithServiceAtYourHome": "ادفع مع الخدمة في منزلك",
+  "unknownStatus": "تم استلام رمز حالة غير معروف",
+  "offerValidFrom": "عرض صالح من",
+  "seeFullProfile": "انظر الملف الشخصي الكامل",
+  "promoCodeAppliedSuccessfully": "تم تطبيق رمز الترويجي بنجاح",
+  "reviewAndRating": "المراجعات والتقييمات",
+  "preference": "التفضيلات",
+  "showLess": "تظهر أقل",
+  "content": "محتوى",
+  "doYouReallyWantToDelete": "هل تريد حقا حذف؟",
+  "discountHighToLow": "الخصم: مرتفع إلى منخفض",
+  "notificationDeletedSuccessfully": "تم حذف الإخطار بنجاح",
+  "addNewAddress": "أضف عنوانًا جديدًا",
+  "invoice": "فاتورة",
+  "notesLbl": "ملحوظات",
+  "started": "بدأ",
+  "promocodes": "العروض",
+  "retry": "إعادة المحاولة",
+  "aboutService": "حول الخدمة",
+  "about": "عن",
+  "closed": "مغلق",
+  "wednesday": "الأربعاء",
+  "companyInformation": "معلومات الشركة",
+  "monday": "الاثنين",
+  "services": "خدمات",
+  "thursday": "يوم الخميس",
+  "yourAccountIsDeActive": "حسابك هو إلهي ، يرجى الاتصال المسؤول لمزيد من المعلومات.",
+  "downloadInvoice": "تنزيل فاتورة",
+  "authenticationFailed": "فشلت المصادقة. ",
+  "noProviderFound": "👨‍💼 لم يتم العثور على مزود",
+  "sunday": "الأحد",
+  "bookService": "خدمات الكتب",
+  "serviceNotAvailableAtSelectedAddress": "الخدمة غير متوفرة على العنوان المحدد",
+  "serviceNotAvailableAtSelectedLocation": "الخدمة غير متوفرة في الموقع المحدد",
+  "noServicesFoundSubTitle": "استكشاف فئات أخرى لمزيد من الخيارات.",
+  "noInternetFound": "اه! ",
+  "serviceDescription": "وصف الخدمة",
+  "tuesday": "يوم الثلاثاء",
+  "chooseImage": "اختر الصور",
+  "noFaqsFoundSubTitle": "تحقق مرة أخرى لاحقًا لمزيد من المعلومات.",
+  "underMaintenanceSubTitle": "نقوم حاليًا بإجراء الصيانة على تطبيقنا. ",
+  "noBookingFound": "🗓 لم يتم العثور على حجوزات",
+  "currentVersion": "الإصدار الحالي",
+  "noBookingFoundSubTitle": "لا حجوزات متاحة في الوقت الحالي.",
+  "manualLocation": "الموقع اليدوي",
+  "normalUpdateSubTitle": "أضفنا الكثير من الميزات الجديدة وإصلاح بعض الأخطاء لجعل تجربتك سلسة قدر الإمكان",
+  "noServicesFound": "🛠 لم يتم العثور على خدمات",
+  "friday": "جمعة",
+  "noProviderFoundSubTitle": "لم نتمكن من العثور على أي مقدمي الخدمات بالقرب منك.",
+  "workCompletedProof": "دليل الانتهاء من العمل",
+  "photos": "صور",
+  "noInternetFoundTitle": "📡 لم يتم العثور على الإنترنت",
+  "saturday": "السبت",
+  "atHomeDescription": "الخدمات المقدمة إلى عتبة داركم.",
+  "businessHours": "ساعات العمل",
+  "orderWillBeScheduledForTheMultipleDays": "ملاحظة: سيتم جدولة الحجز لعدة أيام",
+  "bookedAt": "حجز في",
+  "noReviewsFoundSubTitle": "كن أول من يترك مراجعة!",
+  "storeAddress": "عنوان المتجر",
+  "otp": "OTP",
+  "currentlyNotAvailableAtSelectedAddress": "حاليا غير متوفر على العنوان المحدد",
+  "invoiceDownloadedSuccessfully": "فاتورة تنزيل بنجاح",
+  "becomeProvider": "كن مزودًا",
+  "noProvidersFound": "🏢 لم يتم العثور على مقدمي الخدمات",
+  "reBooking": "إعادة الحجز",
+  "brochureOrFiles": "كتيب/ملفات",
+  "atHome": "في عتبة الباب",
+  "rePayment": "إعادة الدفع",
+  "atStore": "في المتجر",
+  "noReviewsFound": "⭐ لم يتم العثور على مراجعات",
+  "workStartedProof": "بدأ العمل دليل",
+  "noProvidersFoundSubTitle": "يرجى محاولة البحث مرة أخرى أو الاتصال بنا للحصول على المساعدة.",
+  "yourAddress": "عنوانك",
+  "atStoreDescription": "الراحة في موقع متجرنا.",
+  "internalServerError": "أُووبس! ",
+  "loginRequired": "تسجيل الدخول المطلوب",
+  "reschedule": "إعادة جدولة",
+  "selectServiceDeliverable": "موقع تقديم الخدمة",
+  "areYouSureYouWantToLogout": "هل أنت متأكد أنك تريد تسجيل الدخول؟",
+  "enterAddressLine1": "أدخل العنوان",
+  "fieldMustNotBeEmpty": "يجب ألا يكون الحقل فارغًا",
+  "doNotPressBackWhilePaymentAndDoubleTapBackButtonToExit": "لا تضغط مرة أخرى أثناء القيام بالدفع! \n ",
+  "searchResults": "نتائج البحث",
+  "supportHours": "ساعات الدعم",
+  "phone": "هاتف",
+  "area": "شقة / طريق / منطقة",
+  "accountDeletedSuccessfully": "تم حذف حسابك بنجاح",
+  "selectYourLocation": "حدد موقعك",
+  "hoursAgo": "منذ ساعات",
+  "completeAddress": "عنوان كامل",
+  "secondsAgo": "قبل ثوان",
+  "noAddressFoundSubTitle": "احفظ عنوانًا لـ Faster Checkout.",
+  "minutesAgo": "منذ دقائق",
+  "noFaqsFound": "❓ لا توجد أسئلة وأجوبة متاحة",
+  "confirmAddress": "تأكيد العنوان",
+  "noPaymentDetailsFound": "💳 لم يتم العثور على تفاصيل الدفع",
+  "noNotificationsFound": "🔔 لم يتم العثور على إشعارات",
+  "bookingInformation": "معلومات الحجز",
+  "transactionId": "معرف المعاملة",
+  "noAddressFound": "📍 لم يتم العثور على عنوان",
+  "noBookmarkFoundSubTitle": "احفظ المفضلة لديك للوصول السريع.",
+  "deleteAccountWarning": "سيتم حذف طلب الحجز المباشر الخاص بك ، والحجوزات المستمرة وجميع البيانات الخاصة بك. ",
+  "getInTouchWithUs": "إذا كان لديك أي استفسارات تواصل معنا.\n",
+  "daysAgo": "منذ أيام",
+  "noPaymentDetailsFoundSubTitle": "أضف طريقة دفع للمتابعة.",
+  "payOnlineNow": "ادفع عبر الإنترنت الآن",
+  "pleaseReLoginAgainToDeleteAccount": "يرجى إعادة التعليق مرة أخرى لحذف الحساب",
+  "ourSocials": "تواصل مع اجتماعاتنا الاجتماعية",
+  "noBookmarkFound": "🔖 لم يتم العثور على إشارة مرجعية",
+  "searchServices": "خدمات البحث",
+  "faqs": "الأسئلة الشائعة",
+  "subject": "موضوع",
+  "noNotificationsFoundSubTitle": "ترقبوا تحديثات مهمة.",
+  "yearAgo": "منذ عام",
+  "takePhoto": "التقط الصورة",
+  "sending": "إرسال...",
+  "submit": "يُقدِّم",
+  "weCouldntSendYourRequestPleaseTryAgainLater.": "لم نتمكن من إرسال طلبك. ",
+  "youMightAlsoFindYourAnswersOn": "قد تجد أيضًا إجاباتك على",
+  "yesterday": "أمس",
+  "loadingMoreChats": "تحميل المزيد من الدردشات",
+  "addressLine1": "البيت/ شقة/ كتلة لا.",
+  "name": "اسم",
+  "errorSendingMessageTryAgain": "خطأ إرسال رسالة ، انقر فوق إعادة المحاولة.",
+  "chatPreDefineMessageForProvider3": "أهلاً! ",
+  "chatPreDefineMessageForProvider1": "أهلاً بك! ",
+  "chatPreDefineMessageForProvider5": "يا! ",
+  "chatSendHint": "اكتب الرسالة هنا",
+  "chatWithUs": "الدردشة معنا",
+  "adminChatEmptyScreenHeading": "مشكلة؟ ",
+  "extra": "إضافي",
+  "noChatHistoryFound": "💬 لم يتم العثور على تاريخ الدردشة",
+  "pickedImages": "الصور التي تم التقاطها",
+  "noChatHistoryFoundDescription": "ليس لديك أي سجل دردشة بعد. ",
+  "signInWithGoogle": "تسجيل الدخول مع Google",
+  "remove": "يزيل",
+  "orContinueWith": "أو متابعة",
+  "confirm": "يتأكد",
+  "send": "يرسل",
+  "view": "منظر",
+  "share": "يشارك",
+  "selectedFiles": "ملفات محددة",
+  "signInWithApple": "تسجيل الدخول مع Apple",
+  "chat": "محادثة",
+  "billDetails": "تفاصيل فاتورة",
+  "mb": "ميغابايت",
+  "payOnlineNowUsingRazorpay": "ادفع عبر الإنترنت الآن باستخدام Razorpay",
+  "payOnlineNowUsingPaypal": "ادفع عبر الإنترنت الآن باستخدام PayPal",
+  "payOnlineNowUsingPaystack": "الدفع عبر الإنترنت الآن باستخدام PayStack",
+  "paypal": "PayPal",
+  "razorpay": "رازورباي",
+  "maxAllowedFilesAre": "ماكس المسموح بها الملفات",
+  "providerPreBookingChatEmptyScreenHeading": "سؤال وجواب مسبق",
+  "moreServices": "المزيد من الخدمات",
+  "removed": "تمت إزالته",
+  "deleteCart": "حذف العربة",
+  "chatPreBookingMessageForProvider2": "كم من الوقت تستغرق الخدمة عادة؟ ",
+  "noChatsFoundSubTitle": "ليس لديك أي محادثات حتى الآن. ",
+  "chatPreBookingMessageForProvider1": "هل أنت مرخص ومؤمن؟ ",
+  "permissionNotGiven": "الرجاء السماح إذن بالتخزين",
+  "noChatsFound": "🗨 لم يتم العثور على دردشات",
+  "youCantMessageToProvider": "آسف ، لا يمكنك إرسال رسالة إلى المزود منذ إلغاء الحجز أو إكماله. ",
+  "payOnlineNowUsingStripe": "ادفع عبر الإنترنت الآن باستخدام Stripe",
+  "loginOrSignup": "تسجيل الدخول أو التسجيل",
+  "bytes": "بايت",
+  "chatPreDefineMessageForAdmin6": "يا! ",
+  "cameraImages": "صور الكاميرا",
+  "stripe": "شريط",
+  "userLoggedInSuccessfully": "لقد قمت بتسجيل الدخول بنجاح.",
+  "chatPreBookingMessageForProvider5": "هل تقدم أي خصومات أو عروض ترويجية؟ ",
+  "moreService": "المزيد من الخدمة",
+  "chatPreBookingMessageForProvider3": "هل تقدم ضمان الرضا؟ ",
+  "addressUpdatedSuccessfully": "عنوان تم تحديثه بنجاح.",
+  "preBookingEnquiries": "قبل الحجز استفسارات",
+  "chatPreBookingMessageForProvider4": "هل تحضر أدواتك ومستلزماتك؟ ",
+  "addressAddedSuccessfully": "العنوان المضافة بنجاح.",
+  "filesAsTheyExceededTheLimitOf": "الملفات لأنها تجاوزت الحد",
+  "failed": "فشل",
+  "legal": "قانوني",
+  "success": "نجاح",
+  "getStarted": "ابدأ",
+  "paymentMode": "وضع الدفع",
+  "easilyAddNewAddress": "إضافة عنوان جديد بسهولة",
+  "selectDateOfTheService": "حدد تاريخ الخدمة",
+  "unableToOpen": "غير قادر على فتح",
+  "addSlot": "+ إضافة",
+  "enterYourPhoneNumber": "أدخل رقم هاتفك",
+  "enterUsername": "أدخل اسم المستخدم",
+  "selectTimeOfTheService": "حدد وقت الخدمة",
+  "typeToSearch": "اكتب للبحث",
+  "cropImage": "صورة المحاصيل",
+  "scheduleOnYourPreferDateAndTime": "جدولة على تاريخ ووقتك المفضل",
+  "searchLocation": "موقع البحث",
+  "confirmLogout": "تأكيد تسجيل الدخول",
+  "enterYourEmailAddress": "أدخل عنوان بريدك الإلكتروني",
+  "startTyping": "ابدأ في الكتابة ...",
+  "mobileNumberShouldBeBetween6And15Numbers": "يجب أن يتراوح رقم الهاتف المحمول بين 6 و 15 رقمًا",
+  "selectDateAndTime": "حدد التاريخ والوقت",
+  "recentSearched": "تم تفتيشه مؤخرًا",
+  "searchFanRepair": "إصلاح مروحة إصلاح",
+  "searchHairCutting": "ابحث في قطع الشعر",
+  "enterCity": "أدخل المدينة",
+  "pleaseAllowLocationPermission": "الرجاء السماح إذن الموقع",
+  "searchElectronics": "البحث الإلكترونيات",
+  "account": "حساب",
+  "pleaseEnterValidEmail": "الرجاء إدخال بريد إلكتروني صالح",
+  "deleteAddress": "حذف العنوان",
+  "noServicesAvailable": "🔧 لا توجد خدمات متوفرة",
+  "booking_ended": "انتهى",
+  "max": "الأعلى",
+  "min": "دقيقة",
+  "booked": "حجز",
+  "viewDetails": "عرض التفاصيل",
+  "myRequest": "طلبي",
+  "chooseMedia": "اختر الوسائط",
+  "providers": "مقدمي الخدمات",
+  "chatPreDefineMessageForAdmin3": "يا! ",
+  "chatPreDefineMessageForAdmin2": "مرحبًا! ",
+  "chatPreDefineMessageForProvider4": "مرحبًا! ",
+  "chatPreDefineMessageForAdmin4": "أهلاً! ",
+  "ifYouHaventCheckedItAlreadyBeforeContactingUs": "إذا لم تكن قد راجعت بالفعل قبل الاتصال بنا.",
+  "letsTalk": "لنتحدث",
+  "providerChatEmptyScreenHeading": "دعنا نتحدث عن الحجز الخاص بك!",
+  "errorLoadingMoreRetry": "خطأ في تحميل المزيد ، إعادة المحاولة",
+  "uploadFile": "ملف تحميل",
+  "chatWithUsDescription": "إذا كنت لا تزال تبحث عن مساعدة ، فاحرص على الدردشة مع أحد أعضاء فريق الدعم لدينا",
+  "enterArea": "أدخل المنطقة",
+  "chatPreDefineMessageForAdmin1": "أهلاً! ",
+  "yourRequestHasBeenSuccessfullySent": "تم إرسال طلبك بنجاح.",
+  "customerSupport": "دعم العملاء",
+  "serviceDetails": "تفاصيل الخدمة",
+  "chatPreDefineMessageForAdmin5": "مرحبًا! ",
+  "weLoveYourFeedbackSuggestionAndReviewOnHowToServeYou": "نحن نحب ملاحظاتك واقتراحك ومراجعة كيفية خدمتك. ",
+  "myRequests": "الطلبات",
+  "chatPreDefineMessageForProvider2": "أهلاً بك! ",
+  "chatPreDefineMessageForProvider6": "أهلاً! ",
+  "paystack": "PayStack",
+  "submitRequest": "إرسال الطلب",
+  "notYet": "ليس بعد...!",
+  "areYouSure": "هل أنت متأكد..؟",
+  "checkOut": "الدفع..!",
+  "more": "أكثر",
+  "less": "أقل",
+  "additionalChargesFailureMessage": "حدث خطأ ما. ",
+  "cancelRequest": "إلغاء الطلب",
+  "km": "كم",
+  "by": "بواسطة",
+  "requested": "مطلوب",
+  "minutes": "دقيقة.",
+  "save": "يحفظ",
+  "clickHere": "انقر هنا",
+  "serviceLBL": "خدمة",
+  "support": "يدعم",
+  "yes": "نعم",
+  "no": "لا",
+  "chats": "الدردشات",
+  "unblock": "إلغاء الحظر",
+  "cancelBooking": "يلغي",
+  "login": "تسجيل الدخول",
+  "continue": "يكمل",
+  "reviews": "المراجعات",
+  "cancelled": "ألغى",
+  "loggedOutFailed": "حدث خطأ ما. ",
+  "endAt": "تنتهي في",
+  "requestDuration": "طلب المدة",
+  "cod": "دفع في وقت لاحق",
+  "logoutFromApp": "تسجيل الخروج من التطبيق",
+  "payAdditionalCharges": "دفع رسوم إضافية",
+  "customBooking": "الحجز المخصص",
+  "pleaseLoginToSeeYourBookings": "يرجى تسجيل الدخول لرؤية حجوزاتك",
+  "serviceType": "نوع الخدمة",
+  "pleaseSelectTime": "الرجاء تحديد الوقت",
+  "paidAmount": "المبلغ المدفوع:",
+  "otpVerifiedSuccessfully": "تم التحقق من OTP بنجاح",
+  "availableProviders": "مقدمي الخدمات المتاحة",
+  "noServiceRequestedSubTitle": "يرجى طلب خدمة لعرض مقدمي الخدمات المتاحة.",
+  "defaultBooking": "الحجز الافتراضي",
+  "postedAt": "نشر في",
+  "noServiceRequested": "🛠 لم يتم طلب خدمة",
+  "startFrom": "ابدأ من",
+  "shortDescription": "وصف قصير",
+  "requestService": "طلب الخدمة",
+  "otpSentSuccessfully": "أرسل OTP بنجاح",
+  "payOnlineNowUsingFlutterwave": "ادفع عبر الإنترنت الآن باستخدام Flutterwave",
+  "enterPhoneNumber": "أدخل رقم الهاتف",
+  "loginProcessCanceled": "تم إلغاء عملية تسجيل الدخول",
+  "youAreNotLoggedIn": "أنت لم تسجل الدخول",
+  "bids": "عطاءات",
+  "selectEndDateTime": "حدد تاريخ ووقت الانتهاء",
+  "flutterwave": "Flutterwave",
+  "paymentFailed": "حدث خطأ ما أثناء الدفع. ",
+  "enquiryChats": "دردشات الاستفسار",
+  "invalidTime": "يجب أن يكون وقت البدء المحدد قبل وقت الانتهاء",
+  "serviceTitle": "عنوان الخدمة",
+  "noBidsAvailable": "لا عطاءات متاحة",
+  "checkoutServices": "خدمات الخروج",
+  "bookNow": "كتاب الآن",
+  "pleaseLoginToSeeYourRequests": "يرجى تسجيل الدخول لرؤية طلباتك",
+  "cancelServiceWarning": "ستقوم بتعطيل طلب خدمة الوظائف المفتوحة من العملاء في جميع أنحاء العالم. ",
+  "selectStartDateTime": "حدد تاريخ البدء والوقت",
+  "additionalChargesSuccessMessage": "رسوم إضافية مدفوعة بنجاح",
+  "bookingChats": "دردشات الحجز",
+  "additionalCharges": "رسوم إضافية",
+  "selectStartDateTimeFirst": "حدد تاريخ البدء والوقت أولاً",
+  "minMaxBudgetWarning": "يجب أن يكون الحد الأدنى للميزانية أقل من الحد الأقصى للميزانية",
+  "enterMaxPrice": "أدخل أقصى سعر",
+  "addressesSaved": "العناوين المحفوظة",
+  "enterMinPrice": "أدخل الحد الأدنى للسعر",
+  "expiresOn": "تنتهي على",
+  "additionalChargesPaymentMode": "وضع دفع الرسوم الإضافية",
+  "selectServiceType": "الرجاء تحديد نوع الخدمة",
+  "payWithCash": "دفع نقدا",
+  "enterTitle": "الرجاء إدخال العنوان",
+  "requestSuccess": "طلب تقديم بنجاح",
+  "providerNote": "ملاحظة مزود",
+  "requestedService": "الخدمة المطلوبة",
+  "selectAddress": "حدد العنوان",
+  "viewService": "عرض الخدمة",
+  "chatDeletedSuccessfully": "تم حذف الدردشة بنجاح",
+  "deleteChat": "حذف الدردشة",
+  "serviceBookmarkedSuccessfully": "تم وضع إشارة مرجعية على هذه الخدمة بنجاح! ",
+  "additionalInfo": "معلومات إضافية",
+  "pleaseEnterAdditionalInfo": "الرجاء إدخال معلومات إضافية",
+  "youHaveBlockedThisProvider": "لقد قمت بحظر هذا المزود",
+  "enterAdditionalInfo": "أدخل معلومات إضافية",
+  "thisIsGeneralNotification": "هذا إخطار عام",
+  "reportReason": "سبب الإبلاغ",
+  "serviceUnbookmarkedSuccessfully": "تمت إزالة هذه الخدمة من الإشارات المرجعية الخاصة بك. ",
+  "ratingsAndReviews": "التصنيفات والمراجعات",
+  "loggedOutSuccessfully": "لقد قمت بتسجيل الخروج بنجاح",
+  "submitReport": "إرسال التقرير",
+  "goToLogin": "اذهب إلى تسجيل الدخول",
+  "noOneHasBidYet": "لا أحد لديه عرض حتى الآن ، يرجى التحقق مرة أخرى لاحقًا.",
+  "writeInstruction": "اكتب التعليمات",
+  "youHaveBeenBlockedByProvider": "لقد تم حظرك من قبل المزود",
+  "pleaseSelectReason": "الرجاء تحديد سبب",
+  "block&Report": "كتلة وتقرير",
+  "providerNotFound": "لم يتم العثور على المزود",
+  "providerNotFoundSubTitle": "يرجى البحث مرة أخرى أو الاتصال بنا للمساعدة.",
+  "thisCategoryIsNotAvailable": "هذه الفئة ليست متاحة",
+  "thisProviderIsNotAvailable": "هذا المزود ليست متاحة",
+  "noBlockedProviders": "لا يوجد مزود محظور",
+  "noBlockedProvidersSubTitle": "لم تحظر أي مزود بعد. قم بحظر مزودًا لإزالته من الدردشات الخاصة بك.",
+  "blockedProviders": "مزود محظور",
+  "providerNotAvailableAtLocation": "المزود غير متاح في موقعك",
+  "network-request-failed": "حدث خطأ في الشبكة",
+  "invalid-phone-number": "رقم الهاتف المقدم غير صالح",
+  "invalid-verification-code": "رمز التحقق غير صالح. يرجى التحقق مرة أخرى من الرمز الذي أدخلته وحاول مجددًا",
+  "too-many-requests": "طلبات كثيرة جدًا من هذا الجهاز، حاول مرة أخرى لاحقًا",
+  "blogs": "المدونات",
+  "noDataFound": "لا يوجد بيانات",
+  "noBlogsAvailable": "لا يوجد مدونات متاحة",
+  "blogDetails": "تفاصيل المدونة",
+  "categories": "الفئات",
+  "xendit": "زينديت",
+  "payOnlineNowUsingXendit": "ادفع عبر الإنترنت الآن باستخدام Xendit",
+  "notAvailable": "غير متاح",
+  "yourLocation": "موقعك",
+  "total": "المجموع",
+  "relatedBlogs": "المدونات ذات الصلة",
+  "permissionRejected": "الإذن مرفوض"
+}

@@ -1,0 +1,144 @@
+{
+  "project_info": {
+    "project_number": "526848120057",
+    "firebase_url": "https://khidma-plus-52001-default-rtdb.firebaseio.com",
+    "project_id": "khidma-plus-52001",
+    "storage_bucket": "khidma-plus-52001.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:526848120057:android:b3c4af5484b2d3761ebe28",
+        "android_client_info": {
+          "package_name": "com.khidma_plus_admin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "526848120057-accq2ujgfjd0hiq666ctotd3k6ckpham.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNbeNlSQb8NyHK-z-JlVQWicssGnzyJms"
+        },
+        {
+          "current_key": "AIzaSyAxqrp-53B6Fh_TVLwIjhSnWLpIyebYd0o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "526848120057-accq2ujgfjd0hiq666ctotd3k6ckpham.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "526848120057-2mnmqdaju654fc0lqod7neqd5lv470db.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.maqamiprovider"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:526848120057:android:e2b0eb76acb9bd701ebe28",
+        "android_client_info": {
+          "package_name": "com.provider.khadamat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "526848120057-accq2ujgfjd0hiq666ctotd3k6ckpham.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNbeNlSQb8NyHK-z-JlVQWicssGnzyJms"
+        },
+        {
+          "current_key": "AIzaSyAxqrp-53B6Fh_TVLwIjhSnWLpIyebYd0o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "526848120057-accq2ujgfjd0hiq666ctotd3k6ckpham.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "526848120057-2mnmqdaju654fc0lqod7neqd5lv470db.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.maqamiprovider"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:526848120057:android:eb5e568c30feed321ebe28",
+        "android_client_info": {
+          "package_name": "com.services.khadamat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "526848120057-l45ob8v3vmn5q90kfgpq3bptesa06lbl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.services.khadamat",
+            "certificate_hash": "8e38346171ae92114c3a30403925f99b9b504511"
+          }
+        },
+        {
+          "client_id": "526848120057-qo4bdvc20s93q65j14e30ugcgfluffao.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.services.khadamat",
+            "certificate_hash": "09a011063ca57bcf7261e0ba5deeb51986f062ab"
+          }
+        },
+        {
+          "client_id": "526848120057-accq2ujgfjd0hiq666ctotd3k6ckpham.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNbeNlSQb8NyHK-z-JlVQWicssGnzyJms"
+        },
+        {
+          "current_key": "AIzaSyAxqrp-53B6Fh_TVLwIjhSnWLpIyebYd0o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "526848120057-accq2ujgfjd0hiq666ctotd3k6ckpham.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "526848120057-2mnmqdaju654fc0lqod7neqd5lv470db.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.maqamiprovider"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
