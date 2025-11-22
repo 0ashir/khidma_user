@@ -10,13 +10,9 @@ Future<void> initApp() async {
     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
   );
 
-  if (Firebase.apps.isNotEmpty) {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-  } else {
-    await Firebase.initializeApp();
-  }
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   // FirebaseMessaging.onBackgroundMessage(NotificationService.onBackgroundMessageHandler);
   try {
@@ -62,7 +58,6 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-
   @override
   void initState() {
     super.initState();
