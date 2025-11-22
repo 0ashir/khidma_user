@@ -59,15 +59,15 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyB5BfNUzCGqw8MqxMniI0-lM2TpbVteDJo',
-    appId: '1:526848120057:ios:b3bb3d95bbe104641ebe28',
+    apiKey: 'AIzaSyCYl_fGjuDX-rMHwNyncbTkUPyfyqq7htY',
+    appId: '1:526848120057:ios:c03056bb831585a31ebe28',
     messagingSenderId: '526848120057',
     projectId: 'khidma-plus-52001',
     databaseURL: 'https://khidma-plus-52001-default-rtdb.firebaseio.com',
     storageBucket: 'khidma-plus-52001.firebasestorage.app',
-    androidClientId: '526848120057-l45ob8v3vmn5q90kfgpq3bptesa06lbl.apps.googleusercontent.com',
-    iosClientId: '526848120057-6jvrqk0jrgl256mprugner9ffof6i3mf.apps.googleusercontent.com',
-    iosBundleId: 'com.services.khadamat',
+    androidClientId: '526848120057-9n19crtueemc8dtake15vjp7ho9uipg5.apps.googleusercontent.com',
+    iosClientId: '526848120057-k87446t52essa3q713dvddvgal2lgju5.apps.googleusercontent.com',
+    iosBundleId: 'com.khidmaplus',
   );
 
 }
