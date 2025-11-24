@@ -62,13 +62,14 @@ extension StringExtension on String {
 
   String formatDate() {
     return DateFormat("${dateAndTimeSetting["dateFormat"]}",
-        HiveRepository.getCurrentLanguage()!.languageCode)
+            HiveRepository.getCurrentLanguage()!.languageCode)
         .format(DateTime.parse("$this 00:00:00.000Z"));
   }
 
   String formatTime() {
     if (dateAndTimeSetting["use24HourFormat"]) return this;
-    return DateFormat("hh:mm a", HiveRepository.getCurrentLanguage()!.languageCode)
+    return DateFormat(
+            "hh:mm a", HiveRepository.getCurrentLanguage()!.languageCode)
         .format(DateFormat('HH:mm').parse(this))
         .toString();
   }
@@ -82,7 +83,8 @@ extension StringExtension on String {
       final parsedDate = DateTime.parse(trimmed);
 
       // Format as "Month Day, Year"
-      return DateFormat("MMMM d, y", HiveRepository.getCurrentLanguage()!.languageCode)
+      return DateFormat(
+              "MMMM d, y", HiveRepository.getCurrentLanguage()!.languageCode)
           .format(
         parsedDate,
       );
@@ -99,7 +101,7 @@ extension StringExtension on String {
       return "${date.formatDate()} ${split(" ")[1]}";
     }
     return DateFormat('${dateAndTimeSetting["dateFormat"]} hh:mm a',
-        HiveRepository.getCurrentLanguage()!.languageCode)
+            HiveRepository.getCurrentLanguage()!.languageCode)
         .format(DateTime.parse(this));
   }
 
@@ -117,8 +119,7 @@ extension StringExtension on String {
   }
 
   void debugPrint() {
-    if (kDebugMode) {
-    }
+    if (kDebugMode) {}
   }
 
   bool isImage() => [

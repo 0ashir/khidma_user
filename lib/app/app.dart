@@ -13,6 +13,7 @@ Future<void> initApp() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  
 
   // FirebaseMessaging.onBackgroundMessage(NotificationService.onBackgroundMessageHandler);
   try {
