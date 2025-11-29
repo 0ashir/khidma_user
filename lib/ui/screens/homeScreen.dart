@@ -89,9 +89,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 HiveRepository.getLatitude == '') &&
             (HiveRepository.getLongitude == "0.0" ||
                 HiveRepository.getLongitude == ''))) {
-      Future.delayed(Duration.zero, () {
-        Navigator.pushNamed(context, allowLocationScreenRoute);
-      });
+      // Future.delayed(Duration.zero, () {
+      //   Navigator.pushNamed(context, allowLocationScreenRoute);
+      // });
     }
     if (permission == LocationPermission.always ||
         permission == LocationPermission.whileInUse) {
