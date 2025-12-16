@@ -20,7 +20,6 @@
 .classpath
 .project
 .settings/
-.vscode/
 
 # Flutter repo-specific
 /bin/cache/
@@ -66,6 +65,7 @@ unlinked_spec.ds
 **/android/gradlew
 **/android/gradlew.bat
 **/android/local.properties
+temp_auto_push.bat
 **/android/**/GeneratedPluginRegistrant.java
 **/android/key.properties
 *.jks
@@ -132,4 +132,5 @@ app.*.symbols
 
 # FVM Version Cache
 .fvm/
-.fvmrc
+.fvmrc.gitignore
+branch_structure.json
