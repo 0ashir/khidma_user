@@ -1172,6 +1172,94 @@ final dio = Dio();
     // }
   }
 
+  Future<void> addToCartDirect(BuildContext context, Services service) async {
+    debugPrint('ADD TO CART DIRECT FUNCTION IS CALLED');
+    log("addToCartDirect: start — serviceId=${service.id}, title=${service.title}");
+
+    // All context-dependent values captured before any await
+    final cartCtrl = Provider.of<CartProvider>(context, listen: false);
+    final locationCtrl = Provider.of<LocationProvider>(context, listen: false);
+    final navigator = Navigator.of(context);
+    log("addToCartDirect: providers captured — cartList.length=${cartCtrl.cartList.length}, addressList.length=${locationCtrl.addressList.length}");
+
+    // Guest check — synchronous read from pref stored on provider
+    final prefs = await SharedPreferences.getInstance();
+    final isGuest = prefs.getBool(session.isContinueAsGuest) ?? false;
+    log("addToCartDirect: isGuest=$isGuest");
+    if (isGuest) {
+      log("addToCartDirect: guest user → navigating to login");
+      navigator.pushNamed(routeName.login);
+      return;
+    }
+
+    // Already in cart — just navigate
+    final alreadyInCart = cartCtrl.cartList
+        .any((e) => e.isPackage == false && e.serviceList?.id == service.id);
+    log("addToCartDirect: alreadyInCart=$alreadyInCart");
+    if (alreadyInCart) {
+      log("addToCartDirect: service already in cart → calling checkout & navigating to cartScreen");
+      cartCtrl.checkout(context); // ignore: use_build_context_synchronously
+      navigator.pushNamed(routeName.cartScreen);
+      return;
+    }
+
+    // Resolve primary address
+    PrimaryAddress? address;
+    if (locationCtrl.addressList.isNotEmpty) {
+      final idx = locationCtrl.addressList.indexWhere((e) => e.isPrimary == 1);
+      log("addToCartDirect: primaryAddress index=$idx (total=${locationCtrl.addressList.length})");
+      address = idx >= 0
+          ? locationCtrl.addressList[idx]
+          : locationCtrl.addressList.first;
+      log("addToCartDirect: resolved address=${address.address}, id=${address.id}");
+    } else {
+      log("addToCartDirect: addressList is empty");
+    }
+    if (address == null) {
+      log("addToCartDirect: no address found → showing toast and returning");
+      Fluttertoast.showToast(
+          msg: "Please add a delivery address first.",
+          backgroundColor: Colors.red);
+      return;
+    }
+
+    log("addToCartDirect: building cartService with providerId=${service.user?.id ?? service.userId}, type=${service.type}, requiredServicemen=${service.requiredServicemen}");
+    final cartService = Services(
+      id: service.id,
+      title: service.title,
+      duration: service.duration,
+      isFeatured: service.isFeatured,
+      media: service.media,
+      discount: service.discount,
+      price: service.price,
+      status: service.status,
+      serviceRate: service.serviceRate,
+      userId: service.user?.id ?? service.userId,
+      type: service.type?.toString(),
+      requiredServicemen: service.requiredServicemen,
+      selectServiceManType: "app_choose",
+      user: service.user,
+      selectDateTimeOption: "custom",
+      selectedRequiredServiceMan: service.requiredServicemen,
+      primaryAddress: address,
+    );
+
+    log("addToCartDirect: adding to cartList — cartList.length before=${cartCtrl.cartList.length}");
+    cartCtrl.cartList
+        .add(CartModel(isPackage: false, serviceList: cartService));
+    cartCtrl.notifyListeners();
+    log("addToCartDirect: cartList.length after=${cartCtrl.cartList.length} → calling checkout & navigating to cartScreen");
+    cartCtrl.checkout(context); // ignore: use_build_context_synchronously
+    navigator.pushNamed(routeName.cartScreen);
+
+    // Persist cart in background after navigating
+    final encoded =
+        cartCtrl.cartList.map((p) => jsonEncode(p.toJson())).toList();
+    prefs.remove(session.cart);
+    await prefs.setString(session.cart, json.encode(encoded));
+    log("addToCartDirect: cart persisted to SharedPreferences — done");
+  }
+
   onBannerTap(context, id) {
     final commonApi = Provider.of<CommonApiProvider>(context, listen: false);
     commonApi.getCategoryById(context, id);

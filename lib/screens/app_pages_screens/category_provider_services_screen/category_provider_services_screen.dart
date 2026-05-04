@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:developer';
-
+import 'package:fixit_user/common_tap.dart';
 import '../../../config.dart';
 
 class CategoryProviderServicesScreen extends StatelessWidget {
@@ -46,22 +45,7 @@ class CategoryProviderServicesScreen extends StatelessWidget {
                     isShowAdd: false,
                     data: service,
                     isProvider: false,
-                    addTap: catCtrl.isProviderLoading
-                        ? () {
-                            log("Provider Loading");
-                          }
-                        : () async {
-                            SharedPreferences pref =
-                                await SharedPreferences.getInstance();
-                            if (pref.getBool(session.isContinueAsGuest) ==
-                                true) {
-                              route.pushNamedAndRemoveUntil(
-                                  context, routeName.login);
-                            } else {
-                              catCtrl.getProviderById(
-                                  context, service.userId!, e.key, service);
-                            }
-                          },
+                    addTap: () => onBook(context, service, provider: provider),
                     onTap: catCtrl.isAlert
                         ? () {}
                         : () {

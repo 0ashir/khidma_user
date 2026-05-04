@@ -11,7 +11,7 @@ class CommonOtpLayout extends StatelessWidget {
       builder: (context1,value,child) {
         return OtpLayout(
                 controller: value.otpController,
-
+                focusNode: value.otpFocusNode,
                 validator: (value) => Validation().otpValidation(context,value),
                 onSubmitted: (val) {
                   value.otpController.text = val;

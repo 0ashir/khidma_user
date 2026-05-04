@@ -264,7 +264,10 @@ class _RouteToPageState extends State<RouteToPage> {
                       textDirection: lang.locale?.languageCode == 'ar'
                           ? TextDirection.rtl
                           : TextDirection.ltr,
-                      child: child!,
+                      child: SafeArea(
+                        top: false,
+                        child: child!,
+                      ),
                     );
                   },
                 );

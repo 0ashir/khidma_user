@@ -356,24 +356,15 @@ class FeaturedServicesLayout extends StatelessWidget {
                                                                           .r8,
                                                                   cornerSmoothing:
                                                                       1))),
-                                                      child: SizedBox(
-                                                        // width: Sizes.s60 ,
-                                                        child: Text(
-                                                                language(context, translations!.view),
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .clip,
-                                                                style: appCss
-                                                                    .dmDenseMedium12
-                                                                    .textColor(appColor(
-                                                                            context)
-                                                                        .whiteColor))
-                                                            .padding(
-                                                                horizontal:
-                                                                    Insets.i12,
-                                                                vertical:
-                                                                    Insets.i10),
-                                                      )).inkWell(onTap: onTap)
+                                                      child: Row(
+                                                        mainAxisSize: MainAxisSize.min,
+                                                        children: [
+                                                          Icon(Icons.add, color: appColor(context).whiteColor, size: Sizes.s16),
+                                                          const SizedBox(width: 4),
+                                                          Text("Add", style: appCss.dmDenseSemiBold12.textColor(appColor(context).whiteColor)),
+                                                        ],
+                                                      ).padding(horizontal: Insets.i10, vertical: Insets.i10),
+                                                      ).inkWell(onTap: addTap)
                                       ])
                               ]))
                             ])),

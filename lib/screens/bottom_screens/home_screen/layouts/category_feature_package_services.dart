@@ -149,12 +149,9 @@ class CategoryFeaturePackageServices extends StatelessWidget {
                     itemBuilder: (context, index) {
                       return FeaturedServicesLayout(
                           data: homeFeaturedService[index],
-                          addTap: () => dash.onFeatured(
-                              context, homeFeaturedService[index], index,
-                              inCart: isInCart(
-                                  context, homeFeaturedService[index].id)),
-                          // inCart:
-                          //     isInCart(context, homeFeaturedService[index].id),
+                          isShowAdd: false,
+                          addTap: () => dash.addToCartDirect(
+                              context, homeFeaturedService[index]),
                           onTap: () {
                             log("homeFeaturedService[index].id::${homeFeaturedService[index].id}");
                             var serviceDetails =

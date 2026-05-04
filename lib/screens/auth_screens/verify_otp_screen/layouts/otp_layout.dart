@@ -5,6 +5,7 @@ class OtpLayout extends StatelessWidget {
   final ValueChanged<String>? onSubmitted;
   final TextEditingController? controller;
   final PinTheme? errorPinTheme, defaultPinTheme, focusedPinTheme;
+  final FocusNode? focusNode;
 
   const OtpLayout(
       {super.key,
@@ -13,7 +14,8 @@ class OtpLayout extends StatelessWidget {
       this.onSubmitted,
       this.defaultPinTheme,
       this.errorPinTheme,
-      this.focusedPinTheme});
+      this.focusedPinTheme,
+      this.focusNode});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +28,7 @@ class OtpLayout extends StatelessWidget {
             length: 6,
             validator: validator,
             controller: controller,
-            focusNode: FocusNode(),
+            focusNode: focusNode,
             defaultPinTheme: defaultPinTheme,
             onCompleted: (pin) {},
             focusedPinTheme: focusedPinTheme,

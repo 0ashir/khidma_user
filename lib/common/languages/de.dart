@@ -335,7 +335,7 @@ final dynamic de = {
   'asPerProvider': "Gemäß Anbieter -Zeitfenster",
   'selectDate': "Wählen Sie Datum und Uhrzeit auswählen",
   'requiredServicemen': "Erforderliche Soldaten",
-  'customMessage': "Zusätzliche Anweisung",
+  'customMessage': "Zusätzliche Anweisungen (Kfz-Kennzeichen)",
   'addAnyExtra':
       "*Fügen Sie zu diesem Service alle Extras hinzu, die Sie mögen.",
   'next': "Nächste",

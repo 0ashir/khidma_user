@@ -16,6 +16,7 @@ class VerifyOtpProvider with ChangeNotifier {
   bool isCodeSent = false, isCountDown = false, isEmail = false;
   Timer? countdownTimer;
   final FocusNode phoneFocus = FocusNode();
+  final FocusNode otpFocusNode = FocusNode();
   Duration myDuration = const Duration(seconds: 60);
 
   onTapVerify(context) {
@@ -192,11 +193,13 @@ getArgument(context) {
     isEmail = false;
     phone = data["phone"].toString();
     dialCode = data["dialCode"].toString();
-    // Read verificationCode from arguments directly
     verificationCode = data["verificationCode"]?.toString();
     uid = data["uid"]?.toString();
     log("verificationCode from args: $verificationCode");
     startTimer();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      otpFocusNode.requestFocus();
+    });
   }
   log("ARG : $data");
   notifyListeners();
@@ -206,17 +209,16 @@ Future<void> verifyPhoneOtp(BuildContext context) async {
   showLoading(context);
   notifyListeners();
 
-  // Use local verificationCode instead of phoneProvider's
-  if (verificationCode == null || verificationCode == 'null') {
-    hideLoading(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-          content: Text("No verification code found. Please resend OTP.")),
-    );
-    return;
-  }
-
   if (appSettingModel!.general!.defaultSmsGateway == "firebase") {
+    if (verificationCode == null || verificationCode == 'null') {
+      hideLoading(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text("No verification code found. Please resend OTP.")),
+      );
+      return;
+    }
+
     try {
       log("OTP verify: ${otpController.text}, verificationCode: $verificationCode");
 
@@ -282,6 +284,7 @@ Future<void> verifyPhoneOtp(BuildContext context) async {
 
   //resend code
   resendOtp(context) async {
+    otpController.clear();
     showLoading(context);
     notifyListeners();
 

@@ -274,7 +274,7 @@ class SlotBookingProvider with ChangeNotifier {
 
   Future<void> fetchTimeSlots() async {
     try {
-      log("servicesCart!.user!.id::${servicesCart!.user!.id}");
+      log("servicesCart provider id::${servicesCart?.user?.id ?? servicesCart?.userId}");
       // isLoading = true;
       notifyListeners();
       final response = await apiServices.getApi(
@@ -492,7 +492,7 @@ class SlotBookingProvider with ChangeNotifier {
     } else {
       callBookingApi(
           servicesCart?.id,
-          servicesCart?.requiredServicemen,
+          servicesCart?.selectedRequiredServiceMan ?? servicesCart?.requiredServicemen,
           servicesCart?.selectedAdditionalServices
               ?.map((service) => {
                     "id": service.id,
@@ -789,8 +789,9 @@ class SlotBookingProvider with ChangeNotifier {
 
   Future<void> checkSlotAvailable(
       {bool isEdit = false, BuildContext? context}) async {
+    final providerId = servicesCart?.user?.id ?? servicesCart?.userId;
     if (context == null ||
-        servicesCart?.user?.id == null ||
+        providerId == null ||
         timeIndex == null ||
         timeSlot.isEmpty) {
       timeIndex = null;
@@ -813,7 +814,7 @@ class SlotBookingProvider with ChangeNotifier {
       );
       final utcDay = focusedDay.value.toUtc();
       final data = {
-        "provider_id": servicesCart!.user!.id,
+        "provider_id": servicesCart!.user?.id ?? servicesCart!.userId,
         "dateTime": DateFormat("dd-MMM-yyyy,hh:mm aa").format(utcDay),
       };
       final response = await apiServices.getApi(
@@ -1329,12 +1330,14 @@ class SlotBookingProvider with ChangeNotifier {
   }
 
   onRemoveService(context) {
-    if ((servicesCart!.selectedRequiredServiceMan!) == 1) {
-      route.pop(context);
-    } else {
-      servicesCart!.selectedRequiredServiceMan =
-          ((servicesCart!.selectedRequiredServiceMan!) - 1);
+    if ((servicesCart!.selectedRequiredServiceMan!) <= 1) {
+      Fluttertoast.showToast(
+          msg: "Minimum 1 serviceman required",
+          backgroundColor: Colors.red);
+      return;
     }
+    servicesCart!.selectedRequiredServiceMan =
+        (servicesCart!.selectedRequiredServiceMan!) - 1;
     notifyListeners();
   }
 

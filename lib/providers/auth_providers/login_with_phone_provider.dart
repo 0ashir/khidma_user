@@ -1,7 +1,10 @@
 import 'dart:developer';
-import 'package:dio/dio.dart' as dio;
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter/material.dart';
+
 import '../../config.dart';
 
 class LoginWithPhoneProvider with ChangeNotifier {
@@ -13,104 +16,72 @@ class LoginWithPhoneProvider with ChangeNotifier {
   String? verificationCode;
   String? uid;
 
-  onTapOtp(context) async {
+  /// Called when user taps "Send OTP" button.
+  onTapOtp(BuildContext context) async {
+    // Dismiss keyboard
     FocusManager.instance.primaryFocus?.unfocus();
+
+    // Validate form (e.g., phone number format)
     if (globalKey.currentState!.validate()) {
       await sendOtp(context);
     }
   }
 
-  sendOtp(context) async {
+  /// Send OTP via Firebase Phone Auth.
+  sendOtp(BuildContext context) async {
     showLoading(context);
     notifyListeners();
 
-    if (appSettingModel!.general!.defaultSmsGateway == "firebase") {
-      await auth.verifyPhoneNumber(
-        phoneNumber: "$dialCode${numberController.text.trim()}",
-        timeout: const Duration(seconds: 60),
+    assert(appSettingModel!.general!.defaultSmsGateway == "firebase");
 
-        verificationCompleted: (PhoneAuthCredential credential) async {
-          // Auto-verification (Android only) — Firebase handles OTP silently
-          try {
-            final userCredential = await auth.signInWithCredential(credential);
-            uid = userCredential.user?.uid;
-            hideLoading(context);
-            notifyListeners();
-            route.pushNamed(context, routeName.verifyOtp, arg: {
-              "phone": numberController.text.trim(),
-              "dialCode": dialCode,
-              "verificationCode": verificationCode,
-              "uid": uid
-            });
-          } catch (e) {
-            hideLoading(context);
-            log("Auto-verification sign-in failed: $e");
-          }
-        },
+    await auth.verifyPhoneNumber(
+      // Full phone number: dialCode + trimmed input
+      phoneNumber: "$dialCode${numberController.text.trim()}",
+      timeout: const Duration(seconds: 120),
 
-        verificationFailed: (FirebaseAuthException e) {
-          hideLoading(context);
-          log("Verification failed: ${e.code} - ${e.message}");
-          Fluttertoast.showToast(
-              msg: e.message ?? "Verification failed. Please try again.");
-          notifyListeners();
-        },
+      // Auto-sign-in events are ignored; user must always type OTP manually
+      verificationCompleted: (PhoneAuthCredential credential) {
+        log("verificationCompleted fired (ignored — manual OTP required)");
+      },
 
-        codeSent: (String verificationId, int? resendToken) {
-          // KEY FIX: just save verificationId — do NOT sign in here.
-          // The user will enter the SMS code on the next screen,
-          // and you'll combine verificationId + that code to sign in.
-          verificationCode = verificationId;
-          hideLoading(context);
-          notifyListeners();
-          log("OTP sent. verificationCode (verificationId): $verificationCode");
+      // Called when Firebase rejects the request (invalid number, quota, etc.)
+      verificationFailed: (FirebaseAuthException e) {
+        hideLoading(context);
+        log("Verification failed: ${e.code} - ${e.message}");
+        Fluttertoast.showToast(
+          msg: e.message ?? "Verification failed. Please try again.",
+        );
+        notifyListeners();
+      },
 
-          route.pushNamed(context, routeName.verifyOtp, arg: {
-            "phone": numberController.text.trim(),
-            "dialCode": dialCode,
-            "verificationCode": verificationCode, // long token, NOT the SMS code
-            "uid": uid
-          });
-        },
-
-        codeAutoRetrievalTimeout: (String verificationId) {
-          // Update in case it changed during auto-retrieval timeout
-          verificationCode = verificationId;
-          notifyListeners();
-          log("Auto retrieval timeout. verificationId: $verificationId");
-        },
-      );
-    } else {
-      // Non-Firebase SMS gateway (your own API)
-      try {
-        final body = {
-          "dial_code": dialCode.replaceAll("+", ""),
-          "phone": numberController.text.trim()
-        };
-        final formData = dio.FormData.fromMap(body);
-
-        await apiServices.postApi(api.sendOtp, formData).then((value) {
-          hideLoading(context);
-          notifyListeners();
-          if (value.isSuccess!) {
-            route.pushNamed(context, routeName.verifyOtp, arg: {
-              "phone": numberController.text.trim(),
-              "dialCode": dialCode,
-              "verificationCode": null, // API handles verification server-side
-              "uid": uid
-            });
-          } else {
-            Fluttertoast.showToast(msg: value.message);
-          }
-        });
-      } catch (e) {
+      // Called when SMS is successfully sent
+      codeSent: (String verificationId, int? resendToken) {
+        // Save the Firebase verificationId (long token, NOT the 6‑digit SMS code)
+        verificationCode = verificationId;
         hideLoading(context);
         notifyListeners();
-        log("CATCH sendOtp: $e");
-      }
-    }
+
+        log("OTP sent. verificationCode (verificationId): $verificationCode");
+
+        // Navigate to OTP verification screen
+        route.pushNamed(context, routeName.verifyOtp, arg: {
+          "phone": numberController.text.trim(),
+          "dialCode": dialCode,
+          "verificationCode": verificationCode,
+          "uid": uid,
+        });
+      },
+
+      // If auto‑retrieval times out, Firebase may send a new verificationId
+      codeAutoRetrievalTimeout: (String verificationId) {
+        verificationCode = verificationId;
+        notifyListeners();
+        log("Auto retrieval timeout. verificationId: $verificationId");
+      },
+    );
   }
 
+  /// Update dial code when user picks a country.
   changeDialCode(CountryCodeCustom country) {
     dialCode = country.dialCode!;
     notifyListeners();

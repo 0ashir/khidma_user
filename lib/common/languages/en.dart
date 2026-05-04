@@ -341,7 +341,7 @@ dynamic en = {
   'asPerProvider': "As Per Provider Time Slot",
   'selectDate': "Select Date & Time",
   'requiredServicemen': "Required Servicemen",
-  'customMessage': "Additional Instruction",
+  'customMessage': "Additional Instruction (Car Plate No)",
   'addAnyExtra': "*Add Any Extras You Might Like to This Service.",
   'next': "Next",
   'billDetails': "Bill Details",

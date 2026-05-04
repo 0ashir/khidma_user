@@ -1,5 +1,4 @@
 
-import 'package:fixit_user/common_tap.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../../config.dart';
@@ -241,6 +240,7 @@ class ProviderDetailsScreen extends StatelessWidget {
                                                     return FeaturedServicesLayout(
                                                       data: service,
                                                       isProvider: true,
+                                                      isShowAdd: false,
                                                       // inCart: isInCart(
                                                       //     context, service.id),
                                                       onTap: () {
@@ -258,33 +258,11 @@ class ProviderDetailsScreen extends StatelessWidget {
                                                           },
                                                         );
                                                       },
-                                                      addTap: () {
-                                                        value.selectProviderIndex =
-                                                            0;
-                                                        onBook(
-                                                          context,
-                                                          service,
-                                                          provider:
-                                                              service.user,
-                                                          addTap: () => value
-                                                              .onAdd(index),
-                                                          minusTap: () => value
-                                                              .onRemoveService(
-                                                                  context,
-                                                                  index),
-                                                        ).then((_) {
-                                                          value
-                                                                  .serviceList[
-                                                                      index]
-                                                                  .selectedRequiredServiceMan =
-                                                              value
-                                                                  .serviceList[
-                                                                      index]
-                                                                  .requiredServicemen;
-                                                          value
-                                                              .notifyListeners();
-                                                        });
-                                                      },
+                                                      addTap: () => Provider.of<DashboardProvider>(
+                                                              context,
+                                                              listen: false)
+                                                          .addToCartDirect(
+                                                              context, service),
                                                     );
                                                   },
                                                 ),
