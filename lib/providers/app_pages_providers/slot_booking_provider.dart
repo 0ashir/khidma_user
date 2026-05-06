@@ -891,31 +891,6 @@ class SlotBookingProvider with ChangeNotifier {
 // Debugging log
       log("Selected DateTime: $selectedDateTime, AM/PM: $amPm, Hour: $hour, Minute: ${appArray.minList[scrollMinIndex]}");
 
-// Get current time for validation (local time)
-      final now = DateTime.now();
-      final minAllowedTime = now.add(const Duration(hours: 1));
-
-// Debugging log for validation
-      log("Current Time: $now, Min Allowed Time: $minAllowedTime");
-
-// Validation 1: Check for current date
-      final today = DateTime(now.year, now.month, now.day);
-      final selectedDate = DateTime(
-          selectedDateTime.year, selectedDateTime.month, selectedDateTime.day);
-      if (selectedDate.isAtSameMomentAs(today)) {
-        // Validation 2: Prevent past, current, or within 1-hour time on current date
-        if (selectedDateTime.isBefore(minAllowedTime) ||
-            selectedDateTime.isAtSameMomentAs(now)) {
-          isLoading = false;
-          hideLoading(context);
-          Fluttertoast.showToast(
-              backgroundColor: Colors.red,
-              msg: "Please select a time at least 1 hour from now on the current date.");
-          notifyListeners();
-          return;
-        }
-      }
-
 // Update focusedDay.value with validated time
       focusedDay.value = selectedDateTime;
 

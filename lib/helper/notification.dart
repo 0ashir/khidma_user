@@ -256,17 +256,15 @@ class CustomNotificationController {
 
     //when app in background
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-    if (!kIsWeb) {
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+    if (!kIsWeb && Platform.isAndroid) {
       channel = const AndroidNotificationChannel(
-          'high_importance_channel', // id
-          'High Importance Notifications', // titledescription
+          'high_importance_channel',
+          'High Importance Notifications',
           importance: Importance.high,
           showBadge: true);
 
-      flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-
-      /// We use this channel in the `AndroidManifest.xml` file to override the
-      /// default FCM channel to enable heads up notifications.
       await flutterLocalNotificationsPlugin
           .resolvePlatformSpecificImplementation<
               AndroidFlutterLocalNotificationsPlugin>()
@@ -299,27 +297,36 @@ class CustomNotificationController {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       RemoteNotification notification = message.notification!;
 
-      AndroidNotification? android = message.notification?.android;
-
       log("Njdfh :$notification");
       log("Njdfh :${message.data["image"]}");
-      if (android != null && !kIsWeb) {
-        flutterLocalNotificationsPlugin.show(
-          notification.hashCode,
-          notification.title,
-          notification.body,
-          NotificationDetails(
+
+      if (!kIsWeb) {
+        final NotificationDetails details;
+        if (Platform.isAndroid) {
+          details = NotificationDetails(
             android: AndroidNotificationDetails(
               channel!.id, channel!.name,
               channelDescription: channel!.description,
-              // TODO add a proper drawable resource to android, for now using
-              //      one that already exists in example app.
               icon: '@mipmap/ic_launcher',
               showProgress: true,
               channelShowBadge: true,
               fullScreenIntent: true,
             ),
-          ),
+          );
+        } else {
+          details = const NotificationDetails(
+            iOS: DarwinNotificationDetails(
+              presentAlert: true,
+              presentBadge: true,
+              presentSound: true,
+            ),
+          );
+        }
+        flutterLocalNotificationsPlugin.show(
+          notification.hashCode,
+          notification.title,
+          notification.body,
+          details,
         );
       }
       // ignore: unnecessary_null_comparison

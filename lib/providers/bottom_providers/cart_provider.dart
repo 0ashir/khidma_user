@@ -24,6 +24,8 @@ class CartProvider with ChangeNotifier {
 
   bool isPositionedRight = false;
   bool isAnimateOver = false, isPayment = false;
+  bool isCheckoutLoading = false;
+  bool checkoutFailed = false;
   AnimationController? controller;
   Animation<Offset>? offsetAnimation;
   CheckoutModel? checkoutModel;
@@ -118,9 +120,17 @@ class CartProvider with ChangeNotifier {
     return count;
   }
 
+  String _buildDateTime(DateTime serviceDate, String? amPmFormat) {
+    final amPm = amPmFormat?.toLowerCase() ?? DateFormat("aa").format(serviceDate).toLowerCase();
+    return "${DateFormat("dd-MMM-yyyy").format(serviceDate)},${DateFormat("hh:mm").format(serviceDate)} $amPm";
+  }
+
   checkout(context, {isCreateBook = false}) async {
     try {
       if (cartList.isNotEmpty) {
+        isCheckoutLoading = true;
+        checkoutFailed = false;
+        notifyListeners();
         try {
           int primaryIndex = 0;
           SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -200,11 +210,10 @@ class CartProvider with ChangeNotifier {
                 "required_servicemen": element.value.serviceList!
                     .requiredServicemen /*  element.value.serviceList!.selectedRequiredServiceMan */,
                 if (element.value.serviceList!.type != "scheduled")
-                  "date_time": () {
-                    final dt = (element.value.serviceList?.serviceDate ?? DateTime.now()).toUtc();
-                    final amPm = element.value.serviceList?.selectedDateTimeFormat?.toLowerCase() ?? DateFormat("aa").format(dt).toLowerCase();
-                    return "${DateFormat("dd-MMM-yyyy").format(dt)},${DateFormat("hh:mm").format(dt)} $amPm";
-                  }(),
+                  "date_time": _buildDateTime(
+                    element.value.serviceList?.serviceDate ?? DateTime.now(),
+                    element.value.serviceList?.selectedDateTimeFormat,
+                  ),
                 "address_id": element.value.serviceList!.primaryAddress!.id,
                 "select_serviceman":
                     element.value.serviceList?.selectServiceManType,
@@ -277,11 +286,10 @@ class CartProvider with ChangeNotifier {
                   "type": ser.type ?? "fixed",
                   "required_servicemen": ser.selectedRequiredServiceMan ??
                       (idList.isEmpty ? "1" : idList.length.toString()),
-                  "date_time": () {
-                    final dt = ser.serviceDate!.toUtc();
-                    final amPm = ser.selectedDateTimeFormat?.toLowerCase() ?? DateFormat("aa").format(dt).toLowerCase();
-                    return "${DateFormat("dd-MMM-yyyy").format(dt)},${DateFormat("hh:mm").format(dt)} $amPm";
-                  }(),
+                  "date_time": _buildDateTime(
+                    ser.serviceDate ?? DateTime.now(),
+                    ser.selectedDateTimeFormat,
+                  ),
                   "address_id": ser.primaryAddress != null
                       ? ser.primaryAddress!.id
                       : locationCtrl.addressList[primaryIndex].id,
@@ -360,12 +368,13 @@ class CartProvider with ChangeNotifier {
             } else {
               if (value.isSuccess!) {
                 checkoutModel = CheckoutModel.fromJson(value.data);
-                // log("message-=-=-=-=-=${checkoutModel?.services?[0].additionalServices?.first?.totalPrice}");
-
+                checkoutFailed = false;
                 notifyListeners();
               } else {
+                log("checkout failed: ${value.message}");
+                checkoutFailed = true;
                 Fluttertoast.showToast(msg: value.message);
-                log("message 1234564643 ${value.message}");
+                notifyListeners();
               }
             }
           });
@@ -375,12 +384,16 @@ class CartProvider with ChangeNotifier {
           });
           log("checkoutModel::$checkoutModel");
         } catch (e, s) {
+          checkoutFailed = true;
+          log("CART ERROR :$e====> $s");
           Future.delayed(const Duration(milliseconds: 500), () {
             widget1Opacity = 1;
             notifyListeners();
           });
-          log("CART ERROE :$e====> $s");
-        } finally {}
+        } finally {
+          isCheckoutLoading = false;
+          notifyListeners();
+        }
       } else {
         Future.delayed(const Duration(milliseconds: 500), () {
           widget1Opacity = 1;

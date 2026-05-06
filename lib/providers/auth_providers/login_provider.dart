@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:fixit_user/config.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -36,24 +37,39 @@ class LoginProvider with ChangeNotifier {
   }
 
   // SignIn With Google Method
+  bool _googleSignInInitialized = false;
+
+  static const String _webClientId =
+      '526848120057-accq2ujgfjd0hiq666ctotd3k6ckpham.apps.googleusercontent.com';
+
   Future signInWithGoogle(BuildContext context) async {
     try {
       showLoading(context);
 
       final googleSignIn = GoogleSignIn.instance;
-      await googleSignIn.initialize();
 
+      // initialize() throws on iOS if called more than once
+      if (!_googleSignInInitialized) {
+        await googleSignIn.initialize(
+          // serverClientId tells Google to issue an idToken valid for Firebase
+          serverClientId: _webClientId,
+        );
+        _googleSignInInitialized = true;
+      }
+
+      log('Google Sign-In: starting authenticate()');
       final GoogleSignInAccount googleUser = await googleSignIn.authenticate(
         scopeHint: ['email', 'profile'],
       );
+      log('Google Sign-In: account selected — ${googleUser.email}');
 
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
+      log('Google Sign-In: idToken=${googleAuth.idToken != null ? "present" : "NULL"}');
 
       if (googleAuth.idToken == null) {
-        log('idToken is null');
-        hideLoading(context);
         if (context.mounted) {
+          hideLoading(context);
           Fluttertoast.showToast(
             msg: "Google sign-in failed. Please try again.",
             backgroundColor: appColor(context).red,
@@ -62,6 +78,7 @@ class LoginProvider with ChangeNotifier {
         return;
       }
 
+      log('Google Sign-In: signing into Firebase');
       final AuthCredential credential = GoogleAuthProvider.credential(
         idToken: googleAuth.idToken,
       );
@@ -71,9 +88,9 @@ class LoginProvider with ChangeNotifier {
       final User? firebaseUser = userCredential.user;
 
       if (firebaseUser == null) {
-        log('Firebase user is null after Google sign-in');
-        hideLoading(context);
+        log('Google Sign-In: Firebase user is null');
         if (context.mounted) {
+          hideLoading(context);
           Fluttertoast.showToast(
             msg: "Google sign-in failed. Please try again.",
             backgroundColor: appColor(context).red,
@@ -82,7 +99,7 @@ class LoginProvider with ChangeNotifier {
         return;
       }
 
-      log('Firebase sign-in success: ${firebaseUser.email}');
+      log('Google Sign-In: Firebase success — ${firebaseUser.email}');
 
       if (context.mounted) {
         await socialLogin(
@@ -94,7 +111,15 @@ class LoginProvider with ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      log("Google Sign-In error: $e");
+      log("Google Sign-In error: [${e.runtimeType}] $e");
+
+      // User cancelled — don't show error toast
+      if (e is PlatformException && e.code == 'sign_in_canceled') {
+        if (context.mounted) hideLoading(context);
+        notifyListeners();
+        return;
+      }
+
       if (context.mounted) {
         hideLoading(context);
         Fluttertoast.showToast(

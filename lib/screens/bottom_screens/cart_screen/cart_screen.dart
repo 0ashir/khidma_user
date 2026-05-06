@@ -12,6 +12,21 @@ class CartScreen extends StatefulWidget {
 
 class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
   @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      if (!mounted) return;
+      final cartCtrl = Provider.of<CartProvider>(context, listen: false);
+      // Reset so button never shows stale data — always wait for fresh checkout
+      cartCtrl.checkoutModel = null;
+      cartCtrl.checkoutFailed = false;
+      if (cartCtrl.cartList.isNotEmpty) {
+        cartCtrl.checkout(context);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Consumer<CartProvider>(builder: (context1, value, child) {
       final screenHeight = MediaQuery.of(context).size.height;
@@ -23,17 +38,17 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
           PopScope(
         canPop: false,
         onPopInvoked: (didPop) {
-          // route.pushNamedAndRemoveUntil(context, routeName.dashboard);
-          /*  value.onBack(context, true); */
+          if (didPop) return;
           final serviceCtrl =
               Provider.of<ServicesDetailsProvider>(context, listen: false);
           serviceCtrl.clearAdditionalServices();
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (BuildContext context) {
-            return const Dashboard();
-          }));
-
-          if (didPop) return;
+          // Defer navigation until navigator is no longer locked from the pop
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (BuildContext context) {
+              return const Dashboard();
+            }));
+          });
         },
         child: Stack(
           children: [
