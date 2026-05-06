@@ -139,7 +139,6 @@ class ProfileLayout extends StatelessWidget {
     return Consumer2<CommonApiProvider, ProfileProvider>(
         builder: (context1, value, profile, child) {
       return Stack(alignment: Alignment.topRight, children: [
-        const Text("data-=-=-=-="),
         SizedBox(
                 width: MediaQuery.of(context).size.width,
                 child: Column(children: [

@@ -271,47 +271,54 @@ class ProfileProvider with ChangeNotifier {
                   shape: const SmoothRectangleBorder(
                       borderRadius: SmoothBorderRadius.all(SmoothRadius(
                           cornerRadius: AppRadius.r14, cornerSmoothing: 1))),
-                  backgroundColor: appColor(context).whiteBg,
+                  backgroundColor: appColor(context3).whiteBg,
                   content: Stack(alignment: Alignment.topRight, children: [
                     Column(mainAxisSize: MainAxisSize.min, children: [
                       // Gif
                       Stack(alignment: Alignment.topCenter, children: [
                         Stack(alignment: Alignment.topCenter, children: [
                           SizedBox(
-                                  width: MediaQuery.of(context).size.width,
+                                  width: MediaQuery.of(context3).size.width,
                                   child: Image.asset(eImageAssets.failedBook,
                                           height: Sizes.s165, width: Sizes.s88)
                                       .paddingOnly(
                                           bottom: Insets.i15, top: Insets.i25))
                               .decorated(
-                                  color: appColor(context).fieldCardBg,
+                                  color: appColor(context3).fieldCardBg,
                                   borderRadius:
                                       BorderRadius.circular(AppRadius.r10)),
                         ]),
                       ]),
                       // Sub text
                       const VSpace(Sizes.s15),
-                      Text(language(context, translations!.logoutDesc),
+                      Text(language(context3, translations!.logoutDesc),
                           textAlign: TextAlign.center,
                           style: appCss.dmDenseRegular14
-                              .textColor(appColor(context).lightText)
+                              .textColor(appColor(context3).lightText)
                               .textHeight(1.3)),
                       const VSpace(Sizes.s20),
                       Row(children: [
                         Expanded(
                             child: ButtonCommon(
-                                onTap: () => route.pop(context),
+                                onTap: () => route.pop(context3),
                                 title: translations!.cancel!,
-                                borderColor: appColor(context).primary,
-                                color: appColor(context).whiteBg,
+                                borderColor: appColor(context3).primary,
+                                color: appColor(context3).whiteBg,
                                 style: appCss.dmDenseSemiBold16
-                                    .textColor(appColor(context).primary))),
+                                    .textColor(appColor(context3).primary))),
                         const HSpace(Sizes.s15),
                         Expanded(
                             child: ButtonCommon(
                           title: translations!.yes!,
-                          color: appColor(context).primary,
+                          color: appColor(context3).primary,
                           onTap: () async {
+                            // Capture everything from context before any async gap
+                            final navigator = Navigator.of(context3);
+                            final dash = Provider.of<DashboardProvider>(context3, listen: false);
+                            final booking = Provider.of<BookingProvider>(context3, listen: false);
+                            final cartCtrl = Provider.of<CartProvider>(context3, listen: false);
+                            final locationCtrl = Provider.of<LocationProvider>(context3, listen: false);
+
                             SharedPreferences pref =
                                 await SharedPreferences.getInstance();
                             pref.setBool(session.isContinueAsGuest, true);
@@ -328,16 +335,9 @@ class ProfileProvider with ChangeNotifier {
                             userModel = null;
                             setPrimaryAddress = null;
                             userPrimaryAddress = null;
-                            final dash = Provider.of<DashboardProvider>(context,
-                                listen: false);
-                            final booking = Provider.of<BookingProvider>(
-                                context,
-                                listen: false);
                             dash.selectIndex = 0;
                             booking.bookingList.clear();
                             dash.notifyListeners();
-                            hideLoading(context);
-                            // preferences?.clear();
                             preferences!.remove(session.user);
                             preferences!.remove(session.accessToken);
                             preferences!.remove(session.isContinueAsGuest);
@@ -346,16 +346,11 @@ class ProfileProvider with ChangeNotifier {
                             preferences!.remove(session.recentSearch);
                             preferences!.remove(session.booking);
 
-                            final cartCtrl = Provider.of<CartProvider>(context,
-                                listen: false);
-
                             cartCtrl.cartList = [];
-                            
-                            // Clear Map Controller to prevent crash
-                            final locationCtrl = Provider.of<LocationProvider>(
-                                context,
-                                listen: false);
                             locationCtrl.disposeController();
+
+                            // Close dialog before async Firebase calls
+                            navigator.pop();
 
                             final auth = FirebaseAuth.instance.currentUser;
                             if (auth != null) {

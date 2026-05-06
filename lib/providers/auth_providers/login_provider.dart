@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fixit_user/config.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -35,63 +36,81 @@ class LoginProvider with ChangeNotifier {
   }
 
   // SignIn With Google Method
-  Future signInWithGoogle(context) async {
+  Future signInWithGoogle(BuildContext context) async {
     try {
       showLoading(context);
 
       final googleSignIn = GoogleSignIn.instance;
+      await googleSignIn.initialize();
 
-      // Optional: if you need to set clientId/serverClientId do it once at app startup:
-      await googleSignIn.initialize(
-
-      );
-
-      // Authenticate the user (replaces old signIn() call).
-      // You can pass scopeHint if needed.
       final GoogleSignInAccount googleUser = await googleSignIn.authenticate(
         scopeHint: ['email', 'profile'],
       );
 
-      // Get authentication tokens (idToken is what you usually send to your backend)
-      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
-      final String? idToken = googleAuth.idToken;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
-      if (idToken == null) {
-        log('Google Sign-In succeeded but idToken is null');
+      if (googleAuth.idToken == null) {
+        log('idToken is null');
         hideLoading(context);
+        if (context.mounted) {
+          Fluttertoast.showToast(
+            msg: "Google sign-in failed. Please try again.",
+            backgroundColor: appColor(context).red,
+          );
+        }
         return;
       }
-      /*  final FirebaseAuth auth = FirebaseAuth.instance;
-      final GoogleSignIn googleSignIn = GoogleSignIn();
 
-      final GoogleSignInAccount? googleSignInAccount =
-          await googleSignIn.signIn();
-      final GoogleSignInAuthentication googleSignInAuthentication =
-          await googleSignInAccount!.authentication;
       final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleSignInAuthentication.accessToken,
-        idToken: googleSignInAuthentication.idToken,
+        idToken: googleAuth.idToken,
       );
-      User? user = (await auth.signInWithCredential(credential)).user; */
-      socialLogin(
-        context,
-        googleUser.email,
-        googleUser.displayName,
-      );
+
+      final UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+      final User? firebaseUser = userCredential.user;
+
+      if (firebaseUser == null) {
+        log('Firebase user is null after Google sign-in');
+        hideLoading(context);
+        if (context.mounted) {
+          Fluttertoast.showToast(
+            msg: "Google sign-in failed. Please try again.",
+            backgroundColor: appColor(context).red,
+          );
+        }
+        return;
+      }
+
+      log('Firebase sign-in success: ${firebaseUser.email}');
+
+      if (context.mounted) {
+        await socialLogin(
+          context,
+          firebaseUser.email ?? googleUser.email,
+          firebaseUser.displayName ?? googleUser.displayName,
+        );
+      }
+
       notifyListeners();
     } catch (e) {
-      log("kbjhfjuht $e");
-      hideLoading(context);
-      notifyListeners();
-    } finally {
-      hideLoading(context);
+      log("Google Sign-In error: $e");
+      if (context.mounted) {
+        hideLoading(context);
+        Fluttertoast.showToast(
+          msg: "Google sign-in failed. Please try again.",
+          backgroundColor: appColor(context).red,
+        );
+      }
       notifyListeners();
     }
   }
 
-  socialLogin(context, email, displayName /* User user */) async {
+  Future<void> socialLogin(
+      BuildContext context, String email, String? displayName) async {
     showLoading(context);
     notifyListeners();
+
     String token = await getFcmToken();
     var body = {
       "login_type": "google",
@@ -100,56 +119,65 @@ class LoginProvider with ChangeNotifier {
     };
 
     try {
-      await apiServices
-          .postApi(api.socialLogin, jsonEncode(body))
-          .then((value) async {
-        notifyListeners();
-        if (value.isSuccess!) {
-          pref = await SharedPreferences.getInstance();
-          pref!.setBool(session.isContinueAsGuest, false);
-          String? token = pref?.getString(session.accessToken);
-          log("TOKEN :%sss$token");
-          final appDetails =
-              Provider.of<AppDetailsProvider>(context, listen: false);
-          appDetails.getAppPages();
-          final commonApi =
-              Provider.of<CommonApiProvider>(context, listen: false);
-          await commonApi.selfApi(context);
-          commonApi.getDashboardHome(context);
-          commonApi.getDashboardHome2(context);
-          await Future.delayed(DurationClass.ms150);
-          hideLoading(context);
-          final locationCtrl =
-              Provider.of<LocationProvider>(context, listen: false);
-          locationCtrl.getUserCurrentLocation(context);
-          locationCtrl.getLocationList(context);
-          locationCtrl.getCountryState();
-          pref!.remove(session.isContinueAsGuest);
-          // final dashCtrl =
-          //     Provider.of<DashboardProvider>(context, listen: false);
-          // dashCtrl.getJobRequest();
+      final value =
+          await apiServices.postApi(api.socialLogin, jsonEncode(body));
+      notifyListeners();
 
-          final cartCtrl = Provider.of<CartProvider>(context, listen: false);
-          cartCtrl.onReady(context);
-          final notifyCtrl =
-              Provider.of<NotificationProvider>(context, listen: false);
-          notifyCtrl.getNotificationList(context);
-          /*Navigator.popUntil(
-              context,
-              route.pushReplacementNamed(
-                  context, routeName.servicesDetailsScreen));*/
+      if (value.isSuccess!) {
+        pref = await SharedPreferences.getInstance();
+        pref!.setBool(session.isContinueAsGuest, false);
+
+        final appDetails =
+            Provider.of<AppDetailsProvider>(context, listen: false);
+        appDetails.getAppPages();
+
+        final commonApi =
+            Provider.of<CommonApiProvider>(context, listen: false);
+        await commonApi.selfApi(context);
+        commonApi.getDashboardHome(context);
+        commonApi.getDashboardHome2(context);
+
+        await Future.delayed(const Duration(milliseconds: 150));
+
+        hideLoading(context);
+
+        final locationCtrl =
+            Provider.of<LocationProvider>(context, listen: false);
+        locationCtrl.getUserCurrentLocation(context);
+        locationCtrl.getLocationList(context);
+        locationCtrl.getCountryState();
+
+        pref!.remove(session.isContinueAsGuest);
+
+        final cartCtrl = Provider.of<CartProvider>(context, listen: false);
+        cartCtrl.onReady(context);
+
+        final notifyCtrl =
+            Provider.of<NotificationProvider>(context, listen: false);
+        notifyCtrl.getNotificationList(context);
+
+        // ✅ Fix 3: check mounted before navigating
+        if (context.mounted) {
           route.pushReplacementNamed(context, routeName.dashboard);
-        } else {
-          hideLoading(context);
-          notifyListeners();
-          Fluttertoast.showToast(
-              msg: value.message, backgroundColor: appColor(context).red);
         }
-      });
+      } else {
+        hideLoading(context);
+        notifyListeners();
+        Fluttertoast.showToast(
+          msg: value.message,
+          backgroundColor: appColor(context).red,
+        );
+      }
     } catch (e) {
       hideLoading(context);
       notifyListeners();
-      log("CATCH ff: $e");
+      log("CATCH socialLogin: $e");
+      if (context.mounted) {
+        Fluttertoast.showToast(
+          msg: "Something went wrong. Please try again.",
+          backgroundColor: appColor(context).red,
+        );
+      }
     }
   }
 
