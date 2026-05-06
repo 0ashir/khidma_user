@@ -359,13 +359,10 @@ class ProfileProvider with ChangeNotifier {
 
                             final auth = FirebaseAuth.instance.currentUser;
                             if (auth != null) {
-                              FirebaseAuth.instance.signOut();
-                              final googleSignIn = GoogleSignIn.instance;
-
-                              googleSignIn.disconnect();
+                              await FirebaseAuth.instance.signOut();
+                              await GoogleSignIn.instance.disconnect();
                             }
                             notifyListeners();
-                            route.pop(context);
                             route.pushAndRemoveUntil(context);
                           },
                           style: appCss.dmDenseSemiBold16

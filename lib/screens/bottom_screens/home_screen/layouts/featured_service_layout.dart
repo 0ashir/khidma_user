@@ -171,16 +171,16 @@ class FeaturedServicesLayout extends StatelessWidget {
                     if (data!.discount != null && data!.discount > 0)
                       Text(
                           symbolPosition
-                              ? "${getSymbol(context)}${(currency(context).currencyVal * data!.price!).toStringAsFixed(2)}"
-                              : "${(currency(context).currencyVal * data!.price!).toStringAsFixed(2)}${getSymbol(context)}",
+                              ? "${getSymbol(context)}${(currency(context).currencyVal * (data!.price ?? 0)).toStringAsFixed(2)}"
+                              : "${(currency(context).currencyVal * (data!.price ?? 0)).toStringAsFixed(2)}${getSymbol(context)}",
                           style: appCss.dmDenseRegular14
                               .textColor(appColor(context).lightText)
                               .lineThrough),
                     const HSpace(Sizes.s8),
                     Text(
                         symbolPosition
-                            ? "${getSymbol(context)}${((currency(context).currencyVal * data!.serviceRate!).toStringAsFixed(2))}"
-                            : "${((currency(context).currencyVal * data!.serviceRate!).toStringAsFixed(2))}${getSymbol(context)}",
+                            ? "${getSymbol(context)}${((currency(context).currencyVal * (data!.serviceRate ?? data!.price ?? 0)).toStringAsFixed(2))}"
+                            : "${((currency(context).currencyVal * (data!.serviceRate ?? data!.price ?? 0)).toStringAsFixed(2))}${getSymbol(context)}",
                         style: appCss.dmDenseBold16
                             .textColor(appColor(context).darkText))
                   ]),

@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'package:fixit_user/services/environment.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fixit_user/config.dart';
 import 'package:fluttertoast/fluttertoast.dart';

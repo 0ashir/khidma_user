@@ -2,8 +2,10 @@ import UIKit
 import Flutter
 import Firebase
 import FirebaseCore
+import FirebaseAuth
+import FirebaseMessaging
+import GoogleSignIn
 import GoogleMaps
-import FirebaseMessaging   // Important for Messaging
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
@@ -12,66 +14,62 @@ import FirebaseMessaging   // Important for Messaging
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-
-    // 1. Configure Firebase first
     FirebaseApp.configure()
-
-    // 2. Google Maps API Key
     GMSServices.provideAPIKey("AIzaSyDNbeNlSQb8NyHK-z-JlVQWicssGnzyJms")
-
-    // 3. Register Flutter plugins AFTER Firebase & Google Maps
     GeneratedPluginRegistrant.register(with: self)
 
-    // Notification setup
     if #available(iOS 10.0, *) {
       UNUserNotificationCenter.current().delegate = self
-
-      let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
       UNUserNotificationCenter.current().requestAuthorization(
-        options: authOptions,
-        completionHandler: { _, _ in }
-      )
-    } else {
-      let settings: UIUserNotificationSettings =
-        UIUserNotificationSettings(types: [.alert, .badge, .sound], categories: nil)
-      application.registerUserNotificationSettings(settings)
+        options: [.alert, .badge, .sound]) { _, _ in }
     }
-
     application.registerForRemoteNotifications()
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
-  // MARK: - Remote Notifications
+  // MARK: - URL Handling (Google Sign-In + Firebase Phone Auth)
+  override func application(
+    _ app: UIApplication,
+    open url: URL,
+    options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+  ) -> Bool {
+    if Auth.auth().canHandle(url) { return true }
+    return GIDSignIn.sharedInstance.handle(url)
+  }
 
+  // MARK: - APNs Token — tell BOTH Messaging and Auth
   override func application(_ application: UIApplication,
                             didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
     Messaging.messaging().apnsToken = deviceToken
+    Auth.auth().setAPNSToken(deviceToken, type: .unknown)
   }
 
-  // Foreground notification
+  // MARK: - Silent Push — let Firebase Auth intercept first
+  override func application(_ application: UIApplication,
+                            didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+                            fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+    if Auth.auth().canHandleNotification(userInfo) {
+      completionHandler(.noData)
+      return
+    }
+    Messaging.messaging().appDidReceiveMessage(userInfo)
+    completionHandler(.noData)
+  }
+
+  // MARK: - Foreground Notification
   override func userNotificationCenter(_ center: UNUserNotificationCenter,
                                        willPresent notification: UNNotification,
                                        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-    let userInfo = notification.request.content.userInfo
-    Messaging.messaging().appDidReceiveMessage(userInfo)
-    completionHandler([.banner, .sound])   // Fixed: Use .banner instead of .alert in iOS 10+
+    Messaging.messaging().appDidReceiveMessage(notification.request.content.userInfo)
+    completionHandler([.banner, .sound])
   }
 
-  // User tapped on notification
+  // MARK: - Notification Tap
   override func userNotificationCenter(_ center: UNUserNotificationCenter,
                                        didReceive response: UNNotificationResponse,
                                        withCompletionHandler completionHandler: @escaping () -> Void) {
-    let userInfo = response.notification.request.content.userInfo
-    Messaging.messaging().appDidReceiveMessage(userInfo)
+    Messaging.messaging().appDidReceiveMessage(response.notification.request.content.userInfo)
     completionHandler()
-  }
-
-  // Background remote notification
-  override func application(_ application: UIApplication,
-                            didReceiveRemoteNotification userInfo: [AnyHashable : Any],
-                            fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-    Messaging.messaging().appDidReceiveMessage(userInfo)
-    completionHandler(.noData)
   }
 }

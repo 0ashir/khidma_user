@@ -72,7 +72,7 @@ class CartProvider with ChangeNotifier {
 
         return cartModel;
       }).toList();
-      log("cartListcartListcartList:${cartList}");
+      log("cartListcartListcartList:$cartList");
     }
     isLoading = false;
     notifyListeners();
@@ -345,16 +345,10 @@ class CartProvider with ChangeNotifier {
                 final auth = FirebaseAuth.instance.currentUser;
 
                 if (auth != null) {
-                  FirebaseAuth.instance.signOut();
-                  /* GoogleSignIn().disconnect(); */
-                  final googleSignIn = GoogleSignIn.instance;
-
-                  googleSignIn.disconnect();
-                  route.pushNamedAndRemoveUntil(context, routeName.login);
+                  await FirebaseAuth.instance.signOut();
+                  await GoogleSignIn.instance.disconnect();
                 }
                 notifyListeners();
-                route.pop(context);
-                route.pushAndRemoveUntil(context);
                 route.pushAndRemoveUntil(context);
               } else {
                 Fluttertoast.showToast(

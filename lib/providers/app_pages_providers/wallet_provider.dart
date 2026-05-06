@@ -159,11 +159,8 @@ class WalletProvider with ChangeNotifier {
 
             final auth = FirebaseAuth.instance.currentUser;
             if (auth != null) {
-              FirebaseAuth.instance.signOut();
-              /*  GoogleSignIn().disconnect(); */
-              final googleSignIn = GoogleSignIn.instance;
-
-              googleSignIn.disconnect();
+              await FirebaseAuth.instance.signOut();
+              await GoogleSignIn.instance.disconnect();
             }
             notifyListeners();
             route.pushAndRemoveUntil(context);

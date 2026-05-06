@@ -330,7 +330,7 @@ class LocationProvider with ChangeNotifier {
         }
         notifyListeners();
       });
-    } catch (e, s) {
+    } catch (e) {
       // log("EEEE getZoneId :: $e====> $s");
       // Consider providing a default zone ID or other fallback here
       notifyListeners();

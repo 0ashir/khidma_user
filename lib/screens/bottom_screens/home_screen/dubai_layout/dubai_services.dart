@@ -124,16 +124,16 @@ class DubaiServices extends StatelessWidget {
                                   homeFeaturedService[index].discount! > 0)
                                 Text(
                                     symbolPosition
-                                        ? "${getSymbol(context)}${(currency(context).currencyVal * homeFeaturedService[index].price!).round()}"
-                                        : "${(currency(context).currencyVal * homeFeaturedService[index].price!).round()}${getSymbol(context)}",
+                                        ? "${getSymbol(context)}${(currency(context).currencyVal * (homeFeaturedService[index].price ?? 0)).round()}"
+                                        : "${(currency(context).currencyVal * (homeFeaturedService[index].price ?? 0)).round()}${getSymbol(context)}",
                                     style: appCss.dmDenseRegular11
                                         .textColor(appColor(context).lightText)
                                         .lineThrough),
                               const HSpace(Sizes.s5),
                               Text(
                                   symbolPosition
-                                      ? "${getSymbol(context)}${((currency(context).currencyVal * homeFeaturedService[index].serviceRate!).toStringAsFixed(2))}"
-                                      : "${((currency(context).currencyVal * homeFeaturedService[index].serviceRate!).toStringAsFixed(2))}${getSymbol(context)}",
+                                      ? "${getSymbol(context)}${((currency(context).currencyVal * (homeFeaturedService[index].serviceRate ?? homeFeaturedService[index].price ?? 0)).toStringAsFixed(2))}"
+                                      : "${((currency(context).currencyVal * (homeFeaturedService[index].serviceRate ?? homeFeaturedService[index].price ?? 0)).toStringAsFixed(2))}${getSymbol(context)}",
                                   style: appCss.dmDenseBold14
                                       .textColor(appColor(context).darkText)),
                               // AddButtonCommon(onTap: () {})

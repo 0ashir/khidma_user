@@ -1,7 +1,6 @@
 import 'package:fixit_user/models/app_setting_model.dart';
 
 import '../../../../config.dart';
-import '../../../../config.dart';
 
 class PaymentMethodLayout extends StatelessWidget {
   final PaymentMethods? data;

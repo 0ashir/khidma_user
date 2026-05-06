@@ -38,7 +38,7 @@ class CategoryProviderServicesScreen extends StatelessWidget {
                 ),
               )
             : ListView(
-                padding: EdgeInsets.symmetric(vertical: Insets.i15),
+                padding: const EdgeInsets.symmetric(vertical: Insets.i15),
                 children: services.asMap().entries.map((e) {
                   final service = e.value;
                   return FeaturedServicesLayout(

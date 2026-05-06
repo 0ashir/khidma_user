@@ -5,7 +5,6 @@ import 'package:fixit_user/screens/app_pages_screens/custom_job_request/add_job_
 import 'package:fixit_user/screens/app_pages_screens/slot_booking_screen/layouts/custom_date_selection.dart';
 import 'package:fixit_user/screens/app_pages_screens/slot_booking_screen/layouts/weekday_selection.dart';
 import 'package:fixit_user/utils/custom_time_picker.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import '../../../../config.dart';
 import '../../services_details_screen/layouts/add_on_service_card.dart';

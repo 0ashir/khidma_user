@@ -490,7 +490,7 @@ class SlotBookingProvider with ChangeNotifier {
         }
       }
     } else {
-      callBookingApi(
+      await callBookingApi(
           servicesCart?.id,
           servicesCart?.selectedRequiredServiceMan ?? servicesCart?.requiredServicemen,
           servicesCart?.selectedAdditionalServices

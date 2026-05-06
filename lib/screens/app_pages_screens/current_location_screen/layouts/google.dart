@@ -19,7 +19,7 @@ class _SearchLocationState extends State<SearchLocation> {
 
   placeAutoComplete(query) async {
     String api = "https://maps.googleapis.com/maps/api/place/autocomplete/json";
-    String request = "$api?input=${search.text}&key=${googleMapKey}";
+    String request = "$api?input=${search.text}&key=$googleMapKey";
 
     var res = await http.get(Uri.parse(request));
 
@@ -38,7 +38,7 @@ class _SearchLocationState extends State<SearchLocation> {
 
   findCord(context, placeID) async {
     var d = await http.get(Uri.parse(
-        "https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeID&key=${googleMapKey}"));
+        "https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeID&key=$googleMapKey"));
     var result = d.body.toString();
     dynamic a = jsonDecode(d.body);
     log("result :${a['result']['geometry']['location']}");
