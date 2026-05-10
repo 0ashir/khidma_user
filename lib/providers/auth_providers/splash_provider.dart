@@ -128,8 +128,7 @@ class SplashProvider extends ChangeNotifier {
       await FirebaseAuth.instance.signOut();
       final googleSignIn = GoogleSignIn.instance;
 
-      googleSignIn.disconnect();
-      /*  await GoogleSignIn().disconnect(); */
+      await googleSignIn.disconnect();
     }
   }
 
@@ -317,8 +316,8 @@ class SplashProvider extends ChangeNotifier {
 
             final auth = FirebaseAuth.instance.currentUser;
             if (auth != null) {
-              FirebaseAuth.instance.signOut();
-              GoogleSignIn().disconnect();
+              await FirebaseAuth.instance.signOut();
+              await GoogleSignIn.instance.disconnect();
             }
             final login = Provider.of<LoginProvider>(context, listen: false);
             login.continueAsGuestTap(context);
