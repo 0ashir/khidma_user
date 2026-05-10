@@ -147,14 +147,20 @@ class LoginProvider with ChangeNotifier {
     showLoading(context);
     notifyListeners();
 
-    String token = await getFcmToken();
-    var body = {
-      "login_type": "google",
-      "user": {"email": email, "name": displayName},
-      "fcm_token": token
-    };
-
     try {
+      String token = '';
+      try {
+        token = await getFcmToken();
+      } catch (e) {
+        log('socialLogin: getFcmToken failed (non-fatal): $e');
+      }
+
+      var body = {
+        "login_type": "google",
+        "user": {"email": email, "name": displayName},
+        "fcm_token": token
+      };
+
       final value =
           await apiServices.postApi(api.socialLogin, jsonEncode(body));
       notifyListeners();
