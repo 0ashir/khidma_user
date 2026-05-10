@@ -63,17 +63,12 @@ class LoginProvider with ChangeNotifier {
       );
       log('Google Sign-In: account selected — ${googleUser.email}');
 
-      // clearAuthCache() forces a fresh token fetch on iOS, preventing null idToken
-      // from a stale cached session.
-      await googleUser.clearAuthCache();
-
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
-      log('Google Sign-In: idToken=${googleAuth.idToken != null ? "present" : "NULL"}, '
-          'accessToken=${googleAuth.accessToken != null ? "present" : "NULL"}');
+      log('Google Sign-In: idToken=${googleAuth.idToken != null ? "present" : "NULL"}');
 
       if (googleAuth.idToken == null) {
-        log('Google Sign-In: idToken is null after cache clear');
+        log('Google Sign-In: idToken is null');
         if (context.mounted) {
           hideLoading(context);
           Fluttertoast.showToast(
@@ -87,7 +82,6 @@ class LoginProvider with ChangeNotifier {
       log('Google Sign-In: signing into Firebase');
       final AuthCredential credential = GoogleAuthProvider.credential(
         idToken: googleAuth.idToken,
-        accessToken: googleAuth.accessToken,
       );
 
       final UserCredential userCredential =
