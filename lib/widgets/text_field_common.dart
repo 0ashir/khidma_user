@@ -149,15 +149,20 @@ class TextFieldCommon extends StatefulWidget {
 class _TextFieldCommonState extends State<TextFieldCommon> {
   bool isFocus = false;
 
+  void _focusListener() {
+    if (mounted) setState(() {});
+  }
+
   @override
   void initState() {
-    // TODO: implement initState
-    setState(() {
-      widget.focusNode?.addListener(() {
-        setState(() {});
-      });
-    });
     super.initState();
+    widget.focusNode?.addListener(_focusListener);
+  }
+
+  @override
+  void dispose() {
+    widget.focusNode?.removeListener(_focusListener);
+    super.dispose();
   }
 
   @override

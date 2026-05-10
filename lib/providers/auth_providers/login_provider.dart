@@ -37,7 +37,9 @@ class LoginProvider with ChangeNotifier {
   }
 
   // SignIn With Google Method
-  bool _googleSignInInitialized = false;
+  // Static so it survives provider recreation — GoogleSignIn.instance is a
+  // singleton and throws on iOS if initialize() is called more than once.
+  static bool _googleSignInInitialized = false;
 
   static const String _webClientId =
       '526848120057-accq2ujgfjd0hiq666ctotd3k6ckpham.apps.googleusercontent.com';
@@ -48,10 +50,8 @@ class LoginProvider with ChangeNotifier {
 
       final googleSignIn = GoogleSignIn.instance;
 
-      // initialize() throws on iOS if called more than once
       if (!_googleSignInInitialized) {
         await googleSignIn.initialize(
-          // serverClientId tells Google to issue an idToken valid for Firebase
           serverClientId: _webClientId,
         );
         _googleSignInInitialized = true;
@@ -63,11 +63,17 @@ class LoginProvider with ChangeNotifier {
       );
       log('Google Sign-In: account selected — ${googleUser.email}');
 
+      // clearAuthCache() forces a fresh token fetch on iOS, preventing null idToken
+      // from a stale cached session.
+      await googleUser.clearAuthCache();
+
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
-      log('Google Sign-In: idToken=${googleAuth.idToken != null ? "present" : "NULL"}');
+      log('Google Sign-In: idToken=${googleAuth.idToken != null ? "present" : "NULL"}, '
+          'accessToken=${googleAuth.accessToken != null ? "present" : "NULL"}');
 
       if (googleAuth.idToken == null) {
+        log('Google Sign-In: idToken is null after cache clear');
         if (context.mounted) {
           hideLoading(context);
           Fluttertoast.showToast(
@@ -81,6 +87,7 @@ class LoginProvider with ChangeNotifier {
       log('Google Sign-In: signing into Firebase');
       final AuthCredential credential = GoogleAuthProvider.credential(
         idToken: googleAuth.idToken,
+        accessToken: googleAuth.accessToken,
       );
 
       final UserCredential userCredential =
@@ -113,11 +120,15 @@ class LoginProvider with ChangeNotifier {
     } catch (e) {
       log("Google Sign-In error: [${e.runtimeType}] $e");
 
-      // User cancelled — don't show error toast
-      if (e is PlatformException && e.code == 'sign_in_canceled') {
-        if (context.mounted) hideLoading(context);
-        notifyListeners();
-        return;
+      if (e is PlatformException) {
+        log("PlatformException code=${e.code}, message=${e.message}");
+        // sign_in_canceled: user dismissed the picker
+        // canceled: alternate cancellation code on some iOS versions
+        if (e.code == 'sign_in_canceled' || e.code == 'canceled') {
+          if (context.mounted) hideLoading(context);
+          notifyListeners();
+          return;
+        }
       }
 
       if (context.mounted) {

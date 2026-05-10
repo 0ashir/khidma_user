@@ -626,14 +626,24 @@ class PaymentProvider with ChangeNotifier {
       body["currency_code"] = currency(context).currency?.code;
       checkoutBody = body;
       notifyListeners();
-      log("checkoutBody: $checkoutBody");
+      log("========== BOOKING REQUEST ==========");
+      log("Payment Method: ${body["payment_method"]}");
+      log("Currency: ${body["currency_code"]}");
+      log("Services: ${body["services"]}");
+      log("Address ID: ${body["address_id"]}");
+      log("Full Booking Body: $body");
+      log("=====================================");
       await apiServices
           .postApi(api.booking, body, isData: true, isToken: true)
           .then((value) async {
         isPayment = false;
         hideLoading(context);
         notifyListeners();
-        log("VA :${value.data}");
+        log("========== BOOKING RESPONSE ==========");
+        log("Success: ${value.isSuccess}");
+        log("Message: ${value.message}");
+        log("Data: ${value.data}");
+        log("======================================");
         if (value.isSuccess!) {
           if (body["payment_method"] == "cash") {
             onContinue(context);
