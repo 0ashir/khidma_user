@@ -143,67 +143,6 @@ class DubaiServices extends StatelessWidget {
                         const VSpace(Sizes.s10),
                         Row(
                           children: [
-                            CommonArrow(
-                                arrow: eSvgAssets.chat,
-                                svgColor: appColor(context).primary,
-                                color: appColor(context)
-                                    .primary
-                                    .withValues(alpha: 0.15),
-                                onTap: () {
-                                  serviceCtrl.onHomeChatTap(context,
-                                      user: homeFeaturedService[index].user);
-                                  // var data;
-                                  // List filteredChat =
-                                  //     chat.chatHistory.where((doc) {
-                                  //   final docData =
-                                  //       doc.data() as Map<String, dynamic>;
-                                  //   return docData['receiverName'] ==
-                                  //       homeFeaturedService[index]?.user?.name;
-                                  // }).toList();
-                                  //
-                                  // // If match found, set data and log
-                                  // if (filteredChat.isNotEmpty) {
-                                  //   final matchedDoc = filteredChat.first;
-                                  //   data = matchedDoc.data();
-                                  //   log("✅ Matched Chat Data: $data");
-                                  // } else {
-                                  //   data = null;
-                                  //   log("❌ No matched chat data found.");
-                                  // }
-                                  // route.pushNamed(
-                                  //     context, routeName.providerChatScreen,
-                                  //     arg: {
-                                  //       "image": homeFeaturedService[index]
-                                  //                       .user!
-                                  //                       .media !=
-                                  //                   null &&
-                                  //               homeFeaturedService[index]
-                                  //                   .user!
-                                  //                   .media!
-                                  //                   .isNotEmpty
-                                  //           ? homeFeaturedService[index]
-                                  //               .user!
-                                  //               .media![0]
-                                  //               .originalUrl!
-                                  //           : "",
-                                  //       "name": homeFeaturedService[index]
-                                  //           .user!
-                                  //           .name,
-                                  //       "role": "user",
-                                  //       "userId":
-                                  //           homeFeaturedService[index].user!.id,
-                                  //       "token": homeFeaturedService[index]
-                                  //           .user!
-                                  //           .fcmToken,
-                                  //       "phone": homeFeaturedService[index]
-                                  //           .user!
-                                  //           .phone,
-                                  //       "code": homeFeaturedService[index]
-                                  //           .user!
-                                  //           .code,
-                                  //     });
-                                }),
-                            const HSpace(Sizes.s5),
                             Expanded(
                                 child: Container(
                                     decoration: ShapeDecoration(

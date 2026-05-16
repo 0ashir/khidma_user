@@ -570,7 +570,7 @@ class SlotBookingProvider with ChangeNotifier {
     int index = dayWeek.indexWhere(
         (element) => element.day.toLowerCase() == day.toLowerCase());
 
-    if (index >= 0 && dayWeek[index].isActive == "1") {
+    if (index >= 0 && dayWeek[index].isActive == true) {
       List<String> newTimeSlot = dayWeek[index].slots;
       bool isToday = isSameDay(focusedDay.value, DateTime.now());
       for (String slot in newTimeSlot) {
@@ -709,13 +709,18 @@ class SlotBookingProvider with ChangeNotifier {
       // Set AM/PM
       amIndex = twoHoursLater.hour >= 12 ? 0 : 1;
     }
-    // Jump to initial positions
-    carouselController.jumpToPage(scrollHourIndex);
-    carouselController1.jumpToPage(scrollMinIndex);
-    carouselController2.jumpToPage(scrollDayIndex ?? 0);
-    // Handle case where hour or minute not found in lists
+    // Clamp indices before jumping — jumpToPage(-1) crashes the carousel
     if (scrollHourIndex == -1) scrollHourIndex = 0;
     if (scrollMinIndex == -1) scrollMinIndex = 0;
+    // Guard against LateInitializationError when onInit is called from a layout
+    // that does not mount CarouselSlider widgets (e.g. ProviderTimeSlotLayout)
+    try {
+      carouselController.jumpToPage(scrollHourIndex);
+      carouselController1.jumpToPage(scrollMinIndex);
+      carouselController2.jumpToPage(scrollDayIndex);
+    } catch (e) {
+      log('Carousel not yet mounted, skipping jumpToPage: $e');
+    }
 
     // Initialize month dropdown
     int monthIndex = appArray.monthList
@@ -778,7 +783,7 @@ class SlotBookingProvider with ChangeNotifier {
     final slot = timeSlotModel!.timeSlots.firstWhereOrNull(
       (element) => element.day.toUpperCase() == day,
     );
-    timeSlot = (slot != null && slot.isActive == 1) ? slot.slots : [];
+    timeSlot = (slot != null && slot.isActive == true) ? slot.slots : [];
     timeIndex = null; // Reset selected slot
     notifyListeners();
     // Trigger AM/PM filtering if amIndex is set and context is provided
@@ -858,7 +863,7 @@ class SlotBookingProvider with ChangeNotifier {
 
     try {
       // Ensure amIndex is valid
-      if (amIndex == null && amIndex! < 0 && amIndex! > 1) {
+      if (amIndex == null || amIndex! < 0 || amIndex! > 1) {
         isLoading = false;
         hideLoading(context);
         Fluttertoast.showToast(
@@ -996,7 +1001,7 @@ class SlotBookingProvider with ChangeNotifier {
             (element) => element.day.toLowerCase() == day.toLowerCase());
 
         if (listIndex >= 0) {
-          if (dayWeek[listIndex].isActive == 1) {
+          if (dayWeek[listIndex].isActive == true) {
             [];
           } else {
             timeSlot = [];
@@ -1021,7 +1026,7 @@ class SlotBookingProvider with ChangeNotifier {
               (element) => element.day.toLowerCase() == day.toLowerCase());
 
           if (listIndex >= 0) {
-            if (dayWeek[listIndex].isActive == 1) {
+            if (dayWeek[listIndex].isActive == true) {
             } else {
               timeSlot = [];
               notifyListeners();

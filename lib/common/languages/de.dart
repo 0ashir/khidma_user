@@ -334,7 +334,7 @@ final dynamic de = {
   'customDateTime': "Benutzerdefinierte Datum und Uhrzeit",
   'asPerProvider': "Gemäß Anbieter -Zeitfenster",
   'selectDate': "Wählen Sie Datum und Uhrzeit auswählen",
-  'requiredServicemen': "Erforderliche Soldaten",
+  'requiredServicemen': "Benötigte Menge",
   'customMessage': "Zusätzliche Anweisungen (Kfz-Kennzeichen)",
   'addAnyExtra':
       "*Fügen Sie zu diesem Service alle Extras hinzu, die Sie mögen.",

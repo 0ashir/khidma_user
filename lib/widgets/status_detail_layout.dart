@@ -541,7 +541,8 @@ class StatusDetailLayout extends StatelessWidget {
                         if (data!.bookingStatus?.slug != translations!.pending)
                           const VSpace(Sizes.s20),
                         if (data!.service != null &&
-                            data!.bookingStatus?.slug != translations!.pending)
+                            data!.bookingStatus?.slug != translations!.pending &&
+                            data!.bookingStatus?.slug != translations!.completed)
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: data!.service!.type == "remotely"
@@ -1089,7 +1090,9 @@ class StatusDetailLayout extends StatelessWidget {
                     .paddingOnly(bottom: Insets.i5),
                 if (data!.bookingStatus!.slug != translations!.pending)
                   const VSpace(Sizes.s20),
-                if (data!.service!=null&&data!.bookingStatus!.slug != translations!.pending)
+                if (data!.service != null &&
+                    data!.bookingStatus!.slug != translations!.pending &&
+                    data!.bookingStatus!.slug != translations!.completed)
                   Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: data!.service!.type == "remotely"

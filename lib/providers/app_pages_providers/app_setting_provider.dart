@@ -38,15 +38,9 @@ class AppSettingProvider with ChangeNotifier {
   }
 
   onTapData(context, index) {
-    log("dsf");
     if (index == 0) {
       showLayout(context);
-      // showDialog(context: context, builder: (context) => AlertDialog(content: ,),);
     } else if (index == 1) {
-      //   currencyBottomSheet(context);
-      // } else if (index == 2) {
-      route.pushNamed(context, routeName.changeLanguage);
-    } else if (index == 2) {
       route.pushNamed(context, routeName.changePass);
     }
   }

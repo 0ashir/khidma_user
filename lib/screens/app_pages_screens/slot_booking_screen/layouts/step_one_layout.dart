@@ -554,13 +554,6 @@ class _StepOneLayoutState extends State<StepOneLayout>
                               ),
                     const VSpace(Sizes.s15),
                     const ServicemanQuantityLayout(),
-                    if ((value.servicesCart?.selectedRequiredServiceMan ?? 0) >
-                        (value.servicesCart?.requiredServicemen ?? 1))
-                      Text(language(context, translations!.youWillOnly),
-                              style: appCss.dmDenseMedium12
-                                  .textColor(appColor(context).red))
-                          .paddingOnly(bottom: Insets.i25)
-                          .paddingSymmetric(horizontal: Insets.i20),
                     CustomMessageLayout(
                         onTap: () {
                           Timer(const Duration(milliseconds: 500), () {

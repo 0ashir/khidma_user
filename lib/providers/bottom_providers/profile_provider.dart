@@ -123,6 +123,8 @@ class ProfileProvider with ChangeNotifier {
 
         route.pushNamed(context, routeName.chatHistory);
       }
+    } else if (data['title'] == translations!.changeLanguage) {
+      route.pushNamed(context, routeName.changeLanguage);
     } else if (data['title'] == translations!.logOut) {
       logoutConfirmation(context);
     } else if (data['title'] == translations!.shareApp) {

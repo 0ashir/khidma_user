@@ -92,7 +92,7 @@ class CategoryFeaturePackageServices extends StatelessWidget {
                     }),
             ],
           ),
-          const VSpace(Sizes.s25),
+          const VSpace(2),
           Column(
             children: [
               if (homeServicePackagesList.isNotEmpty)
@@ -125,7 +125,7 @@ class CategoryFeaturePackageServices extends StatelessWidget {
                   .dashboardModel2!.homeServicesAdvertisements!.isNotEmpty &&
               commonApi.dashboardModel2!.homeServicesAdvertisements != [])
             const SizedBox(height: 269, child: SpecialOffersLayout()),
-          const VSpace(Sizes.s20),
+          const VSpace(2),
           if (isNewYork != true)
             Column(children: [
               if (homeFeaturedService.isNotEmpty)
@@ -140,7 +140,7 @@ class CategoryFeaturePackageServices extends StatelessWidget {
                         },
                       );
                     }).paddingSymmetric(horizontal: Insets.i20),
-              const VSpace(Sizes.s15),
+              const VSpace(Sizes.s5),
               if (homeFeaturedService.isNotEmpty)
                 ListView.builder(
                     physics: const NeverScrollableScrollPhysics(),

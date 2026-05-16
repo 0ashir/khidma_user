@@ -334,7 +334,7 @@ dynamic ar = {
   'asPerProvider': "حسب الفترة الزمنية للمزود",
   'selectDate': "حدد التاريخ والوقت",
 
-  'requiredServicemen': "مطلوب فنيين",
+  'requiredServicemen': "كم العدد المطلوب",
   'customMessage': "ملاحظات اضافيه ( رقم لوحه السياره)",
   'addAnyExtra': "*أضف أي إضافات قد ترغب بها لهذه الخدمة.",
   'next': "التالي",

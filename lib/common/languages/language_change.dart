@@ -1,6 +1,8 @@
 import 'dart:developer';
 import 'package:fixit_user/common/languages/language_helper.dart';
 import 'package:fixit_user/config.dart';
+import 'package:fixit_user/services/environment.dart' as env;
+import 'package:fixit_user/services/google_translation_service.dart';
 import '../../models/system_language_model.dart';
 import '../../models/translation_model.dart';
 
@@ -89,7 +91,7 @@ class LanguageProvider with ChangeNotifier {
   LanguageHelper languageHelper = LanguageHelper();
   bool isLoader = false;
   void changeLocale(newLocale, context) {
-    log("sharedPreferences a1: $newLocale");
+    log('[Translation] changeLocale called → newLocale=$newLocale');
     Locale convertedLocale;
 
     currentLanguage = newLocale.name!;
@@ -97,11 +99,12 @@ class LanguageProvider with ChangeNotifier {
         newLocale.appLocale!.split("_")[0], newLocale.appLocale!.split("_")[1]);
 
     locale = convertedLocale;
-    sharedPreferences.setString(
-        'selectedLocale', locale!.languageCode.toString());
-    log("GET:: ${sharedPreferences.getString("selectedLocale")}");
-    getLanguageTranslate(context,
-        languageCode: locale!.languageCode.toString());
+    final langCode = locale!.languageCode.toString();
+    sharedPreferences.setString('selectedLocale', langCode);
+    env.local = langCode;
+    log('[Translation] locale set to "$langCode" in SharedPreferences and env.local');
+    GoogleTranslationService.clearCache();
+    getLanguageTranslate(context, languageCode: langCode);
     notifyListeners();
   }
 
@@ -124,13 +127,13 @@ class LanguageProvider with ChangeNotifier {
 
       if (response.isSuccess!) {
         isTranslateLoader = false;
-        translations = Translation.fromJson(
-          response.data,
-        );
+        translations = Translation.fromJson(response.data);
 
-        // Directly pass the map
+        // Override labels whose text has been changed in-app
+        // (backend translation endpoint may still return old values)
+        _applyLabelOverrides(locale?.languageCode ?? 'en');
+
         log("Loaded translations: ${response.data}");
-
         notifyListeners();
       } else {
         isTranslateLoader = false;
@@ -207,5 +210,21 @@ class LanguageProvider with ChangeNotifier {
     sharedPreferences.setInt("index", selectedIndex!);
     log("selectedIndex::$selectedIndex");
     notifyListeners();
+  }
+
+  /// Patches specific translation keys that have been renamed in-app but
+  /// whose backend values may still return the old text.
+  void _applyLabelOverrides(String langCode) {
+    if (translations == null) return;
+    switch (langCode) {
+      case 'ar':
+        translations!.requiredServicemen = 'كم العدد المطلوب';
+        break;
+      case 'de':
+        translations!.requiredServicemen = 'Benötigte Menge';
+        break;
+      default:
+        translations!.requiredServicemen = 'Quantity Needed';
+    }
   }
 }

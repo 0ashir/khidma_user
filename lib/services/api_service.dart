@@ -7,10 +7,13 @@ import 'package:http/http.dart' as http;
 import '../screens/app_pages_screens/server_error_screen/server_error.dart';
 import 'environment.dart';
 import 'error/exceptions.dart';
+import 'google_translation_service.dart';
 
 class ApiServices {
   static var client = http.Client();
-  final dio = Dio();
+  final dio = Dio()
+    ..interceptors.add(_LanguageInterceptor())
+    ..interceptors.add(TranslationResponseInterceptor());
   static List<Map<String, String>> conversationHistory = [];
 
   //to get full path with paramiters
@@ -544,4 +547,81 @@ Exception handleErrorResponse(http.Response response) {
         ? 'Validation failed'
         : 'Server exception',
   );
+}
+
+/// Interceptor that forces Accept-Lang to English on every request so the
+/// backend always returns English content. Dynamic translation is handled
+/// in-app via GoogleTranslationService.
+class _LanguageInterceptor extends Interceptor {
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    options.headers['Accept-Lang'] = 'en';
+    log('[Translation] Interceptor → ${options.uri} | Accept-Lang: en');
+    handler.next(options);
+  }
+}
+
+/// Response interceptor that auto-translates human-readable text fields
+/// in every API response when the user's language is not English.
+/// Only translates fields whose JSON key is in [_translatableKeys].
+/// All other fields (IDs, slugs, URLs, status codes) pass through untouched.
+class TranslationResponseInterceptor extends Interceptor {
+  // JSON keys whose values should be translated
+  static const _translatableKeys = {
+    'title', 'name', 'description', 'detail', 'short_description',
+    'content', 'bio', 'sub_title', 'subtitle', 'tag_line',
+    'overview', 'category_name', 'service_name', 'about',
+  };
+
+  @override
+  void onResponse(Response response, ResponseInterceptorHandler handler) async {
+    try {
+      final locale = await GoogleTranslationService.getCurrentLocale();
+      if (response.data != null) {
+        log('[Translation] ResponseInterceptor → translating response for ${response.realUri} | locale=$locale');
+        response.data = await _translateNode(response.data, locale);
+      }
+    } catch (e) {
+      log('[Translation] ResponseInterceptor error: $e');
+    }
+    handler.next(response);
+  }
+
+  static Future<dynamic> _translateNode(dynamic node, String locale) async {
+    if (node is Map<String, dynamic>) {
+      // Collect all translatable key-value pairs in this map
+      final keys = <String>[];
+      final texts = <String>[];
+      for (final entry in node.entries) {
+        if (_translatableKeys.contains(entry.key) &&
+            entry.value is String &&
+            (entry.value as String).trim().isNotEmpty) {
+          keys.add(entry.key);
+          texts.add(entry.value as String);
+        }
+      }
+
+      // Translate the collected texts in one batch call
+      final Map<String, dynamic> result = Map.from(node);
+      if (texts.isNotEmpty) {
+        final translated =
+            await GoogleTranslationService.translateBatch(texts, locale);
+        for (int i = 0; i < keys.length; i++) {
+          result[keys[i]] = translated[i];
+        }
+      }
+
+      // Recurse into nested maps and lists
+      for (final entry in result.entries) {
+        if (entry.value is Map<String, dynamic> || entry.value is List) {
+          result[entry.key] = await _translateNode(entry.value, locale);
+        }
+      }
+      return result;
+    } else if (node is List) {
+      return Future.wait(
+          node.map((item) => _translateNode(item, locale)).toList());
+    }
+    return node;
+  }
 }

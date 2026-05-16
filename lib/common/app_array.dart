@@ -100,6 +100,11 @@ class AppArray {
               "title": translations!.chatHistory,
               "isArrow": true
             },
+            {
+              "icon": eSvgAssets.translate,
+              "title": translations!.changeLanguage,
+              "isArrow": true
+            },
           ]
         },
         {
@@ -419,8 +424,6 @@ class AppArray {
           'title': isTheme ? translations!.lightTheme : translations!.darkTheme,
           'icon': eSvgAssets.dark
         },
-        // {'title': translations!.changeCurrency, 'icon': eSvgAssets.currency},
-        {'title': translations!.changeLanguage, 'icon': eSvgAssets.translate},
         {'title': translations!.changePassword, 'icon': eSvgAssets.lock}
       ];
 
@@ -429,8 +432,6 @@ class AppArray {
           'title': isTheme ? translations!.lightTheme : translations!.darkTheme,
           'icon': eSvgAssets.dark
         },
-        // {'title': translations!.changeCurrency, 'icon': eSvgAssets.currency},
-        {'title': translations!.changeLanguage, 'icon': eSvgAssets.translate},
       ];
 
 //currency

@@ -8,6 +8,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:path_provider/path_provider.dart';
 import '../../config.dart';
 import 'package:http/http.dart' as http;
+import '../services/google_translation_service.dart';
 
 
 Future<String> downloadAndSaveFile(String url, String fileName) async {
@@ -101,32 +102,35 @@ Future<void> setupFlutterNotifications() async {
 
 void showFlutterNotification(RemoteMessage message) async {
   channel = const AndroidNotificationChannel(
-    'high_importance_channel', // id
-    'High Importance Notifications', // title
-    description:
-        'This channel is used for important notifications.', // description
+    'high_importance_channel',
+    'High Importance Notifications',
+    description: 'This channel is used for important notifications.',
     importance: Importance.high,
   );
 
   flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
-  /// Create an Android Notification Channel.
-  ///
-  /// We use this channel in the `AndroidManifest.xml` file to override the
-  /// default FCM channel to enable heads up notifications.
   await flutterLocalNotificationsPlugin!
       .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel!);
 
-  /// Update the iOS foreground notification presentation options to allow
-  /// heads up notifications.
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
     alert: true,
     badge: true,
     sound: true,
   );
+
   RemoteNotification? notification = message.notification;
+
+  // Translate title and body for the user's preferred language
+  final locale = await GoogleTranslationService.getCurrentLocale();
+  final translated = await GoogleTranslationService.translateBatch(
+    [notification?.title ?? '', notification?.body ?? ''],
+    locale,
+  );
+  final notifTitle = translated[0];
+  final notifBody = translated[1];
 
   if (message.data["image"] != null || message.data["image"] != "") {
     final http.Response response =
@@ -139,17 +143,12 @@ void showFlutterNotification(RemoteMessage message) async {
     );
     flutterLocalNotificationsPlugin!.show(
       notification.hashCode,
-      notification!.title,
-      notification.body,
+      notifTitle,
+      notifBody,
       NotificationDetails(
         android: AndroidNotificationDetails(channel!.id, channel!.name,
             channelDescription: channel!.description,
-            // TODO add a proper drawable resource to android, for now using
-            //      one that already exists in example app.
             styleInformation: bigPictureStyleInformation,
-
-            // TODO add a proper drawable resource to android, for now using
-            //      one that already exists in example app.
             icon: '@mipmap/ic_launcher',
             showProgress: true),
       ),
@@ -157,13 +156,11 @@ void showFlutterNotification(RemoteMessage message) async {
   } else {
     flutterLocalNotificationsPlugin!.show(
       notification.hashCode,
-      notification!.title,
-      notification.body,
+      notifTitle,
+      notifBody,
       NotificationDetails(
         android: AndroidNotificationDetails(channel!.id, channel!.name,
             channelDescription: channel!.description,
-            // TODO add a proper drawable resource to android, for now using
-            //      one that already exists in example app.
             icon: '@mipmap/ic_launcher',
             showProgress: true),
       ),
@@ -388,11 +385,21 @@ class CustomNotificationController {
         });
       }
     }
+
+    // Translate notification content for the user's preferred language
+    final locale = await GoogleTranslationService.getCurrentLocale();
+    final translated = await GoogleTranslationService.translateBatch(
+      [notification?.title ?? '', notification?.body ?? ''],
+      locale,
+    );
+    final notifTitle = translated[0];
+    final notifBody = translated[1];
+
     log("fullScreenIntent: true,");
     flutterLocalNotificationsPlugin.show(
       notification.hashCode,
-      notification!.title,
-      notification.body,
+      notifTitle,
+      notifBody,
       NotificationDetails(
         android: AndroidNotificationDetails(
           channel!.id,

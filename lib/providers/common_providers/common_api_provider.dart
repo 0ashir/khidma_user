@@ -6,6 +6,7 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fixit_user/config.dart';
+import 'package:fixit_user/services/api_service.dart';
 import 'package:fixit_user/models/appernce_model.dart';
 import 'package:fixit_user/models/dashboard_user_model.dart';
 import 'package:fixit_user/models/zone_model.dart';
@@ -215,7 +216,7 @@ class CommonApiProvider extends ChangeNotifier {
     }
   }*/
 
-  final dioo = Dio();
+  final dioo = Dio()..interceptors.add(TranslationResponseInterceptor());
   DashboardModel? dashboardModel;
   DashboardModel2? dashboardModel2;
   CategoryModel? categoryModel;
@@ -233,21 +234,23 @@ class CommonApiProvider extends ChangeNotifier {
     try {
       SharedPreferences pref = await SharedPreferences.getInstance();
       String? token = pref.getString(session.accessToken);
-      String? lang = pref.getString("selectedLocale");
-      // log("message=-=-=-=-=-=-LLLL::$zoneIds");
-      // log("message=-=-=-=-=-=-LLLL::'${api.dashboardHome}?zone_ids=${pref.getString(session.zoneIds)}");
+      // Always use 'en' for content APIs — banners and service images only exist
+      // in English on the backend. UI text is translated via api.translate/{locale}.
       final String? savedZoneIds = pref.getString(session.zoneIds);
       final String effectiveZoneIds = (savedZoneIds != null && savedZoneIds.isNotEmpty)
           ? savedZoneIds
           : zoneIds;
-      final String dashboardUrl = '${api.dashboardHome}?zone_ids=${effectiveZoneIds.isNotEmpty ? effectiveZoneIds : '7'}';
+      // TODO: revert fallback to omit zone_ids when GPS zone is unknown
+      // Using zone 4 temporarily for testing dynamic translations
+      final String dashboardUrl = '${api.dashboardHome}?zone_ids=${effectiveZoneIds.isNotEmpty ? effectiveZoneIds : '4'}';
+      log('[Zone] getDashboardHome → effectiveZoneIds="$effectiveZoneIds" | url=$dashboardUrl');
       final response = await dioo.get(
         dashboardUrl,
         options: Options(headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'Accept-Lang': lang,
-          'Authorization': 'Bearer $token', // Uncomment if token is required
+          'Accept-Lang': 'en',
+          'Authorization': 'Bearer $token',
         }),
       );
 
@@ -308,19 +311,21 @@ class CommonApiProvider extends ChangeNotifier {
     try {
       SharedPreferences pref = await SharedPreferences.getInstance();
       String? token = pref.getString(session.accessToken);
-      String? lang = pref.getString("selectedLocale");
       final String? savedZoneIds2 = pref.getString(session.zoneIds);
       final String effectiveZoneIds2 = (savedZoneIds2 != null && savedZoneIds2.isNotEmpty)
           ? savedZoneIds2
           : zoneIds;
-      final String dashboardUrl2 = '${api.dashboardHome1}?zone_ids=${effectiveZoneIds2.isNotEmpty ? effectiveZoneIds2 : '7'}';
+      // TODO: revert fallback to omit zone_ids when GPS zone is unknown
+      // Using zone 4 temporarily for testing dynamic translations
+      final String dashboardUrl2 = '${api.dashboardHome1}?zone_ids=${effectiveZoneIds2.isNotEmpty ? effectiveZoneIds2 : '4'}';
+      log('[Zone] getDashboardHome2 → effectiveZoneIds="$effectiveZoneIds2" | url=$dashboardUrl2');
       final response = await dioo.get(
         dashboardUrl2,
         options: Options(headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          "Accept-Lang": lang,
-          'Authorization': 'Bearer $token', // Uncomment if token is required
+          'Accept-Lang': 'en',
+          'Authorization': 'Bearer $token',
         }),
       );
       log("URL Name For Call: ${response.realUri}");
@@ -457,6 +462,7 @@ class CommonApiProvider extends ChangeNotifier {
     }
     videoControllers.clear();
   }
+
 }
 
 class MediaItem {

@@ -340,7 +340,7 @@ dynamic en = {
   'customDateTime': "Custom Date & Time",
   'asPerProvider': "As Per Provider Time Slot",
   'selectDate': "Select Date & Time",
-  'requiredServicemen': "Required Servicemen",
+  'requiredServicemen': "Quantity Needed",
   'customMessage': "Additional Instruction (Car Plate No)",
   'addAnyExtra': "*Add Any Extras You Might Like to This Service.",
   'next': "Next",
