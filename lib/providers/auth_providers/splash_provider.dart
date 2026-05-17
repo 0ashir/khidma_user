@@ -455,7 +455,7 @@ class SplashProvider extends ChangeNotifier {
     } else {
       currencyData.priceSymbol = data.symbol.toString();
       currencyData.currency = data;
-      currencyData.currencyVal = data.exchangeRate!;
+      currencyData.currencyVal = data.exchangeRate ?? 0;
       currencyData.notifyListeners();
     }
 

@@ -47,27 +47,18 @@ class CategoriesListProvider with ChangeNotifier {
   }
 
   onReady(context, dash) {
-    // final dash = Provider.of<DashboardProvider>(context, listen: false);
-    categoryList = getCategory(context);
+    getCategory(context);
     notifyListeners();
   }
 
   searchCategory(context) async {
     try {
       String apiUrl = api.category;
-      if (zoneIds.isNotEmpty) {
-        if (searchCtrl.text.isNotEmpty) {
-          apiUrl =
-              "${api.category}?zone_ids=$zoneIds&search=${searchCtrl.text}";
-        } else {
-          apiUrl = "${api.category}?zone_ids=$zoneIds";
-        }
+      final effectiveZone = zoneIds.isNotEmpty ? zoneIds : '2';
+      if (searchCtrl.text.isNotEmpty) {
+        apiUrl = "${api.category}?zone_ids=$effectiveZone&search=${searchCtrl.text}";
       } else {
-        if (searchCtrl.text.isNotEmpty) {
-          apiUrl = "${api.category}&search=${searchCtrl.text}";
-        } else {
-          apiUrl = "${api.category}?zone_ids=$zoneIds";
-        }
+        apiUrl = "${api.category}?zone_ids=$effectiveZone";
       }
       log("CATEGIRY");
       await apiServices.getApi(apiUrl, []).then((value) {

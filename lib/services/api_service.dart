@@ -562,11 +562,9 @@ class _LanguageInterceptor extends Interceptor {
 }
 
 /// Response interceptor that auto-translates human-readable text fields
-/// in every API response when the user's language is not English.
-/// Only translates fields whose JSON key is in [_translatableKeys].
-/// All other fields (IDs, slugs, URLs, status codes) pass through untouched.
+/// in every API response. Uses a single-pass collect + one batch API call
+/// strategy so the entire response tree is translated in one round-trip.
 class TranslationResponseInterceptor extends Interceptor {
-  // JSON keys whose values should be translated
   static const _translatableKeys = {
     'title', 'name', 'description', 'detail', 'short_description',
     'content', 'bio', 'sub_title', 'subtitle', 'tag_line',
@@ -576,10 +574,24 @@ class TranslationResponseInterceptor extends Interceptor {
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) async {
     try {
-      final locale = await GoogleTranslationService.getCurrentLocale();
+      // Read locale from the in-memory variable — no async SharedPreferences call
+      final locale = local;
       if (response.data != null) {
-        log('[Translation] ResponseInterceptor → translating response for ${response.realUri} | locale=$locale');
-        response.data = await _translateNode(response.data, locale);
+        // Pass 1: collect every translatable (map, key) pair from the whole tree
+        final refs = <_TranslationRef>[];
+        _collect(response.data, refs);
+
+        if (refs.isNotEmpty) {
+          // ONE batch call for the entire response
+          final texts = refs.map((r) => r.text).toList();
+          final translated =
+              await GoogleTranslationService.translateBatch(texts, locale);
+          // Pass 2: apply translations back in-place
+          for (int i = 0; i < refs.length; i++) {
+            refs[i].map[refs[i].key] = translated[i];
+          }
+          log('[Translation] translated ${refs.length} fields for ${response.realUri}');
+        }
       }
     } catch (e) {
       log('[Translation] ResponseInterceptor error: $e');
@@ -587,41 +599,35 @@ class TranslationResponseInterceptor extends Interceptor {
     handler.next(response);
   }
 
-  static Future<dynamic> _translateNode(dynamic node, String locale) async {
+  /// Recursively walks [node] and appends a [_TranslationRef] for every
+  /// map entry whose key is in [_translatableKeys] and value is non-empty.
+  static void _collect(dynamic node, List<_TranslationRef> refs) {
     if (node is Map<String, dynamic>) {
-      // Collect all translatable key-value pairs in this map
-      final keys = <String>[];
-      final texts = <String>[];
-      for (final entry in node.entries) {
-        if (_translatableKeys.contains(entry.key) &&
-            entry.value is String &&
-            (entry.value as String).trim().isNotEmpty) {
-          keys.add(entry.key);
-          texts.add(entry.value as String);
+      for (final key in node.keys) {
+        final value = node[key];
+        if (_translatableKeys.contains(key) &&
+            value is String &&
+            value.trim().isNotEmpty) {
+          refs.add(_TranslationRef(map: node, key: key, text: value));
+        }
+        // Always recurse into nested structures
+        if (value is Map<String, dynamic> || value is List) {
+          _collect(value, refs);
         }
       }
-
-      // Translate the collected texts in one batch call
-      final Map<String, dynamic> result = Map.from(node);
-      if (texts.isNotEmpty) {
-        final translated =
-            await GoogleTranslationService.translateBatch(texts, locale);
-        for (int i = 0; i < keys.length; i++) {
-          result[keys[i]] = translated[i];
-        }
-      }
-
-      // Recurse into nested maps and lists
-      for (final entry in result.entries) {
-        if (entry.value is Map<String, dynamic> || entry.value is List) {
-          result[entry.key] = await _translateNode(entry.value, locale);
-        }
-      }
-      return result;
     } else if (node is List) {
-      return Future.wait(
-          node.map((item) => _translateNode(item, locale)).toList());
+      for (final item in node) {
+        _collect(item, refs);
+      }
     }
-    return node;
   }
+}
+
+/// Holds a mutable reference to a map entry so translation can be applied
+/// back in-place without rebuilding the entire JSON tree.
+class _TranslationRef {
+  final Map<String, dynamic> map;
+  final String key;
+  final String text;
+  _TranslationRef({required this.map, required this.key, required this.text});
 }

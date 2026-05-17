@@ -240,9 +240,7 @@ class CommonApiProvider extends ChangeNotifier {
       final String effectiveZoneIds = (savedZoneIds != null && savedZoneIds.isNotEmpty)
           ? savedZoneIds
           : zoneIds;
-      // TODO: revert fallback to omit zone_ids when GPS zone is unknown
-      // Using zone 4 temporarily for testing dynamic translations
-      final String dashboardUrl = '${api.dashboardHome}?zone_ids=${effectiveZoneIds.isNotEmpty ? effectiveZoneIds : '4'}';
+      final String dashboardUrl = '${api.dashboardHome}?zone_ids=${effectiveZoneIds.isNotEmpty ? effectiveZoneIds : '2'}';
       log('[Zone] getDashboardHome → effectiveZoneIds="$effectiveZoneIds" | url=$dashboardUrl');
       final response = await dioo.get(
         dashboardUrl,
@@ -315,9 +313,7 @@ class CommonApiProvider extends ChangeNotifier {
       final String effectiveZoneIds2 = (savedZoneIds2 != null && savedZoneIds2.isNotEmpty)
           ? savedZoneIds2
           : zoneIds;
-      // TODO: revert fallback to omit zone_ids when GPS zone is unknown
-      // Using zone 4 temporarily for testing dynamic translations
-      final String dashboardUrl2 = '${api.dashboardHome1}?zone_ids=${effectiveZoneIds2.isNotEmpty ? effectiveZoneIds2 : '4'}';
+      final String dashboardUrl2 = '${api.dashboardHome1}?zone_ids=${effectiveZoneIds2.isNotEmpty ? effectiveZoneIds2 : '2'}';
       log('[Zone] getDashboardHome2 → effectiveZoneIds="$effectiveZoneIds2" | url=$dashboardUrl2');
       final response = await dioo.get(
         dashboardUrl2,

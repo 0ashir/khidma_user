@@ -571,32 +571,32 @@ class SlotBookingProvider with ChangeNotifier {
         (element) => element.day.toLowerCase() == day.toLowerCase());
 
     if (index >= 0 && dayWeek[index].isActive == true) {
-      List<String> newTimeSlot = dayWeek[index].slots;
-      bool isToday = isSameDay(focusedDay.value, DateTime.now());
-      for (String slot in newTimeSlot) {
-        int hour = int.parse(slot.split(":")[0]);
-        // Filter for AM/PM
-        if (scrollDayIndex == 0 && hour < 12) {
-          // AM: Include slots before 12:00 PM
-          timeSlot.add(slot);
-          log("timeSlot:::$timeSlot");
-        } else if (scrollDayIndex == 1 && hour >= 12) {
-          // PM: Include slots from 12:00 PM onwards
-          timeSlot.add(slot);
-        }
-        // Restrict past times for today
+      // Work on a copy so we never modify the model's list while iterating
+      final sourceSlots = List<String>.from(dayWeek[index].slots);
+      final bool isToday = isSameDay(focusedDay.value, DateTime.now());
+      final DateTime now = DateTime.now();
+      final filtered = <String>[];
+
+      for (final slot in sourceSlots) {
+        final int hour = int.parse(slot.split(':')[0]);
+        final int minute = int.parse(slot.split(':')[1]);
+
+        // AM/PM filter
+        final bool matchesPeriod =
+            (scrollDayIndex == 0 && hour < 12) ||
+            (scrollDayIndex == 1 && hour >= 12);
+        if (!matchesPeriod) continue;
+
+        // Skip past times for today
         if (isToday) {
-          int slotHour = hour;
-          int slotMinute = int.parse(slot.split(":")[1]);
-          DateTime now = DateTime.now();
-          if (scrollDayIndex == 0 && now.hour >= 12) {
-            timeSlot.remove(slot); // Remove AM slots if past noon
-          } else if (slotHour < now.hour ||
-              (slotHour == now.hour && slotMinute < now.minute)) {
-            timeSlot.remove(slot); // Remove past times
-          }
+          if (scrollDayIndex == 0 && now.hour >= 12) continue;
+          if (hour < now.hour || (hour == now.hour && minute < now.minute)) continue;
         }
+
+        filtered.add(slot);
       }
+
+      timeSlot = filtered;
     }
 
     timeIndex = null;
@@ -743,8 +743,7 @@ class SlotBookingProvider with ChangeNotifier {
   }
 
   Future<void> fetchSlotTime(BuildContext context) async {
-    // timeSlot = [];
-    showLoading(context);
+    isSlotLoading = true;
     notifyListeners();
     try {
       final response = await apiServices.getApi(
@@ -759,15 +758,11 @@ class SlotBookingProvider with ChangeNotifier {
         updateTimeSlotsForSelectedDay();
       } else {
         log("GET API failed: ${response.message}");
-        // Fluttertoast.showToast(
-        //     msg: response.message, backgroundColor: Colors.red);
       }
     } catch (e) {
       log("EEEE fetchSlotTime: $e");
-      // Fluttertoast.showToast(
-      //     msg: "Failed to fetch time slots", backgroundColor: Colors.red);
     } finally {
-      hideLoading(context);
+      isSlotLoading = false;
       notifyListeners();
     }
   }
@@ -783,7 +778,12 @@ class SlotBookingProvider with ChangeNotifier {
     final slot = timeSlotModel!.timeSlots.firstWhereOrNull(
       (element) => element.day.toUpperCase() == day,
     );
-    timeSlot = (slot != null && slot.isActive == true) ? slot.slots : [];
+    // Copy the list — assigning directly would share the reference and cause
+    // ConcurrentModificationError when filterSlotByAmPm modifies timeSlot
+    // while iterating the same underlying list.
+    timeSlot = (slot != null && slot.isActive == true)
+        ? List<String>.from(slot.slots)
+        : [];
     timeIndex = null; // Reset selected slot
     notifyListeners();
     // Trigger AM/PM filtering if amIndex is set and context is provided
@@ -851,6 +851,7 @@ class SlotBookingProvider with ChangeNotifier {
   }
 
   bool isLoading = false;
+  bool isSlotLoading = false;
 
   Future<void> checkSlotAvailableForAppChoose({
     required BuildContext context,
@@ -1335,10 +1336,9 @@ class SlotBookingProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  onProviderDateTimeSelect(context) async {
-    log("SSS : $selectProviderIndex ");
-
+  onProviderDateTimeSelect(context) {
     if (selectIndex == 0) {
+      // Custom date/time picker — open immediately
       showModalBottomSheet(
           isScrollControlled: true,
           context: context,
@@ -1350,7 +1350,6 @@ class SlotBookingProvider with ChangeNotifier {
               service: servicesCart,
             );
           }).then((value) {
-        log("VVVS :#$value");
         if (isPackage) {
           final packageCtrl =
               Provider.of<SelectServicemanProvider>(context, listen: false);
@@ -1364,79 +1363,40 @@ class SlotBookingProvider with ChangeNotifier {
           packageCtrl.notifyListeners();
         }
       });
-      notifyListeners();
     } else {
-      await fetchSlotTime(context);
-
-      final hasProviderSlots = timeSlotModel != null &&
-          timeSlotModel!.timeSlots
-              .any((slot) => slot.isActive == true && slot.slots.isNotEmpty);
-
-      if (hasProviderSlots) {
-        showModalBottomSheet(
-            isScrollControlled: true,
-            context: context,
-            builder: (BuildContext context3) {
-              return Consumer<SlotBookingProvider>(
-                  builder: (context1, value, child) {
-                return StatefulBuilder(builder: (context2, setState) {
-                  return ProviderTimeSlotLayout(
-                      isService: isPackage,
-                      selectProviderIndex: selectProviderIndex,
-                      service: servicesCart);
-                });
-              });
-            }).then((value) {
-          log("VVVS : $value");
-          if (value == null) {
-            focusedDay.value = DateTime.now();
-            notifyListeners();
-          }
-          amIndex = null;
-          timeSlot = [];
+      // Provider time slots — open sheet immediately; sheet fetches its own data
+      showModalBottomSheet(
+          isScrollControlled: true,
+          context: context,
+          builder: (BuildContext context3) {
+            return Consumer<SlotBookingProvider>(
+                builder: (context1, value, child) {
+              return ProviderTimeSlotLayout(
+                  isService: isPackage,
+                  selectProviderIndex: selectProviderIndex,
+                  service: servicesCart);
+            });
+          }).then((value) {
+        if (value == null) {
+          focusedDay.value = DateTime.now();
+        }
+        amIndex = null;
+        timeSlot = [];
+        notifyListeners();
+        if (isPackage) {
+          final packageCtrl =
+              Provider.of<SelectServicemanProvider>(context, listen: false);
+          servicePackageList[selectProviderIndex] = servicesCart!;
+          servicePackageList[selectProviderIndex].serviceDate =
+              servicesCart!.serviceDate;
+          servicePackageList[selectProviderIndex].selectDateTimeOption =
+              "timeSlot";
+          servicePackageList[selectProviderIndex].selectedDateTimeFormat =
+              servicesCart!.selectedDateTimeFormat;
           notifyListeners();
-          if (isPackage) {
-            final packageCtrl =
-                Provider.of<SelectServicemanProvider>(context, listen: false);
-            servicePackageList[selectProviderIndex] = servicesCart!;
-            servicePackageList[selectProviderIndex].serviceDate =
-                servicesCart!.serviceDate;
-            servicePackageList[selectProviderIndex].selectDateTimeOption =
-                "timeSlot";
-            servicePackageList[selectProviderIndex].selectedDateTimeFormat =
-                servicesCart!.selectedDateTimeFormat;
-            notifyListeners();
-            packageCtrl.notifyListeners();
-          }
-        });
-      } else {
-        // Provider has no time slots — fall back to custom date/time picker
-        showModalBottomSheet(
-            isScrollControlled: true,
-            context: context,
-            builder: (BuildContext context3) {
-              return DateTimePicker(
-                isWeek: false,
-                isService: isPackage,
-                selectProviderIndex: selectProviderIndex,
-                service: servicesCart,
-              );
-            }).then((value) {
-          log("VVVS custom fallback: $value");
-          if (isPackage) {
-            final packageCtrl =
-                Provider.of<SelectServicemanProvider>(context, listen: false);
-            servicePackageList[selectProviderIndex].serviceDate =
-                servicesCart!.serviceDate;
-            servicePackageList[selectProviderIndex].selectDateTimeOption =
-                "custom";
-            servicePackageList[selectProviderIndex].selectedDateTimeFormat =
-                servicesCart!.selectedDateTimeFormat;
-            notifyListeners();
-            packageCtrl.notifyListeners();
-          }
-        });
-      }
+          packageCtrl.notifyListeners();
+        }
+      });
     }
     notifyListeners();
   }
@@ -1574,26 +1534,26 @@ class SlotBookingProvider with ChangeNotifier {
   }
 
   onBack(context) {
-    log("WOEK ");
     if (isStep2) {
       isStep2 = false;
+      notifyListeners();
     } else {
+      // Reset all state BEFORE popping so notifyListeners does not
+      // fire on an already-removed route (causes black screen)
       isStep2 = false;
-      route.pop(context);
       txtNote.text = "";
-    }
-    if (servicesCart != null) {
-      servicesCart!.serviceDate = null;
-      servicesCart!.selectDateTimeOption = null;
-      if (isPackage) {
-        final packageCtrl =
-            Provider.of<SelectServicemanProvider>(context, listen: false);
-        servicePackageList[selectProviderIndex].serviceDate = null;
-        servicePackageList[selectProviderIndex].selectDateTimeOption = null;
+      if (servicesCart != null) {
+        servicesCart!.serviceDate = null;
+        servicesCart!.selectDateTimeOption = null;
+        if (isPackage) {
+          servicePackageList[selectProviderIndex].serviceDate = null;
+          servicePackageList[selectProviderIndex].selectDateTimeOption = null;
+        }
+        amIndex = null;
       }
-      amIndex = null;
+      notifyListeners();
+      route.pop(context);
     }
-    notifyListeners();
   }
 
   addToCart(context) async {

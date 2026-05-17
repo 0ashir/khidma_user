@@ -10,6 +10,7 @@ import 'package:fixit_user/providers/app_pages_providers/offer_chat_provider.dar
 import 'package:fixit_user/providers/app_pages_providers/referral_provider.dart';
 import 'package:fixit_user/providers/app_pages_providers/wallet_bonus_provider.dart';
 import 'package:fixit_user/services/environment.dart';
+import 'package:fixit_user/services/google_translation_service.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -41,6 +42,7 @@ void main() async {
   }
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await initializeAppSettings();
+  await GoogleTranslationService.loadCache();
 
   sharedPreferences.getString("selectedLocale");
   log("=-=-=-=-=-=-=-=-=- ${sharedPreferences.getString("selectedLocale")}");

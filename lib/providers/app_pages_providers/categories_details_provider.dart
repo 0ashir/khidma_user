@@ -58,29 +58,26 @@ class CategoriesDetailsProvider with ChangeNotifier {
     isGridLoader = true;
     notifyListeners();
     SharedPreferences pref = await SharedPreferences.getInstance();
-    final zoneId = pref.getString(session.zoneIds);
+    final savedZone = pref.getString(session.zoneIds);
+    final effectiveZone = (savedZone != null && savedZone.isNotEmpty) ? savedZone : '2';
 
-    log("message=-=-=--=-=-ZONE IDS ${pref.getString(session.zoneIds)}");
+    log("message=-=-=--=-=-ZONE IDS $savedZone → using: $effectiveZone");
 
     try {
       demoList = [];
       isLoading = true;
       notifyListeners();
-      // ${pref.getString(session.zoneIds) ?? 1}
-      // Log the API URL for debugging
-      final url =
-          '${api.categoryService}?category_id=$id&zone_ids=${pref.getString(session.zoneIds) ?? 1}';
+      final url = '${api.categoryService}?category_id=$id&zone_ids=$effectiveZone';
       log('Fetching category service: $url');
 
 // Make the API call using Dio
-      String? lang = pref.getString("selectedLocale");
       final response = await dio.get(
         url,
         options: Options(
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'Accept-Language': lang,
+            'Accept-Language': 'en',
           },
         ),
       );
@@ -96,8 +93,8 @@ class CategoriesDetailsProvider with ChangeNotifier {
 
         // Filter child categories
         final validCategories = categoryService?.categories
-            /*  ?.where((category) => category.isChild == true) */
-            ?.toList();
+            ?.where((category) => category.isChild == false)
+            .toList();
 
         // Only add "All" category if there are valid subcategories
         if (validCategories != null && validCategories.isNotEmpty) {
@@ -161,11 +158,11 @@ class CategoriesDetailsProvider with ChangeNotifier {
       serviceDemo.clear();
 
       SharedPreferences pref = await SharedPreferences.getInstance();
-      final zoneId = pref.getString(session.zoneIds);
+      final savedZone2 = pref.getString(session.zoneIds);
+      final effectiveZone2 = (savedZone2 != null && savedZone2.isNotEmpty) ? savedZone2 : '2';
 
       // Build the API URL with optional search
-      String url =
-          '${api.categoryService}?category_id=$id&zone_ids=${pref.getString(session.zoneIds)}';
+      String url = '${api.categoryService}?category_id=$id&zone_ids=$effectiveZone2';
       if (search != null && search.isNotEmpty) {
         url += '&search=$search';
       }
@@ -184,14 +181,13 @@ class CategoriesDetailsProvider with ChangeNotifier {
 
       log('Fetching services: $url');
 
-      String? lang = pref.getString("selectedLocale");
       final response = await dio.get(
         url,
         options: Options(
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'Accept-Language': lang,
+            'Accept-Language': 'en',
           },
         ),
       );
@@ -233,6 +229,14 @@ class CategoriesDetailsProvider with ChangeNotifier {
     subCategoryId = id;
     notifyListeners();
     log('Selected sub-category ID: $id, Index: $index');
+
+    if (id == 0) {
+      // "All" selected — reload with the parent category
+      getServiceByCategoryId(context, id: categoryModel?.id);
+    } else {
+      // Specific subcategory selected — fetch providers for it
+      getServiceByCategoryId(context, id: id);
+    }
   }
 
   List<Service> get filteredServices {
@@ -487,7 +491,8 @@ class CategoriesDetailsProvider with ChangeNotifier {
     isLoader = true;
     notifyListeners();
     try {
-      String apiUrl = "${api.service}?categoryIds=$id&zone_ids=$zoneIds";
+      final effectiveZone = zoneIds.isNotEmpty ? zoneIds : '2';
+      String apiUrl = "${api.service}?categoryIds=$id&zone_ids=$effectiveZone";
 
       if (selectedRates.isNotEmpty) {
         apiUrl += "&rating=${selectedRates.join(',')}";

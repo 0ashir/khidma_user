@@ -131,20 +131,15 @@ class SelectServicemanProvider with ChangeNotifier {
         "isPackage": isPackage,
         "selectProviderIndex": index
       }).then((e) {
-        route.pop(context);
         if (e != null) {
           if (isPackage) {
             Services services = e;
-            notifyListeners();
-
             servicePackageList[index].selectServiceManType =
                 services.selectServiceManType;
             servicePackageList[index].selectedServiceMan = null;
-            notifyListeners();
           }
           notifyListeners();
         }
-        notifyListeners();
       });
     } else {
       route.pushNamed(context, routeName.serviceSelectedUserScreen, arg: {

@@ -7,11 +7,41 @@ class GoogleTranslationService {
   static const String _apiKey = 'AIzaSyDb8zk-JshdVYLf3139WSoNZUh5DT6vl1w';
   static const String _endpoint =
       'https://translation.googleapis.com/language/translate/v2';
+  static const String _persistKey = 'google_translation_cache';
 
   // In-memory cache: "lang\x00text" -> translated
   static final Map<String, String> _cache = {};
+  // Tracks whether the in-memory cache has new entries not yet saved to disk
+  static bool _dirty = false;
 
   static String _cacheKey(String text, String lang) => '$lang\x00$text';
+
+  /// Loads the persisted cache from SharedPreferences into memory.
+  /// Call this once during app startup so the first screen load is fast.
+  static Future<void> loadCache() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final stored = prefs.getString(_persistKey);
+      if (stored != null && stored.isNotEmpty) {
+        final Map<String, dynamic> decoded = jsonDecode(stored);
+        _cache.addAll(decoded.cast<String, String>());
+        log('[Translation] loaded ${_cache.length} entries from disk cache');
+      }
+    } catch (e) {
+      log('[Translation] loadCache error: $e');
+    }
+  }
+
+  /// Persists the in-memory cache to SharedPreferences in the background.
+  static void _persist() {
+    if (!_dirty) return;
+    _dirty = false;
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.setString(_persistKey, jsonEncode(_cache));
+    }).catchError((e) {
+      log('[Translation] persist error: $e');
+    });
+  }
 
   /// Returns the user's preferred locale code from SharedPreferences.
   static Future<String> getCurrentLocale() async {
@@ -63,6 +93,8 @@ class GoogleTranslationService {
         final translated =
             data['data']['translations'][0]['translatedText'] as String;
         _cache[key] = translated;
+        _dirty = true;
+        _persist();
         log('[Translation] success → "$translated"');
         return translated;
       }
@@ -130,6 +162,8 @@ class GoogleTranslationService {
           results[idx] = translated;
           log('[Translation] [$idx] "${texts[idx]}" → "$translated"');
         }
+        _dirty = true;
+        _persist();
       } else {
         log('[Translation] batch API failed: ${response.statusCode} — ${response.body}');
       }
@@ -140,9 +174,16 @@ class GoogleTranslationService {
     return results;
   }
 
-  /// Clears the in-memory cache (e.g. after a language switch).
+  /// Clears both the in-memory and persisted cache.
+  /// Called when the user switches language so stale translations are discarded.
   static void clearCache() {
-    log('[Translation] cache cleared');
     _cache.clear();
+    _dirty = false;
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.remove(_persistKey);
+    }).catchError((e) {
+      log('[Translation] clearCache persist error: $e');
+    });
+    log('[Translation] cache cleared (memory + disk)');
   }
 }

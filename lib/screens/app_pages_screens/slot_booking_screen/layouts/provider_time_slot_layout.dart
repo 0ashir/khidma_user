@@ -51,7 +51,11 @@ class ProviderTimeSlotLayout extends StatelessWidget {
               height: MediaQuery.of(context).size.height / 1.2,
               child: Stack(children: [
                 SingleChildScrollView(
-                  child: LoadingComponent(
+                  child: value.isSlotLoading
+                      ? SizedBox(
+                          height: MediaQuery.of(context).size.height / 1.2,
+                          child: const Center(child: CircularProgressIndicator()))
+                      : LoadingComponent(
                     child: Column(children: [
                       Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
