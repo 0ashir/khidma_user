@@ -15,22 +15,24 @@ class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
-    return Consumer3<DashboardProvider, CommonApiProvider,
-            CategoriesDetailsProvider>(
-        builder: (context3, dash, common, categoriesDetailsProvider, child) {
-      return Consumer<HomeScreenProvider>(builder: (context1, value, child) {
-        return Consumer<LocationProvider>(
-            builder: (context2, locationCtrl, child) {
-          return UpgradeAlert(
-              showIgnore: false,
-              showLater: false,
-              child: Stack(
-                children: [
-                  StatefulWrapper(
-                      onInit: () => Future.delayed(
-                          const Duration(milliseconds: 100),
-                          () => value.onAnimate(this, context)),
-                      child: common.isLoadingDashboard /*  value.isSkeleton */
+    return Consumer<LanguageProvider>(
+        builder: (context0, lang, child) {
+      return Consumer3<DashboardProvider, CommonApiProvider,
+              CategoriesDetailsProvider>(
+          builder: (context3, dash, common, categoriesDetailsProvider, child) {
+        return Consumer<HomeScreenProvider>(builder: (context1, value, child) {
+          return Consumer<LocationProvider>(
+              builder: (context2, locationCtrl, child) {
+            return UpgradeAlert(
+                showIgnore: false,
+                showLater: false,
+                child: Stack(
+                  children: [
+                    StatefulWrapper(
+                        onInit: () => Future.delayed(
+                            const Duration(milliseconds: 100),
+                            () => value.onAnimate(this, context)),
+                        child: (common.isLoadingDashboard || lang.isTranslateLoader == true || translations == null) /*  value.isSkeleton */
                           /*  ? const /* BerlinSkeleton() */ /* TokyoSkeleton() */ /* DubaiSkeleton() */ /*  TorontoSkeleton() */ /* NewYorkSkeleton() */ HomeSkeleton() */
                           ? appSettingModel?.general?.defaultHomeScreen ==
                                   "tokyo"
@@ -122,8 +124,9 @@ class _HomeScreenState extends State<HomeScreen>
                         height: Sizes.s100,
                       )),
                     )
-                ],
-              ));
+                  ],
+                ));
+          });
         });
       });
     });

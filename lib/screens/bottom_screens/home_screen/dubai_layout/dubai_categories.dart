@@ -5,19 +5,21 @@ class DubaiCategories extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer3<CommonApiProvider, DashboardProvider,
-            CategoriesDetailsProvider>(
-        builder: (context, commonApi, dash, categoryDetails, child) {
+    return Consumer2<CommonApiProvider, DashboardProvider>(
+        builder: (context, commonApi, dash, child) {
+      if (commonApi.dashboardModel == null) return const SizedBox.shrink();
+      final categoryDetails =
+          Provider.of<CategoriesDetailsProvider>(context, listen: false);
       return Column(
         children: [
-          if (commonApi.dashboardModel!.categories!.isNotEmpty)
+          if (commonApi.dashboardModel?.categories?.isNotEmpty == true)
             HeadingRowCommon(
                     title: translations!.topCategories,
                     isTextSize: true,
                     onTap: () => route.pushNamed(
                         context, routeName.categoriesListScreen))
                 .paddingSymmetric(horizontal: Insets.i20),
-          if (commonApi.dashboardModel!.categories!.isNotEmpty)
+          if (commonApi.dashboardModel?.categories?.isNotEmpty == true)
             const VSpace(Sizes.s15),
           SizedBox(
             height: Sizes.s48,
@@ -79,31 +81,33 @@ class DubaiCategories extends StatelessWidget {
                         .padding(right: Insets.i10)
                   ])
                       .inkWell(onTap: () {
-                        categoryDetails.hasCategoryList.clear();
-                        categoryDetails.hasCategoryList.addAll(
-                          (commonApi.dashboardModel!.categories?[index]
-                                      .hasSubCategories ??
-                                  [])
-                              .map((subCategory) => CategoryModel(
-                                    // Map fields from HasSubCategoryElement to CategoryModel
-                                    id: subCategory
-                                        .id, // Example: assuming id exists
-                                    title: subCategory
-                                        .title, // Adjust based on your model
-                                    media: [
-                                      Media(
-                                          originalUrl: subCategory
-                                              .media?.first.originalUrl)
-                                    ],
-                                    // Add other required fields here
-                                  ))
-                              .toList() as Iterable<CategoryModel>,
-                        );
+                        // Pre-set provider state BEFORE navigating so the
+                        // destination page renders correctly on its first frame
+                        // with the correct title and shimmer loading state.
+                        categoryDetails.categoryModel = homeCategoryList[index];
+                        categoryDetails.isServiceLoading = true;
+                        categoryDetails.demoList = [];
+                        categoryDetails.serviceDemo.clear();
+                        categoryDetails.hasCategoryList
+                          ..clear()
+                          ..addAll(
+                            (commonApi.dashboardModel?.categories?[index]
+                                        .hasSubCategories ??
+                                    [])
+                                .map((subCategory) => CategoryModel(
+                                      id: subCategory.id,
+                                      title: subCategory.title,
+                                      media: [
+                                        Media(
+                                            originalUrl: subCategory
+                                                .media?.first.originalUrl)
+                                      ],
+                                    )),
+                          );
 
                         route.pushNamed(
                             context, routeName.categoriesDetailsScreen,
-                            arg: /* dash.categoryList */
-                                homeCategoryList[index]);
+                            arg: homeCategoryList[index]);
                       })
                       .decorated(
                         borderRadius: BorderRadius.circular(25),

@@ -69,14 +69,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   title: Text(language(context, translations!.profileSetting),
                       style: appCss.dmDenseBold18
                           .textColor(appColor(context).darkText)),
-                  automaticallyImplyLeading: false,
-                  actions: [
-                    CommonArrow(
-                            arrow: eSvgAssets.setting,
-                            svgColor: appColor(context).darkText,
-                            onTap: () => value.onTapSettingTap(context))
-                        .paddingSymmetric(horizontal: Insets.i20)
-                  ]),
+                  automaticallyImplyLeading: false),
               body: SingleChildScrollView(
                   child: Column(children: [
                 const VSpace(Sizes.s15),

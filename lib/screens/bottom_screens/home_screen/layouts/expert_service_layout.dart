@@ -142,12 +142,13 @@ class HomeExpertServiceLayout extends StatelessWidget {
             children: [
           Row(
             children: [
-              data != null && data!.media!.isNotEmpty
+              data != null && data!.media != null && data!.media!.isNotEmpty &&
+                      (data!.media![0].originalUrl ?? '').isNotEmpty
                   ? CommonImageLayout(
                       height: Sizes.s72,
                       width: Sizes.s72,
                       radius: 8,
-                      image: data!.media![0].originalUrl!,
+                      image: data!.media![0].originalUrl,
                       assetImage: eImageAssets.noImageFound3,
                     ).boxShapeExtension()
                   : CommonCachedImage(

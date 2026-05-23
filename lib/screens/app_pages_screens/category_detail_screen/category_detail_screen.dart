@@ -14,8 +14,8 @@ class CategoryDetailScreen extends StatelessWidget {
             CategoriesDetailsProvider>(
         builder: (context1, login, serviceCtrl, value, child) {
       return StatefulWrapper(
-          onInit: () => Future.delayed(DurationClass.ms150)
-              .then((val) => value.onReady(context)),
+          onInit: () => WidgetsBinding.instance.addPostFrameCallback(
+              (_) => value.onReady(context)),
           child: PopScope(
               canPop: true,
               onPopInvoked: (didPop) {

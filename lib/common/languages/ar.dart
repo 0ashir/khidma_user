@@ -245,7 +245,7 @@ dynamic ar = {
   'country': "دولة",
   'state': "ولاية",
   'city': "مدينة",
-  'zipCode': "الرمز البريدي",
+  'zipCode': "رقم المبنى",
   'personName': "اسم الشخص",
   'phoneNumber': "رقم التليفون",
   'contactNo': "رقم الاتصال.",

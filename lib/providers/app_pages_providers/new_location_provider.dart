@@ -75,7 +75,11 @@ class NewLocationProvider with ChangeNotifier {
 
       selectIndex = categoryList.indexWhere((element) =>
           element.toString().toLowerCase() == address!.type!.toLowerCase());
-      state = locationCtrl.stateList[stateValue!];
+      if (selectIndex < 0) selectIndex = 0;
+
+      final stateIndex = locationCtrl.stateList
+          .indexWhere((element) => element.id == stateValue);
+      state = stateIndex >= 0 ? locationCtrl.stateList[stateIndex] : null;
       isCheck = address!.isPrimary == 1 ? true : false;
       log("DIAOCLODE1 :${address!.code}");
       int dialCodeIndex = countriesEnglish.indexWhere((element) =>

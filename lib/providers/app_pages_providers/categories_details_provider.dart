@@ -429,37 +429,44 @@ class CategoriesDetailsProvider with ChangeNotifier {
   }
 
   onRefresh(context) async {
-    showLoading(context);
-    await getCategoryService(id: categoryModel!.id);
-    await getService(id: categoryModel!.id);
+    await Future.wait([
+      getCategoryService(id: categoryModel!.id),
+      getService(id: categoryModel!.id),
+    ]);
     notifyListeners();
-    hideLoading(context);
   }
 
   onReady(context) async {
     isNavigatingToCategory = false;
     mediaUrls = [];
-    demoList = [];
-    demoList.clear();
-    // isLoading = true;
-    isServiceLoading = true;
     widget1Opacity = 1;
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    bool isGuest = preferences.getBool(session.isContinueAsGuest) ?? false;
-    log("isGuest::$isGuest");
-    if (isGuest == false) {
-      fetchBannerAdsData(context);
+
+    // categoryModel is pre-set by the tap handler before navigation,
+    // so the page already shows the correct title and shimmer on frame 1.
+    // Fall back to route args only if navigating from a non-Dubai layout.
+    if (categoryModel == null) {
+      dynamic data = ModalRoute.of(context)!.settings.arguments;
+      categoryModel = data;
+      isServiceLoading = true;
+      demoList = [];
+      serviceDemo.clear();
+      notifyListeners();
     }
 
-    showLoading(context);
-    dynamic data = ModalRoute.of(context)!.settings.arguments;
-    categoryModel = data;
-    await getCategoryService(id: categoryModel!.id);
-    await getService(id: categoryModel!.id);
     final dash = Provider.of<DashboardProvider>(context, listen: false);
     providerList = dash.providerList;
 
-    hideLoading(context);
+    final SharedPreferences preferences = await SharedPreferences.getInstance();
+    final bool isGuest = preferences.getBool(session.isContinueAsGuest) ?? false;
+    log("isGuest::$isGuest");
+
+    // Fire all data calls concurrently — shimmers already visible
+    await Future.wait([
+      getCategoryService(id: categoryModel!.id),
+      getService(id: categoryModel!.id),
+      if (isGuest == false) fetchBannerAdsData(context),
+    ]);
+
     notifyListeners();
   }
 
@@ -613,44 +620,29 @@ class CategoriesDetailsProvider with ChangeNotifier {
       route.pushNamed(context, routeName.cartScreen);
     } else {
       try {
-        loadingServiceId = service.id; // 🔄 Set the loading ID
+        loadingServiceId = service.id;
         notifyListeners();
 
         final response =
             await apiServices.getApi("${api.provider}/$id", [], isData: true);
 
         if (response.isSuccess!) {
-          ProviderModel providerModel = ProviderModel.fromJson(response.data);
+          if (!context.mounted) return;
           final providerDetail =
               Provider.of<ProviderDetailsProvider>(context, listen: false);
           providerDetail.selectProviderIndex = 0;
           providerDetail.notifyListeners();
-
-          // await onBook(
-          //   context,
-          //   service,
-          //   provider: providerModel,
-          //   providerId: providerModel.id,
-          //   addTap: () => onAdd(index),
-          //   minusTap: () => onRemoveService(context, index),
-          // ).then((e) {
-          //   if (index >= 0 && index <= serviceList.length) {
-          //     serviceList[index].selectedRequiredServiceMan =
-          //         serviceList[index].requiredServicemen ?? 1;
-          //   } else {
-          //     Fluttertoast.showToast(msg: "Unable to update service selection");
-          //   }
-          //   notifyListeners();
-          // });
         } else {
           Fluttertoast.showToast(msg: response.message);
         }
       } catch (e, s) {
         log("ERROR getProviderById: $e == $s");
-        snackBarMessengers(context,
-            message: "Failed to fetch provider details");
+        if (context.mounted) {
+          snackBarMessengers(context,
+              message: "Failed to fetch provider details");
+        }
       } finally {
-        loadingServiceId = null; // 🔄 Clear loading
+        loadingServiceId = null;
         notifyListeners();
       }
     }

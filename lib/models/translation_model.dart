@@ -2936,7 +2936,7 @@ class Translation {
         country: "Country",
         state: "State",
         city: "City",
-        zipCode: "Zip Code",
+        zipCode: "Building Number",
         personName: "Person Name",
         phoneNumber: "Phone Number",
         contactNo: "Contact No.",

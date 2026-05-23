@@ -1,4 +1,4 @@
-
+﻿
 import 'package:fixit_user/config.dart';
 
 import 'package:image_picker/image_picker.dart';
@@ -54,81 +54,81 @@ class AppArray {
           "data": [
             {
               "icon": eSvgAssets.mobile,
-              "title": translations!.appDetails,
-              "description": translations!.aboutUs,
+              "title": translations?.appDetails,
+              "description": translations?.aboutUs,
               "isArrow": true
             },
-            /*{"icon": eSvgAssets.rate, "title": translations!.rateUs, "isArrow": false},*/
+            /*{"icon": eSvgAssets.rate, "title": translations?.rateUs, "isArrow": false},*/
             {
               "icon": eSvgAssets.share,
-              "title": translations!.shareApp,
+              "title": translations?.shareApp,
               "isArrow": false
             },
             /*  {
               "icon": eSvgAssets.chat,
-              "title": translations!.supportTickets,
+              "title": translations?.supportTickets,
               "isArrow": false
             }, */
           ]
         },
         {
-          "title": translations!.becomeProvider ?? "",
+          "title": translations?.becomeProvider ?? "",
         }
       ];
 
   List<Map<String, dynamic>> get profileList => [
         {
-          "title": translations!.general,
+          "title": translations?.general,
           "data": [
             {
               "icon": eSvgAssets.like,
-              "title": translations!.favouriteList,
+              "title": translations?.favouriteList,
               "isArrow": true
             },
             {
               "icon": eSvgAssets.locationOut1,
-              "title": translations!.manageLocations,
+              "title": translations?.manageLocations,
               "isArrow": true
             },
             {
               "icon": eSvgAssets.coupon,
-              "title": translations!.myReviews,
+              "title": translations?.myReviews,
               "isArrow": true
             },
             {
               "icon": eSvgAssets.chat,
-              "title": translations!.chatHistory,
+              "title": translations?.chatHistory,
               "isArrow": true
             },
             {
               "icon": eSvgAssets.translate,
-              "title": translations!.changeLanguage,
+              "title": translations?.changeLanguage,
               "isArrow": true
             },
           ]
         },
         {
-          "title": translations!.aboutApp,
+          "title": translations?.aboutApp,
           "data": [
             {
               "icon": eSvgAssets.mobile,
-              "title": translations!.appDetails,
-              "description": translations!.aboutUs,
+              "title": translations?.appDetails,
+              "description": translations?.aboutUs,
               "isArrow": true
             },
             {
               "icon": eSvgAssets.rate,
-              "title": translations!.rateUs,
+              "title": translations?.rateUs,
               "isArrow": true
             },
             {
               "icon": eSvgAssets.share,
-              "title": translations!.shareApp,
+              "title": translations?.shareApp,
               "isArrow": true
             },
             {
               "icon": eSvgAssets.chat,
-              "title": translations!.staffChat,
+              "title": translations?.staffChat,
               "isArrow": true
             },
             if (appSettingModel!.activation!.referralEnable == "1")
@@ -143,16 +143,16 @@ class AppArray {
           "title": "",
         },
         {
-          "title": translations!.alertZone,
+          "title": translations?.alertZone,
           "data": [
             {
               "icon": eSvgAssets.delete,
-              "title": translations!.deleteAccount,
+              "title": translations?.deleteAccount,
               "isArrow": false
             },
             {
               "icon": eSvgAssets.logout,
-              "title": translations!.logOut,
+              "title": translations?.logOut,
               "isArrow": false
             }
           ]
@@ -161,7 +161,7 @@ class AppArray {
 
 /*
   List<ProfileModel> profileList(context) => [
-        ProfileModel(title: translations!.general, data: [
+        ProfileModel(title: translations?.general, data: [
           Data(
               icon: eSvgAssets.like,
               title: translations?.favouriteList ?? appFonts.favouriteList,
@@ -208,61 +208,61 @@ class AppArray {
 */
 
   var categoriesList = [
-    {"title": translations!.acRepair, "icon": eSvgAssets.ac},
-    {"title": translations!.cleaning, "icon": eSvgAssets.cleaning},
-    {"title": translations!.carpenter, "icon": eSvgAssets.carpenter},
-    {"title": translations!.cooking, "icon": eSvgAssets.cooking},
-    {"title": translations!.electrician, "icon": eSvgAssets.electrician},
-    {"title": translations!.painter, "icon": eSvgAssets.painter},
-    {"title": translations!.plumber, "icon": eSvgAssets.plumber},
-    {"title": translations!.salon, "icon": eSvgAssets.salon}
+    {"title": translations?.acRepair, "icon": eSvgAssets.ac},
+    {"title": translations?.cleaning, "icon": eSvgAssets.cleaning},
+    {"title": translations?.carpenter, "icon": eSvgAssets.carpenter},
+    {"title": translations?.cooking, "icon": eSvgAssets.cooking},
+    {"title": translations?.electrician, "icon": eSvgAssets.electrician},
+    {"title": translations?.painter, "icon": eSvgAssets.painter},
+    {"title": translations?.plumber, "icon": eSvgAssets.plumber},
+    {"title": translations?.salon, "icon": eSvgAssets.salon}
   ];
 
   var servicesList = [
     {
-      "title": translations!.cleaningPackage,
+      "title": translations?.cleaningPackage,
       "icon": eImageAssets.cleaning,
       "price": "\$20.05",
       "color": const Color(0XFFFD4868)
     },
     {
-      "title": translations!.paintingPackage,
+      "title": translations?.paintingPackage,
       "icon": eImageAssets.paint,
       "price": "\$15.52",
       "color": const Color(0XFF48BFFD)
     },
     {
-      "title": translations!.cookingPackage,
+      "title": translations?.cookingPackage,
       "icon": eImageAssets.fire,
       "price": "\$15.52",
       "color": const Color(0XFF808CFF)
     },
     {
-      "title": translations!.acRepair,
+      "title": translations?.acRepair,
       "icon": eImageAssets.ac,
       "price": "\$15.52",
       "color": const Color(0XFFFF7456)
     },
     {
-      "title": translations!.salonPackage,
+      "title": translations?.salonPackage,
       "icon": eImageAssets.salon,
       "price": "\$15.52",
       "color": const Color(0XFFB75CFF)
     },
     {
-      "title": translations!.plumberPackage,
+      "title": translations?.plumberPackage,
       "icon": eImageAssets.plumber,
       "price": "\$15.52",
       "color": const Color(0XFF17D792)
     },
     {
-      "title": translations!.electricianPackage,
+      "title": translations?.electricianPackage,
       "icon": eImageAssets.electrician,
       "price": "\$15.52",
       "color": const Color(0XFF487AFD)
     },
     {
-      "title": translations!.carpenterPackage,
+      "title": translations?.carpenterPackage,
       "icon": eImageAssets.carpenter,
       "price": "\$15.52",
       "color": const Color(0XFFFDB448)
@@ -272,145 +272,145 @@ class AppArray {
   var featuredList = [
     {
       "profile": eImageAssets.fsProfile1,
-      "name": translations!.arleneMcCoy,
+      "name": translations?.arleneMcCoy,
       "rating": "3.0",
       "discount": "10%",
       "image": eImageAssets.fs1,
-      "work": translations!.cleaningBathroom,
+      "work": translations?.cleaningBathroom,
       "offerPrice": "\$40.56",
       "price": "\$30",
-      "time": translations!.min30,
-      "description": translations!.foamJet,
+      "time": translations?.min30,
+      "description": translations?.foamJet,
       "serviceman": "Min 2 servicemen required"
     },
     {
       "profile": eImageAssets.fsProfile2,
-      "name": translations!.darleneRobertson,
+      "name": translations?.darleneRobertson,
       "rating": "3.0",
       "discount": "",
       "image": eImageAssets.fs2,
-      "work": translations!.furnishing,
+      "work": translations?.furnishing,
       "offerPrice": "\$15.23",
       "price": "\$15.23",
-      "time": translations!.min30,
-      "description": translations!.foamJet,
+      "time": translations?.min30,
+      "description": translations?.foamJet,
       "serviceman": "Min 1 servicemen required"
     }
   ];
 
   var expertServicesList = [
     {
-      "name": translations!.leslie,
+      "name": translations?.leslie,
       "rating": "4.0",
       "image": eImageAssets.es1,
-      "location": translations!.santaAna,
+      "location": translations?.santaAna,
       "status": "online",
-      "subtext": translations!.paintingService
+      "subtext": translations?.paintingService
     },
     {
-      "name": translations!.estherHoward,
+      "name": translations?.estherHoward,
       "rating": "4.0",
       "image": eImageAssets.es2,
-      "location": translations!.allentown,
+      "location": translations?.allentown,
       "status": "offline",
-      "subtext": translations!.paintingCleaning
+      "subtext": translations?.paintingCleaning
     },
     {
-      "name": translations!.guyHawkins,
+      "name": translations?.guyHawkins,
       "rating": "3.0",
       "image": eImageAssets.es3,
-      "location": translations!.mesaNew,
+      "location": translations?.mesaNew,
       "status": "online",
-      "subtext": translations!.salonService
+      "subtext": translations?.salonService
     },
   ];
 
   var latestBlogList = [
     {
-      "name": translations!.switchboard,
+      "name": translations?.switchboard,
       "image": eImageAssets.lb1,
-      "subtext": translations!.woodenPartition,
-      "date": translations!.feb25,
+      "subtext": translations?.woodenPartition,
+      "date": translations?.feb25,
       "message": "23",
-      "by": translations!.byAdmin
+      "by": translations?.byAdmin
     },
     {
-      "name": translations!.manTrimming,
+      "name": translations?.manTrimming,
       "image": eImageAssets.lb2,
-      "subtext": translations!.woodenPartition,
-      "date": translations!.feb25,
+      "subtext": translations?.woodenPartition,
+      "date": translations?.feb25,
       "message": "30",
-      "by": translations!.byAdmin
+      "by": translations?.byAdmin
     },
     {
-      "name": translations!.bringJoy,
+      "name": translations?.bringJoy,
       "image": eImageAssets.lb3,
-      "subtext": translations!.mar30,
-      "date": translations!.feb25,
+      "subtext": translations?.mar30,
+      "date": translations?.feb25,
       "message": "10",
-      "by": translations!.byAdmin
+      "by": translations?.byAdmin
     },
   ];
 
 /*
   var profileList = [
     {
-      "title": translations!.general,
+      "title": translations?.general,
       "data": [
         {
           "icon": eSvgAssets.like,
-          "title": translations!.favouriteList,
+          "title": translations?.favouriteList,
           "isArrow": true
         },
         {
           "icon": eSvgAssets.locationOut1,
-          "title": translations!.manageLocations,
+          "title": translations?.manageLocations,
           "isArrow": true
         },
         {
           "icon": eSvgAssets.coupon,
-          "title": translations!.myReviews,
+          "title": translations?.myReviews,
           "isArrow": true
         },
         {
           "icon": eSvgAssets.chat,
-          "title": translations!.chatHistory,
+          "title": translations?.chatHistory,
           "isArrow": true
         }
       ]
     },
     {
-      "title": translations!.aboutApp,
+      "title": translations?.aboutApp,
       "data": [
         {
           "icon": eSvgAssets.mobile,
-          "title": translations!.appDetails,
-          "description": translations!.aboutUs,
+          "title": translations?.appDetails,
+          "description": translations?.aboutUs,
           "isArrow": true
         },
 
- {"icon": eSvgAssets.rate, "title": translations!.rateUs, "isArrow": false},
+ {"icon": eSvgAssets.rate, "title": translations?.rateUs, "isArrow": false},
         {
           "icon": eSvgAssets.share,
-          "title": translations!.shareApp,
+          "title": translations?.shareApp,
           "isArrow": false
         },
       ]
     },
     {
-      "title": translations!.becomeProvider,
+      "title": translations?.becomeProvider,
     },
     {
-      "title": translations!.alertZone,
+      "title": translations?.alertZone,
       "data": [
         {
           "icon": eSvgAssets.delete,
-          "title": translations!.deleteAccount,
+          "title": translations?.deleteAccount,
           "isArrow": false
         },
         {
           "icon": eSvgAssets.logout,
-          "title": translations!.logOut,
+          "title": translations?.logOut,
           "isArrow": false
         }
       ]
@@ -421,15 +421,15 @@ class AppArray {
   //app setting
   List appSetting(isTheme) => [
         {
-          'title': isTheme ? translations!.lightTheme : translations!.darkTheme,
+          'title': isTheme ? translations?.lightTheme : translations?.darkTheme,
           'icon': eSvgAssets.dark
         },
-        {'title': translations!.changePassword, 'icon': eSvgAssets.lock}
+        {'title': translations?.changePassword, 'icon': eSvgAssets.lock}
       ];
 
   List appGuestSetting(isTheme) => [
         {
-          'title': isTheme ? translations!.lightTheme : translations!.darkTheme,
+          'title': isTheme ? translations?.lightTheme : translations?.darkTheme,
           'icon': eSvgAssets.dark
         },
       ];
@@ -437,7 +437,7 @@ class AppArray {
 //currency
   List<Map<String, dynamic>> get currencyList => [
         {
-          'title': translations!.usDollar,
+          'title': translations?.usDollar,
           'icon': eSvgAssets.usCurrency,
           "code": "USD",
           "symbol": "\$",
@@ -447,30 +447,30 @@ class AppArray {
           'EUR': 0.96,
         },
         {
-          'title': translations!.euro,
+          'title': translations?.euro,
           'icon': eSvgAssets.euroCurrency,
           "code": "EUR",
-          "symbol": '€',
+          "symbol": 'â‚¬',
           'USD': 1.05,
           'INR': 87.10,
           'POU': 0.87,
           'EUR': 1,
         },
         {
-          'title': translations!.inr,
+          'title': translations?.inr,
           'icon': eSvgAssets.inCurrency,
           "code": "INR",
-          "symbol": '₹',
+          "symbol": 'â‚¹',
           'USD': 0.012,
           'INR': 1,
           'POU': 0.010,
           'EUR': 0.011,
         },
         {
-          'title': translations!.pound,
+          'title': translations?.pound,
           'icon': eSvgAssets.ukCurrency,
           "code": "POU",
-          "symbol": "£",
+          "symbol": "Â£",
           'USD': 1.22,
           'INR': 101.74,
           'POU': 1,
@@ -488,7 +488,7 @@ class AppArray {
       "service": "Cleaning service",
       "rate": "4.0",
       "review":
-          "“I just love their service & the staff nature for work, I’d like to hire them again”",
+          "â€œI just love their service & the staff nature for work, Iâ€™d like to hire them againâ€",
       "time": "12 min ago",
     },
     {
@@ -505,7 +505,7 @@ class AppArray {
       "name": "Lorri Warf",
       "service": "Ac cleaning",
       "rate": "4.0",
-      "review": "“I love their work with ease, Thank you !”",
+      "review": "â€œI love their work with ease, Thank you !â€",
       "time": "28 days ago",
     },
   ];
@@ -513,27 +513,27 @@ class AppArray {
   List<Map<String, dynamic>> get editReviewList => [
         {
           "icon": eSvgAssets.bad,
-          "title": translations!.bad,
+          "title": translations?.bad,
           "gif": eGifAssets.bad
         },
         {
           "icon": eSvgAssets.okay,
-          "title": translations!.okay,
+          "title": translations?.okay,
           "gif": eGifAssets.okay
         },
         {
           "icon": eSvgAssets.good,
-          "title": translations!.good,
+          "title": translations?.good,
           "gif": eGifAssets.good
         },
         {
           "icon": eSvgAssets.amazing,
-          "title": translations!.amazing,
+          "title": translations?.amazing,
           "gif": eGifAssets.amazing
         },
         {
           "icon": eSvgAssets.excellent,
-          "title": translations!.excellent,
+          "title": translations?.excellent,
           "gif": eGifAssets.excellent
         },
       ];
@@ -549,37 +549,37 @@ class AppArray {
         {
           "icon": eSvgAssets.cleaning,
           "isCheck": false,
-          "title": translations!.cleaning,
+          "title": translations?.cleaning,
         },
         {
           "icon": eSvgAssets.ac,
           "isCheck": false,
-          "title": translations!.acRepair,
+          "title": translations?.acRepair,
         },
         {
           "icon": eSvgAssets.carpenter,
           "isCheck": false,
-          "title": translations!.carpenter,
+          "title": translations?.carpenter,
         },
         {
           "icon": eSvgAssets.cooking,
           "isCheck": false,
-          "title": translations!.cooking,
+          "title": translations?.cooking,
         },
         {
           "icon": eSvgAssets.electrician,
           "isCheck": false,
-          "title": translations!.electrician,
+          "title": translations?.electrician,
         },
         {
           "icon": eSvgAssets.painter,
           "isCheck": false,
-          "title": translations!.painter,
+          "title": translations?.painter,
         },
         {
           "icon": eSvgAssets.plumber,
           "isCheck": false,
-          "title": translations!.plumber,
+          "title": translations?.plumber,
         },
       ];
 
@@ -614,8 +614,8 @@ class AppArray {
       ];
 
   List<Map<String, dynamic>> get reviewLowHighList => [
-        {"id": 0, "title": translations!.lowestRate},
-        {"id": 1, "title": translations!.highestRate},
+        {"id": 0, "title": translations?.lowestRate},
+        {"id": 1, "title": translations?.highestRate},
       ];
 
   List<String> get languagesList => [
@@ -630,14 +630,14 @@ class AppArray {
       ];
 
   List<Map<String, dynamic>> get selectList => [
-        {"image": eSvgAssets.gallery, "title": translations!.chooseFromGallery},
-        {"image": eSvgAssets.camera, "title": translations!.openCamera}
+        {"image": eSvgAssets.gallery, "title": translations?.chooseFromGallery},
+        {"image": eSvgAssets.camera, "title": translations?.openCamera}
       ];
 
   List<Map<String, dynamic>> get selectRepaymentOrCancel => [
-        {"title": translations!.cancelBooking},
-        {"title": translations!.cashOnDelivery},
-        {"title": translations!.selectAnotherPayment}
+        {"title": translations?.cancelBooking},
+        {"title": translations?.cashOnDelivery},
+        {"title": translations?.selectAnotherPayment}
       ];
 
   List monthList = [
@@ -679,9 +679,9 @@ class AppArray {
   List<Map<String, dynamic>> get jobExperienceList => [
         {
           "id": 0,
-          "title": translations!.highestExperience,
+          "title": translations?.highestExperience,
         },
-        {"id": 1, "title": translations!.lowestExperience},
+        {"id": 1, "title": translations?.lowestExperience},
       ];
 
   List<String> get expertiseList => [
@@ -697,20 +697,20 @@ class AppArray {
       ];
 
   List<Map<String, dynamic>> get socialList => [
-        {"image": eSvgAssets.phone1, "title": translations!.call},
-        {"image": eSvgAssets.chat, "title": translations!.chat},
-        {"image": eSvgAssets.wp, "title": translations!.wp},
+        {"image": eSvgAssets.phone1, "title": translations?.call},
+        {"image": eSvgAssets.chat, "title": translations?.chat},
+        {"image": eSvgAssets.wp, "title": translations?.wp},
       ];
 
   List<Map<String, dynamic>> get remotelySocialList => [
-        {"image": eSvgAssets.phone1, "title": translations!.call},
-        {"image": eSvgAssets.wp, "title": translations!.wp},
+        {"image": eSvgAssets.phone1, "title": translations?.call},
+        {"image": eSvgAssets.wp, "title": translations?.wp},
       ];
 
   var optionList = [
-    translations!.audioCall,
-    translations!.videoCall,
-    /* translations!.clearChat */
+    translations?.audioCall,
+    translations?.videoCall,
+    /* translations?.clearChat */
   ];
 
   var packageBookingList = [
@@ -728,7 +728,7 @@ class AppArray {
           "title": "House hold cook",
           "price": "15.23",
           "bookingId": "#15263",
-          "status": translations!.accepted,
+          "status": translations?.accepted,
           "serviceman": "2"
         },
         {
@@ -736,7 +736,7 @@ class AppArray {
           "title": "Hair spa",
           "price": "10.15",
           "bookingId": "#15264",
-          "status": translations!.ongoing,
+          "status": translations?.ongoing,
           "serviceman": "0"
         },
       ]
@@ -746,7 +746,7 @@ class AppArray {
   List<String> get themeModeList => [
         translations?.lightTheme ?? "",
         translations?.darkTheme ?? "",
-        translations!.systemDefault ?? ''
+        translations?.systemDefault ?? ''
       ];
 
   var durationList = [
@@ -768,3 +768,4 @@ class AppArray {
 
   List<XFile> serviceImageList = [];
 }
+

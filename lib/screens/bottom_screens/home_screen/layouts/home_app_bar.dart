@@ -11,7 +11,7 @@ class HomeAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<HomeScreenProvider>(builder: (context1, value, child) {
-      // log("street :$street");
+      if (translations == null) return const SizedBox.shrink();
       return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         Row(children: [
           const HSpace(Sizes.s20),

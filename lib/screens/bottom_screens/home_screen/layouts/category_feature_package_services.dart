@@ -14,36 +14,32 @@ class CategoryFeaturePackageServices extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer6<DashboardProvider, HomeScreenProvider, CartProvider,
-            CommonApiProvider, CategoriesDetailsProvider, ChatHistoryProvider>(
-        builder: (context3, dash, value, cart, commonApi, categoryDetails,
-            chatHistory, child) {
+    return Consumer5<DashboardProvider, HomeScreenProvider, CartProvider,
+            CommonApiProvider, ChatHistoryProvider>(
+        builder: (context3, dash, value, cart, commonApi, chatHistory, child) {
+      final categoryDetails =
+          Provider.of<CategoriesDetailsProvider>(context, listen: false);
       return Column(children: [
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Column(
             children: [
-              if (commonApi.dashboardModel != null &&
-                  commonApi.dashboardModel!.categories!.isNotEmpty)
+              if (commonApi.dashboardModel?.categories?.isNotEmpty == true)
                 HeadingRowCommon(
                         title: translations!.topCategories,
                         isTextSize: true,
                         onTap: () => route.pushNamed(
                             context, routeName.categoriesListScreen))
                     .paddingSymmetric(horizontal: Insets.i20),
-              if (commonApi.dashboardModel != null &&
-                  commonApi.dashboardModel!.categories!.isNotEmpty)
+              if (commonApi.dashboardModel?.categories?.isNotEmpty == true)
                 const VSpace(Sizes.s15),
               if (commonApi.dashboardModel != null)
                 GridView.builder(
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     padding: const EdgeInsets.symmetric(horizontal: Sizes.s20),
-                    itemCount: commonApi.dashboardModel != null &&
-                            commonApi.dashboardModel!.categories?.length == 8
-                        ? commonApi.dashboardModel!.categories
-                            ?.getRange(0, 8)
-                            .length
-                        : commonApi.dashboardModel!.categories?.length,
+                    itemCount: (commonApi.dashboardModel!.categories?.length ?? 0) >= 8
+                        ? 8
+                        : (commonApi.dashboardModel!.categories?.length ?? 0),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 4,
@@ -56,37 +52,19 @@ class CategoryFeaturePackageServices extends StatelessWidget {
                         index: index,
                         selectedIndex: dash.topSelected,
                         data: homeCategoryList[index],
-                        onTap: () async {
-                          log("loader state ${categoryDetails.isNavigatingToCategory}");
-                          if (categoryDetails.isNavigatingToCategory) return;
-
-                          categoryDetails.setIsNavigatingToCategory(true);
-
-                          showLoading(context);
-
-                          try {
-                            categoryDetails.demoList = [];
-                            await categoryDetails.fetchBannerAdsData(context);
-
-                            await categoryDetails.getServiceByCategoryId(
-                              context,
-                              id: homeCategoryList[index].id,
-                            );
-
-                            hideLoading(context);
-
-                            await route.pushNamed(
-                              context,
-                              routeName.categoriesDetailsScreen,
-                              arg: homeCategoryList[index],
-                            );
-                          } catch (e, s) {
-                            hideLoading(context);
-                            log("Navigation error: $s");
-                          } finally {
-                            // 🔥 ALWAYS reset
-                            categoryDetails.setIsNavigatingToCategory(false);
-                          }
+                        onTap: () {
+                          // Pre-set provider state so the destination page
+                          // renders with the correct title and shimmer on
+                          // its first frame — no API calls before navigation.
+                          categoryDetails.categoryModel = homeCategoryList[index];
+                          categoryDetails.isServiceLoading = true;
+                          categoryDetails.demoList = [];
+                          categoryDetails.serviceDemo.clear();
+                          route.pushNamed(
+                            context,
+                            routeName.categoriesDetailsScreen,
+                            arg: homeCategoryList[index],
+                          );
                         },
                       );
                     }),

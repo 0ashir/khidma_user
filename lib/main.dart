@@ -244,6 +244,7 @@ class _RouteToPageState extends State<RouteToPage> {
                 );
 
                 return MaterialApp(
+                  key: ValueKey(lang.locale?.languageCode ?? 'en'),
                   title: 'Khidma User',
                   navigatorKey: navigatorKey,
                   debugShowCheckedModeBanner: false,

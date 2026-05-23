@@ -306,10 +306,11 @@ class _CartLayoutState extends State<CartLayout> {
               width: Sizes.s94,
               decoration: ShapeDecoration(
                   image: DecorationImage(
-                      image: NetworkImage(imageUrl),
-                      /* AssetImage(widget.data!.isPackage == true
-                          ? eImageAssets.package
-                          : eImageAssets.fsl1), */
+                      image: imageUrl.isNotEmpty
+                          ? NetworkImage(imageUrl) as ImageProvider
+                          : AssetImage(widget.data!.isPackage == true
+                              ? eImageAssets.package
+                              : eImageAssets.fsl1),
                       fit: BoxFit.cover),
                   shape: const SmoothRectangleBorder(
                       borderRadius: SmoothBorderRadius.all(
@@ -400,14 +401,10 @@ class _CartLayoutState extends State<CartLayout> {
                                             shape: BoxShape.circle,
                                             image: DecorationImage(
                                               image: j.value.media != null &&
-                                                      j.value.media!.isNotEmpty
-                                                  ? NetworkImage(j
-                                                          .value
-                                                          .media![0]
-                                                          .originalUrl ??
-                                                      '')
-                                                  : AssetImage(eImageAssets
-                                                      .noImageFound2),
+                                                      j.value.media!.isNotEmpty &&
+                                                      (j.value.media![0].originalUrl ?? '').isNotEmpty
+                                                  ? NetworkImage(j.value.media![0].originalUrl!) as ImageProvider
+                                                  : AssetImage(eImageAssets.noImageFound2),
                                               fit: BoxFit.cover,
                                             ),
                                           ),
@@ -485,10 +482,11 @@ class _CartLayoutState extends State<CartLayout> {
                                             decoration: BoxDecoration(
                                                 shape: BoxShape.circle,
                                                 image: DecorationImage(
-                                                    image: NetworkImage(j
-                                                        .value
-                                                        .media![0]
-                                                        .originalUrl!)))),
+                                                    image: j.value.media != null &&
+                                                            j.value.media!.isNotEmpty &&
+                                                            (j.value.media![0].originalUrl ?? '').isNotEmpty
+                                                        ? NetworkImage(j.value.media![0].originalUrl!) as ImageProvider
+                                                        : AssetImage(eImageAssets.noImageFound2)))),
                                         const HSpace(Sizes.s8),
                                         Column(
                                             crossAxisAlignment:

@@ -180,18 +180,18 @@ class SplashProvider extends ChangeNotifier {
 */
 
   loadDashboardApis(BuildContext context) async {
+    // Capture providers synchronously from the original context.
+    // For subsequent async steps, use navigatorKey.currentContext so we
+    // always have a live context even after the splash screen navigates away.
     final commonApi = Provider.of<CommonApiProvider>(context, listen: false);
     final loc = Provider.of<LocationProvider>(context, listen: false);
 
-    // Future.wait([
     await getAppSettingList(context);
-    // loc.getZoneId();
-    await commonApi.getDashboardHome(context);
-    await commonApi.getDashboardHome2(context);
-    // await loc.getCountryState();
-    await loc.getUserCurrentLocation(context);
-    // loc.getLocationList(context),
-    // ]);
+
+    final ctx = navigatorKey.currentContext ?? context;
+    await commonApi.getDashboardHome(ctx);
+    await commonApi.getDashboardHome2(ctx);
+    await loc.getUserCurrentLocation(ctx);
   }
 
   Future<void> clearSessionPrefs(context, SharedPreferences prefs) async {
@@ -342,6 +342,7 @@ class SplashProvider extends ChangeNotifier {
   bool isLoading = true;
 
   Future<void> getAppSettingList(BuildContext context) async {
+    // Capture synchronously — context may be stale after the first await.
     final currencyProvider =
         Provider.of<CurrencyProvider>(context, listen: false);
     try {
@@ -349,18 +350,22 @@ class SplashProvider extends ChangeNotifier {
       notifyListeners();
 
       final value = await apiServices.getApi(api.settings, [], isData: true);
+      // After the await above the splash context may be deactivated.
+      // Use navigatorKey.currentContext for any Provider/route access below.
+      final activeContext = navigatorKey.currentContext ?? context;
+
       if (value.isSuccess!) {
         appSettingModel = AppSettingModel.fromJson(value.data['values']);
         onboardingScreens = appSettingModel?.onboarding ?? [];
         log("appSettingModel!.general!.defaultLanguage:${appSettingModel!.general!.defaultLanguage!.locale}");
         onUpdate(currencyProvider, appSettingModel!.general!.defaultCurrency!);
-        onUpdateLanguage(context, appSettingModel!.general!.defaultLanguage!);
+        await onUpdateLanguage(activeContext, appSettingModel!.general!.defaultLanguage!);
 
-        if (appSettingModel!.maintenance?.maintenanceMode == '1' &&
-            context.mounted) {
+        if (appSettingModel!.maintenance?.maintenanceMode == '1') {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (context.mounted) {
-              route.pushReplacementNamed(context, routeName.maintenance);
+            final ctx = navigatorKey.currentContext;
+            if (ctx != null && ctx.mounted) {
+              route.pushReplacementNamed(ctx, routeName.maintenance);
             }
           });
         }
@@ -511,18 +516,23 @@ class SplashProvider extends ChangeNotifier {
   //   }
   // }
 
-  onUpdateLanguage(context, DefaultLanguage data) async {
+  Future<void> onUpdateLanguage(context, DefaultLanguage data) async {
+    // Capture provider synchronously before any async gap.
+    // After awaits the original context may be deactivated (splash navigated away).
+    final language = Provider.of<LanguageProvider>(
+        navigatorKey.currentContext ?? context,
+        listen: false);
+
     SharedPreferences pref = await SharedPreferences.getInstance();
-    log("message-=-=-=-=-=-=-=${data.locale}");
-    if (pref.getString("selectedLocale") == null) {
+    var selectedLocale = pref.getString("selectedLocale");
+
+    if (selectedLocale == null) {
       await pref.setString('selectedLocale', data.locale!);
-      final language = Provider.of<LanguageProvider>(context, listen: false);
-      language.getLanguageTranslate(context,
-          isSelectLanguage: false, languageCode: data.locale);
-      log("messagedatadatadata::${data.locale}");
-    } else {
-      log("messagedatadatadavdsfsdta::${data.locale}");
     }
+
+    final langCode = selectedLocale ?? data.locale ?? 'en';
+    final activeContext = navigatorKey.currentContext ?? context;
+    await language.getLanguageTranslate(activeContext, languageCode: langCode);
     notifyListeners();
   }
 

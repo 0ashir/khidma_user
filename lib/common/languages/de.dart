@@ -245,7 +245,7 @@ final dynamic de = {
   'country': "Land",
   'state': "Zustand",
   'city': "Stadt",
-  'zipCode': "PLZ",
+  'zipCode': "Gebäudenummer",
   'personName': "Personname",
   'phoneNumber': "Telefonnummer",
   'contactNo': "Kontaktnummer",

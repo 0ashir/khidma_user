@@ -168,29 +168,28 @@ class _OngoingBookingScreenState extends State<OngoingBookingScreen>
                           AnimatedBuilder(
                               animation: value.scrollController,
                               builder: (BuildContext context, Widget? child) {
+                                final needsPayment = isPaymentComplete(value.booking!);
                                 return AnimatedContainer(
                                     duration: const Duration(milliseconds: 400),
                                     height: value.scrollController.position
                                                 .userScrollDirection ==
                                             ScrollDirection.reverse
                                         ? 0
-                                        : 70,
+                                        : needsPayment ? 70 : 0,
                                     color: appColor(context).whiteBg,
                                     padding: const EdgeInsets.only(
                                         left: Insets.i20,
                                         right: Insets.i20,
                                         bottom: Insets.i20),
-                                    child: value.booking!.bookingStatus?.slug ==
-                                            /* appFonts.ontheway */ appFonts
-                                                .onthewayStatus
+                                    child: needsPayment
                                         ? Container(
                                             width: MediaQuery.of(context)
                                                 .size
                                                 .width,
                                             height: 50,
                                             decoration: ShapeDecoration(
-                                                color:
-                                                    appColor(context).primary,
+                                                color: appColor(context)
+                                                    .greenColor,
                                                 shape: SmoothRectangleBorder(
                                                     borderRadius:
                                                         SmoothBorderRadius(
@@ -198,150 +197,57 @@ class _OngoingBookingScreenState extends State<OngoingBookingScreen>
                                                                 AppRadius.r8,
                                                             cornerSmoothing:
                                                                 1))),
-                                            child:
-                                                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                                              value.isUpdateStatus
-                                                  ? const CircularProgressIndicator(
-                                                          color: Colors.white)
-                                                      .center()
-                                                      .padding(
-                                                          vertical: Sizes.s5)
-                                                  : Text(
-                                                      translations!
-                                                          .startService!,
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      style: appCss
-                                                          .dmDenseSemiBold16
-                                                          .textColor(
-                                                              appColor(context)
-                                                                  .whiteColor))
-                                            ])).inkWell(onTap: () => value.onStart(context))
-                                        /*  ButtonCommon(
-                                                    title: translations!
-                                                        .startService,
-                                                    onTap: () => value
-                                                        .onStart(context)) */
-                                        : value.isPayButton
-                                            ? Container(
-                                                width: MediaQuery.of(context)
-                                                    .size
-                                                    .width,
-                                                height: 50,
-                                                decoration: ShapeDecoration(
-                                                    color: appColor(context)
-                                                        .greenColor,
-                                                    shape: SmoothRectangleBorder(
-                                                        borderRadius:
-                                                            SmoothBorderRadius(
-                                                                cornerRadius:
-                                                                    AppRadius
-                                                                        .r8,
-                                                                cornerSmoothing:
-                                                                    1))),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    value.isBooking
-                                                        ? const CircularProgressIndicator(
-                                                                color: Colors
-                                                                    .white)
-                                                            .center()
-                                                            .padding(
-                                                                vertical:
-                                                                    Sizes.s5)
-                                                        : Text(
-                                                            // Check if advance payment is enabled and remaining payment is pending
-                                                            (value.booking?.advancePaymentEnable ==
-                                                                        true &&
-                                                                    (value.booking
-                                                                            ?.remainingPaymentStatus
-                                                                            ?.toLowerCase() !=
-                                                                        'completed'))
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                value.isBooking
+                                                    ? const CircularProgressIndicator(
+                                                            color: Colors.white)
+                                                        .center()
+                                                        .padding(
+                                                            vertical: Sizes.s5)
+                                                    : Text(
+                                                        (value.booking?.advancePaymentEnable ==
+                                                                    true &&
+                                                                (value.booking
+                                                                        ?.remainingPaymentStatus
+                                                                        ?.toLowerCase() !=
+                                                                    'completed'))
+                                                            ? (symbolPosition
+                                                                ? "${language(context, translations!.pay)} ${getSymbol(context)}${value.booking?.remainingPaymentAmount?.toStringAsFixed(2)}"
+                                                                : "${language(context, translations!.pay)} ${value.booking?.remainingPaymentAmount?.toStringAsFixed(2)}${getSymbol(context)}")
+                                                            : (value.booking
+                                                                        ?.paymentStatus !=
+                                                                    "COMPLETED"
                                                                 ? (symbolPosition
-                                                                    ? "${language(context, translations!.pay)} ${getSymbol(context)}${value.booking?.remainingPaymentAmount?.toStringAsFixed(2)}"
-                                                                    : "${language(context, translations!.pay)} ${value.booking?.remainingPaymentAmount?.toStringAsFixed(2)}${getSymbol(context)}")
-                                                                : (value.booking
-                                                                            ?.paymentStatus !=
-                                                                        "COMPLETED"
-                                                                    ? (symbolPosition
-                                                                        ? value.booking?.grandTotalWithExtras !=
-                                                                                0
-                                                                            ? "${language(context, translations!.pay)} ${getSymbol(context)}${value.booking?.grandTotalWithExtras?.toStringAsFixed(2)}"
-                                                                            : "${language(context, translations!.pay)} ${getSymbol(context)}${value.booking?.total?.toStringAsFixed(2)}"
-                                                                        : value.booking?.grandTotalWithExtras !=
-                                                                                0
-                                                                            ? "${language(context, translations!.pay)} ${value.booking?.grandTotalWithExtras?.toStringAsFixed(2)}${getSymbol(context)}"
-                                                                            : "${language(context, translations!.pay)} ${value.booking?.total?.toStringAsFixed(2)}${getSymbol(context)}")
-                                                                    : (symbolPosition
-                                                                        ? "${language(context, translations!.pay)} ${getSymbol(context)}${value.booking?.extraChargesTotal?.grandTotal == 0 ? value.booking?.total : value.booking?.extraChargesTotal?.grandTotal?.toStringAsFixed(2)}"
-                                                                        : "${language(context, translations!.pay)} ${value.booking?.extraChargesTotal?.grandTotal == 0 ? value.booking?.total : value.booking?.extraChargesTotal?.grandTotal?.toStringAsFixed(2)}${getSymbol(context)}")),
-                                                            textAlign: TextAlign
-                                                                .center,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                            style: appCss
-                                                                .dmDenseSemiBold16
-                                                                .textColor(appColor(
-                                                                        context)
+                                                                    ? value.booking?.grandTotalWithExtras !=
+                                                                            0
+                                                                        ? "${language(context, translations!.pay)} ${getSymbol(context)}${value.booking?.grandTotalWithExtras?.toStringAsFixed(2)}"
+                                                                        : "${language(context, translations!.pay)} ${getSymbol(context)}${value.booking?.total?.toStringAsFixed(2)}"
+                                                                    : value.booking?.grandTotalWithExtras !=
+                                                                            0
+                                                                        ? "${language(context, translations!.pay)} ${value.booking?.grandTotalWithExtras?.toStringAsFixed(2)}${getSymbol(context)}"
+                                                                        : "${language(context, translations!.pay)} ${value.booking?.total?.toStringAsFixed(2)}${getSymbol(context)}")
+                                                                : (symbolPosition
+                                                                    ? "${language(context, translations!.pay)} ${getSymbol(context)}${value.booking?.extraChargesTotal?.grandTotal == 0 ? value.booking?.total : value.booking?.extraChargesTotal?.grandTotal?.toStringAsFixed(2)}"
+                                                                    : "${language(context, translations!.pay)} ${value.booking?.extraChargesTotal?.grandTotal == 0 ? value.booking?.total : value.booking?.extraChargesTotal?.grandTotal?.toStringAsFixed(2)}${getSymbol(context)}")),
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        style: appCss
+                                                            .dmDenseSemiBold16
+                                                            .textColor(
+                                                                appColor(context)
                                                                     .whiteColor),
-                                                          )
-                                                  ],
-                                                ),
-                                              ).inkWell(onTap: () => value.paySuccess(context))
-                                            /* ButtonCommon(
-                                                    title: "${language(context, translations!.pay)} ${getSymbol(context)}${(currency(context).currencyVal * totalServicesChargesAndTotalBooking(value.booking!)).toStringAsFixed(2)}",
-                                                    onTap: () => value.paySuccess(
-                                                          context,
-                                                        ),
-                                                    style: appCss.dmDenseSemiBold16.textColor(appColor(context).whiteColor),
-                                                    color: appColor(context).greenColor,
-                                                    c) */
-                                            : value.booking?.service != null && value.booking!.service!.type == "remotely"
-                                                ? Expanded(child: ButtonCommon(title: translations!.completed!, onTap: () => value.completeConfirmation(context, this)))
-                                                : Row(children: [
-                                                    Expanded(
-                                                        child: ButtonCommon(
-                                                            title: value.booking!.bookingStatus?.slug == appFonts.onHold
-                                                                ? translations!
-                                                                    .restart!
-                                                                : translations!
-                                                                    .pause!,
-                                                            color: value
-                                                                        .booking!
-                                                                        .bookingStatus!
-                                                                        .name!
-                                                                        .toLowerCase() ==
-                                                                    appFonts
-                                                                        .onHold
-                                                                ? const Color(
-                                                                    0xFF27AF4D)
-                                                                : const Color(
-                                                                    0xFFFF4B4B),
-                                                            onTap: () => value
-                                                                        .booking!
-                                                                        .bookingStatus!
-                                                                        .slug ==
-                                                                    appFonts
-                                                                        .onHold
-                                                                ? value.onPauseConfirmation(
-                                                                    context,
-                                                                    isHold: false)
-                                                                : value.onPauseConfirmation(context))),
-                                                    const HSpace(Sizes.s15),
-                                                    Expanded(
-                                                        child: ButtonCommon(
-                                                            title: translations!
-                                                                .completed!,
-                                                            onTap: () => value
-                                                                .completeConfirmation(
-                                                                    context,
-                                                                    this)))
-                                                  ]));
+                                                      )
+                                              ],
+                                            ),
+                                          ).inkWell(
+                                            onTap: () =>
+                                                value.paySuccess(context))
+                                        : const SizedBox.shrink());
                               })
                         ]))));
     });
