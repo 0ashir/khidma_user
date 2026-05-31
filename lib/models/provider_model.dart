@@ -11,6 +11,7 @@ class ProviderModel {
   String? providerId;
   String? description;
   int? status;
+  int? isOnline;
   int? isFavourite;
   int? isFavouriteId;
   int? isVerified;
@@ -49,6 +50,7 @@ class ProviderModel {
     this.providerId,
     this.description,
     this.status,
+    this.isOnline,
     this.isFavourite,
     this.isFavouriteId,
     this.isVerified,
@@ -87,6 +89,7 @@ class ProviderModel {
     providerId = json['provider_id']?.toString();
     description = json['description'];
     status = json['status'];
+    isOnline = json['is_online'];
     fcmToken = json['fcm_token'];
     isFavourite = json['is_favourite'];
     isFavouriteId = json['is_favourite_id'];
@@ -195,6 +198,7 @@ class ProviderModel {
     data['provider_id'] = providerId;
     data['description'] = description;
     data['status'] = status;
+    data['is_online'] = isOnline;
     data['is_favourite'] = isFavourite;
     data['is_favourite_id'] = isFavouriteId;
     data['is_verified'] = isVerified;

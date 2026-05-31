@@ -26,6 +26,8 @@ dynamic ar = {
   "google": "جوجل",
   "phone": "هاتف",
   "continueAsGuest": "استمر كضيف",
+  "continueWithGoogle": "المتابعة مع جوجل",
+  "continueWithEmail": "المتابعة بالبريد الإلكتروني",
   "loginWithPhone": "تسجيل الدخول بالهاتف",
   "enterYourRegister": "أدخل رقم هاتف التسجيل الخاص بك",
   "phoneNo": "رقم الهاتف.",

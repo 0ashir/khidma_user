@@ -90,6 +90,7 @@ class DashboardProvider with ChangeNotifier {
     expanded = true;
     notifyListeners();
     await Future.delayed(const Duration(seconds: 2));
+    if (!context.mounted) return;
     expanded = false;
     if (selectIndex != 0) {
       final homeCtrl = Provider.of<HomeScreenProvider>(context, listen: false);
@@ -98,6 +99,7 @@ class DashboardProvider with ChangeNotifier {
     } else {
       if (selectIndex == 3) {
         SharedPreferences preferences = await SharedPreferences.getInstance();
+        if (!context.mounted) return;
         bool isGuest = preferences.getBool(session.isContinueAsGuest) ?? false;
         if (isGuest == false) {
           final homeCtrl =
@@ -117,6 +119,7 @@ class DashboardProvider with ChangeNotifier {
         }
       }
     }
+    if (!context.mounted) return;
     if (selectIndex != 1) {
       final booking = Provider.of<BookingProvider>(context, listen: false);
       if (booking.animationController != null) {

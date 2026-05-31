@@ -24,6 +24,8 @@ class Translation {
     this.google,
     this.phone,
     this.continueAsGuest,
+    this.continueWithGoogle,
+    this.continueWithEmail,
     this.loginWithPhone,
     this.enterYourRegister,
     this.enterYourRegisterPhone,
@@ -687,6 +689,8 @@ class Translation {
   String? google;
   String? phone;
   String? continueAsGuest;
+  String? continueWithGoogle;
+  String? continueWithEmail;
   String? loginWithPhone;
   String? enterYourRegister;
   String? enterYourRegisterPhone;
@@ -1354,9 +1358,11 @@ class Translation {
     google = json['google'] ?? "";
     phone = json['phone'] ?? "";
     continueAsGuest = json['continueAsGuest'] ?? "";
+    continueWithGoogle = json['continueWithGoogle'] ?? "Continue With Google";
+    continueWithEmail = json['continueWithEmail'] ?? "Continue With Email";
     loginWithPhone = json['loginWithPhone'] ?? "";
     enterYourRegister = json['enterYourRegister'] ?? "";
-    enterYourRegisterPhone = json['enterYourRegisterPhone'] ?? "";
+    enterYourRegisterPhone = "Enter Your Registered Phone Number";
     phoneNo = json['phoneNo'] ?? "";
     enterPhone = json['enterPhone'] ?? "";
     sendOtp = json['sendOtp'] ?? "";
@@ -2035,6 +2041,8 @@ class Translation {
     data['google'] = google;
     data['phone'] = phone;
     data['continueAsGuest'] = continueAsGuest;
+    data['continueWithGoogle'] = continueWithGoogle;
+    data['continueWithEmail'] = continueWithEmail;
     data['loginWithPhone'] = loginWithPhone;
     data['enterYourRegister'] = enterYourRegister;
     data['enterYourRegisterPhone'] = enterYourRegisterPhone;
@@ -2714,9 +2722,11 @@ class Translation {
         google: "Google",
         phone: "Phone",
         continueAsGuest: "Continue As Guest",
+        continueWithGoogle: "Continue With Google",
+        continueWithEmail: "Continue With Email",
         loginWithPhone: "LOGIN WITH PHONE",
         enterYourRegister: "Enter Your Register E-mail",
-        enterYourRegisterPhone: "Enter Your Register Phone Number",
+        enterYourRegisterPhone: "Enter Your Registered Phone Number",
         phoneNo: "Phone No.",
         enterPhone: "Enter Phone Po.",
         sendOtp: "Send OTP",

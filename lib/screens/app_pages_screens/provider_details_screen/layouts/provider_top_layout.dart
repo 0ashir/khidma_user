@@ -45,7 +45,20 @@ class ProviderTopLayout extends StatelessWidget {
                               style: appCss.dmDenseSemiBold14
                                   .textColor(appColor(context).darkText)),
                           const HSpace(Sizes.s6),
-                          SvgPicture.asset(eSvgAssets.tick)
+                          SvgPicture.asset(eSvgAssets.tick),
+                          if ((providerCtrl.provider?.isOnline ?? 1) == 0) ...[
+                            const HSpace(Sizes.s8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(
+                                  color: const Color(0xFFFF3B30),
+                                  borderRadius: BorderRadius.circular(20)),
+                              child: Text("Offline",
+                                  style: appCss.dmDenseMedium12
+                                      .textColor(Colors.white)),
+                            )
+                          ]
                         ]),
                     const VSpace(Sizes.s6),
                     IntrinsicHeight(

@@ -107,6 +107,19 @@ class _CartLayoutState extends State<CartLayout> {
                       : ""),
               style:
                   appCss.dmDenseMedium14.textColor(appColor(context).darkText)),
+          if (_isProviderOffline()) ...[
+            const HSpace(Sizes.s6),
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                  color: const Color(0xFFFF3B30),
+                  borderRadius: BorderRadius.circular(12)),
+              child: Text("Offline",
+                  style: appCss.dmDenseMedium10
+                      .textColor(Colors.white)),
+            )
+          ],
           VerticalDivider(
                   width: 1,
                   thickness: 1,
@@ -559,6 +572,14 @@ class _CartLayoutState extends State<CartLayout> {
     ])
         .boxBorderExtension(context, isShadow: true)
         .paddingOnly(bottom: Insets.i15);
+  }
+
+  bool _isProviderOffline() {
+    if (widget.data!.isPackage == true) {
+      return (widget.data?.servicePackageList?.user?.isOnline ?? 1) == 0;
+    }
+    final user = widget.data?.serviceList?.user;
+    return (user?.isOnline ?? 1) == 0;
   }
 
   Widget _buildScheduleInfoRow(

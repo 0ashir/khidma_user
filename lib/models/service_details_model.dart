@@ -357,6 +357,7 @@ class User {
     required this.experienceDuration,
     required this.served,
     required this.fcmToken,
+    this.isOnline,
   });
 
   final dynamic id;
@@ -367,6 +368,7 @@ class User {
   final dynamic experienceDuration;
   final dynamic served;
   final dynamic fcmToken;
+  final int? isOnline;
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
@@ -381,6 +383,7 @@ class User {
       experienceDuration: json["experience_duration"],
       served: json["served"],
       fcmToken: json["fcm_token"],
+      isOnline: json["is_online"],
     );
   }
 
@@ -393,6 +396,7 @@ class User {
         "experience_duration": experienceDuration,
         "served": served,
         "fcm_token": fcmToken,
+        "is_online": isOnline,
       };
 
   @override
@@ -1040,6 +1044,7 @@ class User {
     required this.experienceDuration,
     required this.served,
     required this.fcmToken,
+    this.isOnline,
   });
 
   final dynamic id;
@@ -1050,6 +1055,7 @@ class User {
   final dynamic experienceDuration;
   final dynamic served;
   final dynamic fcmToken;
+  final int? isOnline;
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
@@ -1064,6 +1070,7 @@ class User {
       experienceDuration: json["experience_duration"],
       served: json["served"],
       fcmToken: json["fcm_token"],
+      isOnline: json["is_online"],
     );
   }
 
@@ -1076,6 +1083,7 @@ class User {
         "experience_duration": experienceDuration,
         "served": served,
         "fcm_token": fcmToken,
+        "is_online": isOnline,
       };
 
   @override

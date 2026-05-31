@@ -27,9 +27,11 @@ dynamic en = {
   "google": "Google",
   "phone": "Phone",
   "continueAsGuest": "Continue As Guest",
+  "continueWithGoogle": "Continue With Google",
+  "continueWithEmail": "Continue With Email",
   "loginWithPhone": "LOGIN WITH PHONE",
   "enterYourRegister": "Enter Your Register E-mail",
-  "enterYourRegisterPhone": "Enter Your Register Phone Number",
+  "enterYourRegisterPhone": "Enter Your Registered Phone Number",
 
   "phoneNo": "Phone No.",
   "enterPhone": "Enter Phone Po.",

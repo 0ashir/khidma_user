@@ -392,7 +392,38 @@ class ServicesDetailsScreen extends StatelessWidget {
                                 }),
                               ).paddingOnly(bottom: Insets.i20).decorated(
                                   color: appColor(context).whiteBg)*/
-                                        if (serviceCtrl.service?.status == 1)
+                                        if (serviceCtrl.service?.status == 1 &&
+                                            (serviceCtrl.service?.user?.isOnline ?? 1) == 0)
+                                          Container(
+                                              margin: const EdgeInsets.symmetric(
+                                                  horizontal: 20,
+                                                  vertical: 8),
+                                              padding: const EdgeInsets.all(12),
+                                              decoration: BoxDecoration(
+                                                  color: const Color(0xFFFF3B30)
+                                                      .withOpacity(0.1),
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  border: Border.all(
+                                                      color: const Color(
+                                                          0xFFFF3B30),
+                                                      width: 1)),
+                                              child: Row(children: [
+                                                const Icon(
+                                                    Icons.info_outline,
+                                                    color: Color(0xFFFF3B30),
+                                                    size: 18),
+                                                const HSpace(Sizes.s8),
+                                                Expanded(
+                                                    child: Text(
+                                                        "This provider is currently offline and not accepting bookings.",
+                                                        style: appCss
+                                                            .dmDenseMedium13
+                                                            .textColor(const Color(
+                                                                0xFFFF3B30))))
+                                              ])),
+                                        if (serviceCtrl.service?.status == 1 &&
+                                            (serviceCtrl.service?.user?.isOnline ?? 1) != 0)
                                           ButtonCommon(
                                                   margin: Insets.i20,
                                                   title: translations!.addToCart!,
@@ -455,6 +486,7 @@ class ServicesDetailsScreen extends StatelessWidget {
                                                             fcmToken: user
                                                                 .fcmToken
                                                                 .toString(),
+                                                            isOnline: user.isOnline,
                                                             media: user.media
                                                                 .map((e) => Media(
                                                                     originalUrl:

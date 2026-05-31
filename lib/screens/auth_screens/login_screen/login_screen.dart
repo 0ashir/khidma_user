@@ -9,9 +9,21 @@ class LoginScreen extends StatelessWidget {
       return LoadingComponent(
         child: Scaffold(
             body: SafeArea(
-                child: Center(
-                    child: SingleChildScrollView(
-                        child: Column(children: [
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+          CommonArrow(
+            arrow: rtl(context)
+                ? eSvgAssets.arrowRight
+                : eSvgAssets.arrowLeft1,
+            onTap: () => route.pop(context),
+          ).paddingOnly(left: Insets.i10, top: Insets.i8),
+          Expanded(
+            child: Transform.translate(
+              offset: const Offset(0, -20),
+              child: Center(
+                  child: SingleChildScrollView(
+                    child: Column(children: [
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             appSettingModel?.general?.splashScreenLogo != null
                 ? Image.network(
@@ -40,42 +52,12 @@ class LoginScreen extends StatelessWidget {
                 const VSpace(Sizes.s15),
                 const LoginLayout(),
                 const VSpace(Sizes.s20),
-                if (appSettingModel != null &&
-                    appSettingModel!.activation!.socialLoginEnable == "1")
-                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    const ContinueWithContainer(),
-                    Text(language(context, translations!.orContinue),
-                            style: appCss.dmDenseMedium14
-                                .textColor(appColor(context).lightText))
-                        .paddingSymmetric(horizontal: Insets.i10),
-                    const ContinueWithContainer()
-                  ]),
-                if (appSettingModel != null &&
-                    appSettingModel!.activation!.socialLoginEnable == "1")
-                  const VSpace(Sizes.s20),
-                if (appSettingModel != null &&
-                    appSettingModel!.activation!.socialLoginEnable == "1")
-                  Row(children: [
-                    AuthButtonCommon(
-                        title: translations!.google,
-                        onTap: () => value.signInWithGoogle(context),
-                        logo: eImageAssets.google),
-                    const HSpace(Sizes.s25),
-                    AuthButtonCommon(
-                        title: translations!.phone,
-                        logo: eImageAssets.mobile,
-                        onTap: () =>
-                            route.pushNamed(context, routeName.loginWithPhone))
-                  ]),
-                if (appSettingModel != null &&
-                    appSettingModel!.activation!.socialLoginEnable == "1")
-                  const VSpace(Sizes.s25),
                 ContinueGuestLayout(
                   onTap: () => value.continueAsGuestTap(context),
                 )
               ]).alignment(Alignment.centerLeft))
-        ]).paddingSymmetric(horizontal: Insets.i20))))),
-      );
+        ]).paddingSymmetric(horizontal: Insets.i20)))))])),
+      ));
     });
   }
 }

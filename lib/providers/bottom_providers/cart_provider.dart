@@ -110,6 +110,16 @@ class CartProvider with ChangeNotifier {
     );
   }
 
+  bool get hasOfflineProviders {
+    return cartList.any((cart) {
+      if (cart.isPackage == true) {
+        return (cart.servicePackageList?.user?.isOnline ?? 1) == 0;
+      }
+      final user = cart.serviceList?.user;
+      return (user?.isOnline ?? 1) == 0;
+    });
+  }
+
   int totalRequiredServiceMan(List<Services> service) {
     int count = 0;
     service.asMap().entries.forEach((element) {

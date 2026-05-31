@@ -95,6 +95,38 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
+                                          if (value.hasOfflineProviders)
+                                            Container(
+                                              margin: const EdgeInsets.only(
+                                                  bottom: 12),
+                                              padding: const EdgeInsets.all(12),
+                                              decoration: BoxDecoration(
+                                                  color: const Color(0xFFFF3B30)
+                                                      .withOpacity(0.1),
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  border: Border.all(
+                                                      color: const Color(
+                                                          0xFFFF3B30),
+                                                      width: 1)),
+                                              child: Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    const Icon(
+                                                        Icons.warning_amber_rounded,
+                                                        color: Color(0xFFFF3B30),
+                                                        size: 18),
+                                                    const HSpace(Sizes.s8),
+                                                    Expanded(
+                                                        child: Text(
+                                                            "Some providers in your cart are currently offline. Please remove their services to proceed to checkout.",
+                                                            style: appCss
+                                                                .dmDenseMedium13
+                                                                .textColor(const Color(
+                                                                    0xFFFF3B30))))
+                                                  ]),
+                                            ),
                                           ...value.cartList.asMap().entries.map(
                                               (e) => CartLayout(
                                                   data: e.value,
@@ -269,6 +301,7 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
                                 amount: symbolPosition
                                     ? "${getSymbol(context)}${(currency(context).currencyVal * value.checkoutModel!.total!.total!).toStringAsFixed(2)}"
                                     : "${(currency(context).currencyVal * value.checkoutModel!.total!.total!).toStringAsFixed(2)}${getSymbol(context)}",
+                                hasOfflineProviders: value.hasOfflineProviders,
                                 onTap: () => value.onPaymentTap(
                                     context) /* route.pushNamed(
                                           context, routeName.paymentScreen,
