@@ -135,6 +135,7 @@ class Translation {
     this.appSetting,
     this.darkTheme,
     this.lightTheme,
+    this.changeTheme,
     this.changeCurrency,
     this.changeLanguage,
     this.usDollar,
@@ -321,6 +322,9 @@ class Translation {
     this.asPerProvider,
     this.selectDate,
     this.requiredServicemen,
+    this.carPlateNumber,
+    this.carPlateNumbers,
+    this.carPlateHint,
     this.customMessage,
     this.addAnyExtra,
     this.next,
@@ -800,6 +804,7 @@ class Translation {
   String? appSetting;
   String? darkTheme;
   String? lightTheme;
+  String? changeTheme;
   String? changeCurrency;
   String? changeLanguage;
   String? usDollar;
@@ -987,6 +992,9 @@ class Translation {
   String? asPerProvider;
   String? selectDate;
   String? requiredServicemen;
+  String? carPlateNumber;
+  String? carPlateNumbers;
+  String? carPlateHint;
   String? customMessage;
   String? addAnyExtra;
   String? next;
@@ -1470,6 +1478,7 @@ class Translation {
     appSetting = json['appSetting'] ?? "";
     darkTheme = json['darkTheme'] ?? "";
     lightTheme = json['lightTheme'] ?? "";
+    changeTheme = json['changeTheme'] ?? "Change Theme";
     changeCurrency = json['changeCurrency'] ?? "";
     changeLanguage = json['changeLanguage'] ?? "";
     usDollar = json['usDollar'] ?? "";
@@ -1656,6 +1665,9 @@ class Translation {
     asPerProvider = json['asPerProvider'] ?? "";
     selectDate = json['selectDate'] ?? "";
     requiredServicemen = json['requiredServicemen'] ?? "";
+    carPlateNumber = json['carPlateNumber'] ?? "";
+    carPlateNumbers = json['carPlateNumbers'] ?? "";
+    carPlateHint = json['carPlateHint'] ?? "";
     customMessage = json['customMessage'] ?? "";
     addAnyExtra = json['addAnyExtra'] ?? "";
     next = json['next'] ?? "";
@@ -2153,6 +2165,7 @@ class Translation {
     data['appSetting'] = appSetting;
     data['darkTheme'] = darkTheme;
     data['lightTheme'] = lightTheme;
+    data['changeTheme'] = changeTheme;
     data['changeCurrency'] = changeCurrency;
     data['changeLanguage'] = changeLanguage;
     data['usDollar'] = usDollar;
@@ -2339,6 +2352,9 @@ class Translation {
     data['asPerProvider'] = asPerProvider;
     data['selectDate'] = selectDate;
     data['requiredServicemen'] = requiredServicemen;
+    data['carPlateNumber'] = carPlateNumber;
+    data['carPlateNumbers'] = carPlateNumbers;
+    data['carPlateHint'] = carPlateHint;
     data['customMessage'] = customMessage;
     data['addAnyExtra'] = addAnyExtra;
     data['next'] = next;
@@ -2841,6 +2857,7 @@ class Translation {
         appSetting: "App Setting",
         darkTheme: "Dark Theme",
         lightTheme: "Light Theme",
+        changeTheme: "Change Theme",
         changeCurrency: "Change Currency",
         changeLanguage: "Change Language",
         usDollar: "US Dollar",
@@ -3036,7 +3053,10 @@ class Translation {
         asPerProvider: "As Per Provider Time Slot",
         selectDate: "Select Date & Time",
         requiredServicemen: "Required Servicemen",
-        customMessage: "Additional Instruction (Car Plate No)",
+        carPlateNumber: "Car Plate Number",
+        carPlateNumbers: "Car Plate Numbers",
+        carPlateHint: "Car {n} plate number",
+        customMessage: "Additional Instruction",
         addAnyExtra: "*Add Any Extras You Might Like to This Service.",
         next: "Next",
         billDetails: "Bill Details",

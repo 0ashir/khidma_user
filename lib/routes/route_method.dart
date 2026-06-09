@@ -24,7 +24,6 @@ class AppRoute {
     routeName.registerUser: (p0) => const RegisterScreen(),
     routeName.dashboard: (p0) => const Dashboard(),
     routeName.changePass: (p0) => const ChangePasswordScreen(),
-    routeName.appSetting: (p0) => const AppSettingScreen(),
     routeName.changeLanguage: (p0) => const ChangeLanguageScreen(),
     routeName.profileDetail: (p0) => const ProfileDetailScreen(),
     routeName.walletBalance: (p0) => const WalletBalanceScreen(),

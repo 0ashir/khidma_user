@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -125,6 +126,15 @@ class ProfileProvider with ChangeNotifier {
       }
     } else if (data['title'] == translations!.changeLanguage) {
       route.pushNamed(context, routeName.changeLanguage);
+    } else if (data['title'] == translations!.changeTheme) {
+      Provider.of<AppSettingProvider>(context, listen: false)
+          .showLayout(context);
+    } else if (data['title'] == translations!.changePassword) {
+      if (isGuest) {
+        route.pushAndRemoveUntil(context);
+      } else {
+        route.pushNamed(context, routeName.changePass);
+      }
     } else if (data['title'] == translations!.logOut) {
       logoutConfirmation(context);
     } else if (data['title'] == translations!.shareApp) {
@@ -253,8 +263,12 @@ class ProfileProvider with ChangeNotifier {
   void shareApp(BuildContext context) {
     final box = context.findRenderObject() as RenderBox?;
 
+    final storeLink = Platform.isIOS
+        ? 'https://apps.apple.com/us/app/khidma-plus-home-services/id6755617892'
+        : 'https://play.google.com/store/apps/details?id=com.services.khadamat';
+
     Share.share(
-      'Download the Fixit User App for get better services at home.\n\nhttps://play.google.com/store/apps/details?id=com.Fixit',
+      'Download the Khidma Plus app for better services at home.\n\n$storeLink',
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
     );
   }
@@ -394,11 +408,6 @@ class ProfileProvider with ChangeNotifier {
     });
   }
 
-  onTapSettingTap(context) {
-    route
-        .pushNamed(context, routeName.appSetting)
-        .then((val) => notifyListeners());
-  }
 
   //delete account
   deleteAccount(context) async {

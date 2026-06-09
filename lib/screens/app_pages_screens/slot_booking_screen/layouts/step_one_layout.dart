@@ -5,6 +5,7 @@ import 'package:fixit_user/utils/custom_time_picker.dart';
 import 'package:intl/intl.dart';
 import '../../../../config.dart';
 import '../../services_details_screen/layouts/add_on_service_card.dart';
+import 'car_plate_layout.dart';
 import 'weekday_selection.dart';
 import 'custom_date_selection.dart';
 
@@ -554,6 +555,7 @@ class _StepOneLayoutState extends State<StepOneLayout>
                               ),
                     const VSpace(Sizes.s15),
                     const ServicemanQuantityLayout(),
+                    const CarPlateLayout(),
                     CustomMessageLayout(
                         onTap: () {
                           Timer(const Duration(milliseconds: 500), () {

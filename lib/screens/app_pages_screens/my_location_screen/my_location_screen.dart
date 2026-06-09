@@ -118,10 +118,9 @@ class _MyLocationScreenState extends State<MyLocationScreen>
                                   if (locationCtrl.addressList.isNotEmpty)
                                     ...locationCtrl.addressList.asMap().entries.map((e) => LocationLayout(
                                             data: e.value,
-                                            selectedIndex: e.value.isPrimary == 1
-                                                ? true
-                                                : locationCtrl.selectedIndex ==
-                                                    e.key,
+                                            selectedIndex: locationCtrl.selectedIndex != null
+                                                ? locationCtrl.selectedIndex == e.key
+                                                : e.value.isPrimary == 1,
                                             deleteOnTap: () =>
                                                 locationCtrl.deleteAccountConfirmation(
                                                     context, this, e.value.id),

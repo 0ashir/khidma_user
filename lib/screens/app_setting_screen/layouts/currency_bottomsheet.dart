@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import '../../../config.dart';
+import 'bullet_layout.dart';
 
 class CurrencyBottomSheet extends StatelessWidget {
   final String? currencys;
@@ -42,7 +43,7 @@ class CurrencyBottomSheet extends StatelessWidget {
                     child: ListView.builder(
                         itemCount: dash.currencyList.length,
                         itemBuilder: (context1, index) {
-                          return BulletLayout(
+                         return BulletLayout(
                                   currency: currencys,
                                   data: dash.currencyList[index],
                                   index: index,

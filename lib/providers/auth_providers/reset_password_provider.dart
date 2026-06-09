@@ -86,7 +86,7 @@ class ResetPasswordProvider extends ChangeNotifier {
                                     ChangeNotifierProvider(
                                         create: (_) => VerifyOtpProvider()),
                                   ],
-                                  child: const LoginScreen(),
+                                  child: const LoginWithPhoneScreen(),
                                   builder: (context, child) {
                                     return child!;
                                   })));

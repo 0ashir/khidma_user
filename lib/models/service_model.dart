@@ -55,6 +55,8 @@ class Services {
   List<DateTime>? scheduledDatesJson;
   int? scheduledServicesCount;
   List<String>? selectedWeekdays;
+  // Car plate numbers — one per required serviceman (max 4), only for car categories
+  List<String>? carPlateNumbers;
 
   Services({
     this.id,
@@ -105,6 +107,7 @@ class Services {
     this.scheduledDatesJson,
     this.scheduledServicesCount,
     this.selectedWeekdays,
+    this.carPlateNumbers,
   });
 
   Services.fromJson(Map<String, dynamic> json) {

@@ -28,19 +28,33 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  if (Platform.isAndroid) {
-    log("app android ");
-    await Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
+  // Create the notification channel once at startup so every path (foreground,
+  // background, killed) always finds a channel that already has the correct
+  // custom sound.  Android ignores createNotificationChannel if the channel
+  // already exists with the same ID, so this is safe to call on every launch.
+  if (Platform.isAndroid) {
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    await flutterLocalNotificationsPlugin!.initialize(
+      const InitializationSettings(
+        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+        iOS: DarwinInitializationSettings(),
+      ),
     );
-  } else {
-    log("app IOS");
-   await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform
-    );
+    await flutterLocalNotificationsPlugin!
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(const AndroidNotificationChannel(
+          'high_importance_channel',
+          'High Importance Notifications',
+          description: 'This channel is used for important notifications.',
+          importance: Importance.high,
+          playSound: true,
+          sound: RawResourceAndroidNotificationSound('notification_sound'),
+        ));
   }
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
   await initializeAppSettings();
   await GoogleTranslationService.loadCache();
 
@@ -291,19 +305,41 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   );
 
   final title = message.data['title'] ?? '';
-  final AndroidNotificationChannel channel = AndroidNotificationChannel(
+  final bool isCall =
+      title == 'Incoming Audio Call...' || title == 'Incoming Video Call...';
+
+  final AndroidNotificationChannel bgChannel = AndroidNotificationChannel(
     'high_importance_channel',
-    'High Importance Notifications for Astrologically',
+    'High Importance Notifications',
     description: 'This channel is used for important notifications.',
     importance: Importance.high,
     playSound: true,
-    sound:
-        (title == 'Incoming Audio Call...' || title == 'Incoming Video Call...')
+    sound: isCall
         ? const RawResourceAndroidNotificationSound('callsound')
-        : null,
+        : const RawResourceAndroidNotificationSound('notification_sound'),
   );
 
-  showNotification(message, channel);
+  flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+  await flutterLocalNotificationsPlugin!
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(bgChannel);
+
+  await flutterLocalNotificationsPlugin!.initialize(
+    const InitializationSettings(
+      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+      iOS: DarwinInitializationSettings(),
+    ),
+  );
+
+  // Only show a local notification for data-only messages (no notification
+  // field).  For notification messages the FCM SDK already displayed the
+  // notification using the channel we just created/updated above, so showing
+  // again here would produce a duplicate with a second sound.
+  if (message.notification == null) {
+    showNotification(message, bgChannel);
+  }
 }
 
 Future<void> showNotification(
@@ -313,6 +349,9 @@ Future<void> showNotification(
   final String title = remote.notification?.title ?? '';
   final String body = remote.notification?.body ?? '';
 
+  final bool isCall = remote.data['title'] == 'Incoming Audio Call...' ||
+      remote.data['title'] == 'Incoming Video Call...';
+
   AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
     channel.id,
     channel.name,
@@ -320,18 +359,18 @@ Future<void> showNotification(
     importance: Importance.max,
     priority: Priority.high,
     playSound: true,
-    icon: "ic_notification",
-    sound:
-        (remote.data['title'] == 'Incoming Audio Call...' ||
-            remote.data['title'] == 'Incoming Video Call...')
+    icon: '@mipmap/ic_launcher',
+    sound: isCall
         ? const RawResourceAndroidNotificationSound('callsound')
-        : null,
+        : const RawResourceAndroidNotificationSound('notification_sound'),
     fullScreenIntent: true,
     visibility: NotificationVisibility.public,
   );
 
-  DarwinNotificationDetails iOSDetails = const DarwinNotificationDetails(
-    sound: 'callsound.wav',
+  DarwinNotificationDetails iOSDetails = DarwinNotificationDetails(
+    sound: isCall ? 'callsound.wav' : 'notification_sound.aiff',
+    presentAlert: true,
+    presentBadge: true,
     presentSound: true,
   );
 
@@ -341,7 +380,7 @@ Future<void> showNotification(
   );
 
   await flutterLocalNotificationsPlugin?.show(
-    0,
+    remote.hashCode,
     title,
     body,
     notificationDetails,

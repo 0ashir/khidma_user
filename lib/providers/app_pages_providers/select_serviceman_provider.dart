@@ -80,7 +80,7 @@ class SelectServicemanProvider with ChangeNotifier {
 // route.pop(context);
     Services selectServicesCart = Services(
       id: service.id,
-// categories: service.categories,
+      categories: service.categories,
       title: service.title,
 // description: service.description,
       // discount: service.discount,

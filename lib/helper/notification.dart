@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:fixit_user/firebase_options.dart';
 import 'package:fixit_user/main.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -79,17 +80,12 @@ Future<void> createBookingNotification(NotificationType type) async {
 bool isFlutterLocalNotificationsInitialized = false;
 
 //when app in background
+@pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   debugPrint('Handling a background message ${message.messageId}');
-  debugPrint("message.datass : ${message.data}");
   await Firebase.initializeApp(
-      options: const FirebaseOptions(
-          apiKey: "AIzaSyBLT6o5-8VqNKJNlkTaIRq2RVeN5xE5zGA",
-          projectId: "fixit-db226",
-          messagingSenderId: "186901032010",
-          appId: "1:186901032010:android:b5c732cd46b148cb740ab3"));
-  flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  showFlutterNotification(message);
+      options: DefaultFirebaseOptions.currentPlatform);
+  await showFlutterNotification(message);
 }
 
 Future<void> setupFlutterNotifications() async {
@@ -100,26 +96,41 @@ Future<void> setupFlutterNotifications() async {
   isFlutterLocalNotificationsInitialized = true;
 }
 
-void showFlutterNotification(RemoteMessage message) async {
-  channel = const AndroidNotificationChannel(
+// ---------------------------------------------------------------------------
+// Custom notification sound
+// Android : place file at  android/app/src/main/res/raw/notification_sound.mp3
+// iOS     : add file to   ios/Runner/notification_sound.aiff  (via Xcode)
+// ---------------------------------------------------------------------------
+const String _kAndroidSoundName = 'notification_sound';
+const String _kIosSoundName     = 'notification_sound.aiff';
+
+Future<void> showFlutterNotification(RemoteMessage message) async {
+  // Ensure channel and plugin are ready in case this is called from the
+  // background isolate where main() did not run.
+  if (flutterLocalNotificationsPlugin == null) {
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    await flutterLocalNotificationsPlugin!.initialize(
+      const InitializationSettings(
+        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+        iOS: DarwinInitializationSettings(),
+      ),
+    );
+  }
+
+  const AndroidNotificationChannel bgChannel = AndroidNotificationChannel(
     'high_importance_channel',
     'High Importance Notifications',
     description: 'This channel is used for important notifications.',
     importance: Importance.high,
+    playSound: true,
+    sound: RawResourceAndroidNotificationSound(_kAndroidSoundName),
   );
-
-  flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  channel = bgChannel;
 
   await flutterLocalNotificationsPlugin!
       .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel!);
-
-  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-    alert: true,
-    badge: true,
-    sound: true,
-  );
+      ?.createNotificationChannel(bgChannel);
 
   RemoteNotification? notification = message.notification;
 
@@ -132,40 +143,43 @@ void showFlutterNotification(RemoteMessage message) async {
   final notifTitle = translated[0];
   final notifBody = translated[1];
 
-  if (message.data["image"] != null || message.data["image"] != "") {
-    final http.Response response =
-        await http.get(Uri.parse(message.data["image"]));
-    BigPictureStyleInformation bigPictureStyleInformation =
-        BigPictureStyleInformation(
-      ByteArrayAndroidBitmap.fromBase64String(base64Encode(response.bodyBytes)),
-      largeIcon: ByteArrayAndroidBitmap.fromBase64String(
-          base64Encode(response.bodyBytes)),
-    );
-    flutterLocalNotificationsPlugin!.show(
-      notification.hashCode,
-      notifTitle,
-      notifBody,
-      NotificationDetails(
-        android: AndroidNotificationDetails(channel!.id, channel!.name,
-            channelDescription: channel!.description,
-            styleInformation: bigPictureStyleInformation,
-            icon: '@mipmap/ic_launcher',
-            showProgress: true),
-      ),
-    );
-  } else {
-    flutterLocalNotificationsPlugin!.show(
-      notification.hashCode,
-      notifTitle,
-      notifBody,
-      NotificationDetails(
-        android: AndroidNotificationDetails(channel!.id, channel!.name,
-            channelDescription: channel!.description,
-            icon: '@mipmap/ic_launcher',
-            showProgress: true),
-      ),
-    );
+  BigPictureStyleInformation? bigPicture;
+  final imageUrl = message.data["image"] as String?;
+  if (imageUrl != null && imageUrl.isNotEmpty) {
+    try {
+      final http.Response response = await http.get(Uri.parse(imageUrl));
+      final bytes = base64Encode(response.bodyBytes);
+      bigPicture = BigPictureStyleInformation(
+        ByteArrayAndroidBitmap.fromBase64String(bytes),
+        largeIcon: ByteArrayAndroidBitmap.fromBase64String(bytes),
+      );
+    } catch (_) {}
   }
+
+  await flutterLocalNotificationsPlugin!.show(
+    message.hashCode,
+    notifTitle,
+    notifBody,
+    NotificationDetails(
+      android: AndroidNotificationDetails(
+        bgChannel.id,
+        bgChannel.name,
+        channelDescription: bgChannel.description,
+        styleInformation: bigPicture,
+        icon: '@mipmap/ic_launcher',
+        playSound: true,
+        importance: Importance.max,
+        priority: Priority.high,
+        sound: const RawResourceAndroidNotificationSound(_kAndroidSoundName),
+      ),
+      iOS: const DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+        sound: _kIosSoundName,
+      ),
+    ),
+  );
 }
 
 /// Create a [AndroidNotificationChannel] for heads up notifications
@@ -191,8 +205,10 @@ class CustomNotificationController {
           log('Notification Listener REGISTRATION ERROR : $e');
         });
 
-        FirebaseMessaging.onBackgroundMessage(
-            _firebaseMessagingBackgroundHandler);
+        // Background handler is already registered in main() before runApp().
+        // Do NOT register it again here — a second registration overrides the
+        // first and the notification.dart handler uses hardcoded Android-only
+        // Firebase options, which crashes on iOS.
 
         await FirebaseMessaging.instance
             .setForegroundNotificationPresentationOptions(
@@ -209,19 +225,31 @@ class CustomNotificationController {
   // }
 
   Future<void> registerNotificationListeners() async {
+    // Ensure the foreground channel exists with the correct sound before the
+    // first message arrives.  createNotificationChannel is a no-op on Android
+    // if the channel already exists with the same ID.
+    const AndroidNotificationChannel foregroundChannel =
+        AndroidNotificationChannel(
+      'high_importance_channel',
+      'High Importance Notifications',
+      description: 'This channel is used for important notifications.',
+      importance: Importance.high,
+      playSound: true,
+      sound: RawResourceAndroidNotificationSound(_kAndroidSoundName),
+    );
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(foregroundChannel);
+
     FirebaseMessaging.instance.setAutoInitEnabled(true).then((value) {
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        final title = message.notification?.title ?? '';
+        final body = message.notification?.body ?? '';
         if (message.notification != null &&
-            message.notification!.title!.isNotEmpty &&
-            message.notification!.body!.isNotEmpty) {
-          const AndroidNotificationChannel channel = AndroidNotificationChannel(
-            'high_importance_channel',
-            'High Importance Notifications for Astrologically',
-            description: 'This channel is used for important notifications.',
-            importance: Importance.high,
-            playSound: true,
-          );
-          showNotification(message, channel);
+            title.isNotEmpty &&
+            body.isNotEmpty) {
+          showNotification(message, foregroundChannel);
         }
       }, onError: (e) {
         log("setAutoInitEnabled error $e");
@@ -251,97 +279,54 @@ class CustomNotificationController {
   Future<void> initNotification(context) async {
     log('initCall');
 
-    //when app in background
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    // Do NOT re-register the background handler here — main() already registers
+    // the correct one with platform-aware Firebase options and call-sound logic.
+    // Do NOT overwrite flutterLocalNotificationsPlugin — main() already
+    // initialised it with the channel and correct sound before runApp().
+    if (!isFlutterLocalNotificationsInitialized) {
+      isFlutterLocalNotificationsInitialized = true;
+      if (!kIsWeb && Platform.isAndroid) {
+        channel = const AndroidNotificationChannel(
+            'high_importance_channel',
+            'High Importance Notifications',
+            importance: Importance.high,
+            showBadge: true,
+            playSound: true,
+            sound: RawResourceAndroidNotificationSound(_kAndroidSoundName));
 
-    if (!kIsWeb && Platform.isAndroid) {
-      channel = const AndroidNotificationChannel(
-          'high_importance_channel',
-          'High Importance Notifications',
-          importance: Importance.high,
-          showBadge: true);
+        await flutterLocalNotificationsPlugin!
+            .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin>()
+            ?.createNotificationChannel(channel!);
+      }
 
-      await flutterLocalNotificationsPlugin
-          .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
-          ?.createNotificationChannel(channel!);
+      await flutterLocalNotificationsPlugin!.initialize(
+        const InitializationSettings(
+          android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+          iOS: DarwinInitializationSettings(),
+        ),
+      );
     }
 
-    //when app is [closed | killed | terminated]
+    // Cold-start: app was killed and user tapped the notification to open it.
     FirebaseMessaging.instance
         .getInitialMessage()
         .then((RemoteMessage? message) {
       if (message != null) {
-        flutterLocalNotificationsPlugin.cancelAll();
+        flutterLocalNotificationsPlugin?.cancelAll();
         debugPrint("CHECK NOTI");
         showFlutterNotification(message, true, context);
       }
     });
-    const DarwinInitializationSettings initializationSettingsDarwin =
-        DarwinInitializationSettings();
 
-    var initialzationSettingsAndroid =
-        const AndroidInitializationSettings('@mipmap/ic_launcher');
-    var initializationSettings = InitializationSettings(
-      android: initialzationSettingsAndroid,
-      iOS: initializationSettingsDarwin,
-    );
+    // Foreground listener is already registered in registerNotificationListeners().
+    // Registering it again here would produce duplicate notifications, so we skip it.
 
-    flutterLocalNotificationsPlugin.initialize(initializationSettings);
-
-    //when app in foreground
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      RemoteNotification notification = message.notification!;
-
-      log("Njdfh :$notification");
-      log("Njdfh :${message.data["image"]}");
-
-      if (!kIsWeb) {
-        final NotificationDetails details;
-        if (Platform.isAndroid) {
-          details = NotificationDetails(
-            android: AndroidNotificationDetails(
-              channel!.id, channel!.name,
-              channelDescription: channel!.description,
-              icon: '@mipmap/ic_launcher',
-              showProgress: true,
-              channelShowBadge: true,
-              fullScreenIntent: true,
-            ),
-          );
-        } else {
-          details = const NotificationDetails(
-            iOS: DarwinNotificationDetails(
-              presentAlert: true,
-              presentBadge: true,
-              presentSound: true,
-            ),
-          );
-        }
-        flutterLocalNotificationsPlugin.show(
-          notification.hashCode,
-          notification.title,
-          notification.body,
-          details,
-        );
-      }
-      // ignore: unnecessary_null_comparison
-      log("notification1 : ${message.data}");
-      flutterLocalNotificationsPlugin.cancelAll();
-
-      showFlutterNotification(message, false, context);
-    });
-
-    //when app in background
+    // Background-to-foreground: user tapped a notification while app was backgrounded.
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
-      log('A new onMessageOpenedApp event was published!');
-      log("onMessageOpenedApp: $message");
-      flutterLocalNotificationsPlugin.cancelAll();
-      AndroidNotification? android = message.notification?.android;
-      if (android != null) {
-        showFlutterNotification(message, true, context);
-      }
+      log('onMessageOpenedApp: $message');
+      // Works on both Android and iOS — no android-specific guard needed.
+      showFlutterNotification(message, true, context);
     });
 
     requestPermissions();
@@ -384,6 +369,8 @@ class CustomNotificationController {
               .pushNamedAndRemoveUntil(routeName.chatHistory, (route) => false);
         });
       }
+      // Navigation done — do not re-post the notification when the user tapped it.
+      return;
     }
 
     // Translate notification content for the user's preferred language
@@ -395,12 +382,9 @@ class CustomNotificationController {
     final notifTitle = translated[0];
     final notifBody = translated[1];
 
-    log("fullScreenIntent: true,");
-    flutterLocalNotificationsPlugin.show(
-      notification.hashCode,
-      notifTitle,
-      notifBody,
-      NotificationDetails(
+    final NotificationDetails details;
+    if (Platform.isAndroid && channel != null) {
+      details = NotificationDetails(
         android: AndroidNotificationDetails(
           channel!.id,
           channel!.name,
@@ -411,8 +395,31 @@ class CustomNotificationController {
           importance: Importance.max,
           priority: Priority.high,
           visibility: NotificationVisibility.public,
+          sound: const RawResourceAndroidNotificationSound(_kAndroidSoundName),
         ),
-      ),
+        iOS: const DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+          sound: _kIosSoundName,
+        ),
+      );
+    } else {
+      details = const NotificationDetails(
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+          sound: _kIosSoundName,
+        ),
+      );
+    }
+
+    flutterLocalNotificationsPlugin.show(
+      message.hashCode,
+      notifTitle,
+      notifBody,
+      details,
     );
   }
 
@@ -519,20 +526,12 @@ class CustomNotificationController {
               playSound: true,
               importance: Importance.max,
               priority: Priority.high,
-              sound: (message.data['title'] != 'Incoming Audio Call...' ||
-                      message.data['title'] != 'Incoming Video Call...')
-                  ? null
-                  : const RawResourceAndroidNotificationSound('callsound'),
-              // TODO add a proper drawable resource to android, for now using
-              //      one that already exists in example app.
+              sound: const RawResourceAndroidNotificationSound(_kAndroidSoundName),
             ),
           ),
         );
       }
-      // ignore: unnecessary_null_comparison
       debugPrint("notification1 : ${message.data}");
-      flutterLocalNotificationsPlugin.cancelAll();
-
       showFlutterNotification(message, false, context);
     });
 

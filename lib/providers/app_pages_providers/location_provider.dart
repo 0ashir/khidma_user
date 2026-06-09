@@ -1,5 +1,7 @@
 import 'dart:developer';
 import 'package:fixit_user/config.dart';
+import 'package:fixit_user/utils/toast_utils.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:fixit_user/models/current_zone_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -50,6 +52,11 @@ class LocationProvider with ChangeNotifier {
       if (e != null) {
         log("GET :$e");
         position = e;
+        // Keep newLat/newLog set to the searched coords so that a
+        // background getUserCurrentLocation completing later does not
+        // override the camera and marker with the GPS position.
+        newLat = (e as LatLng).latitude;
+        newLog = e.longitude;
         notifyListeners();
         getAddressFromLatLng(context);
       }
@@ -160,16 +167,24 @@ class LocationProvider with ChangeNotifier {
       markers = {};
       final Uint8List markerIcon =
           await getBytesFromAsset(eImageAssets.pin, 50);
-      currentAddress = '${place!.name}';
-      street = '${place!.street}';
-      // log("currentAddresscurrentAddress:$currentAddress");
 
-      if (place!.name == place!.street) {
-        street = '${place!.name}, ${place!.subLocality}, ${place!.postalCode}';
-      } else {
-        street =
-            '${place!.name}, ${place!.street}, ${place!.subLocality}, ${place!.postalCode}';
-      }
+      // place.name returns plus codes (e.g. "7QVJ+MH") on Android — use
+      // thoroughfare (street name) + subThoroughfare (house number) instead.
+      final String streetName = place!.thoroughfare ?? place!.street ?? place!.name ?? '';
+      final String streetNumber = place!.subThoroughfare ?? '';
+      final String mainAddress = streetNumber.isNotEmpty
+          ? '$streetNumber $streetName'
+          : streetName;
+      currentAddress = mainAddress.isNotEmpty
+          ? mainAddress
+          : (place!.subLocality ?? place!.locality ?? place!.name ?? '');
+
+      final List<String> streetParts = [
+        if (place!.subLocality?.isNotEmpty == true) place!.subLocality!,
+        if (place!.locality?.isNotEmpty == true) place!.locality!,
+        if (place!.postalCode?.isNotEmpty == true) place!.postalCode!,
+      ];
+      street = streetParts.isNotEmpty ? streetParts.join(', ') : (place!.street ?? '');
       markers.add(Marker(
         draggable: true,
         onDrag: (value) {
@@ -196,7 +211,7 @@ class LocationProvider with ChangeNotifier {
       ));
       if (mapController != null) {
         mapController!.animateCamera(CameraUpdate.newLatLng(
-            LatLng(position!.latitude, position!.longitude)));
+            LatLng(newLat ?? position!.latitude, newLog ?? position!.longitude)));
       }
       notifyListeners();
       log("NEW : ${position!.latitude}/ ${position!.longitude}");
@@ -304,35 +319,48 @@ class LocationProvider with ChangeNotifier {
       Position position = await Geolocator.getCurrentPosition(
           locationSettings:
               const LocationSettings(accuracy: LocationAccuracy.high));
-      log("position getZoneId:$position");
-      log("zone by point =====> ${isLocation == true ? "${api.zoneByPoint}?lat=${lat ?? position.latitude}&lng=${lan ?? position.longitude}" : "${api.zoneByPoint}?lat=${position.latitude}&lng=${position.longitude}"}");
+
+      final double usedLat = isLocation ? double.tryParse(lat ?? '') ?? position.latitude : position.latitude;
+      final double usedLng = isLocation ? double.tryParse(lan ?? '') ?? position.longitude : position.longitude;
+      log("[Zone] ── getZoneId called | isLocation=$isLocation");
+      log("[Zone] ── GPS position   : lat=${position.latitude}, lng=${position.longitude}");
+      log("[Zone] ── Using lat/lng  : lat=$usedLat, lng=$usedLng");
+      log("[Zone] ── API URL        : ${api.zoneByPoint}?lat=$usedLat&lng=$usedLng");
+
       await apiServices.getApi(
-          isLocation == true
-              ? "${api.zoneByPoint}?lat=${lat ?? position.latitude}&lng=${lan ?? position.longitude}"
-              : "${api.zoneByPoint}?lat=${position.latitude}&lng=${position.longitude}",
+          "${api.zoneByPoint}?lat=$usedLat&lng=$usedLng",
           []).then((value) async {
-        log("CALUE zone api response:${value.data}");
+        log("[Zone] ── API success=${value.isSuccess} | raw response: ${value.data}");
         if (value.isSuccess!) {
           List o = value.data;
           String idsString = o.map((obj) => obj['id'].toString()).join(',');
-          currentZoneModel.clear(); // Clear previous data
+          currentZoneModel.clear();
           for (var data in value.data) {
             currentZoneModel.add(Datum1.fromJson(data));
           }
           zoneIds = idsString;
-          log("string :$idsString");
+          if (idsString.isNotEmpty) {
+            log("[Zone] ✅ Zone match found | zone_ids=$idsString | zones=${o.map((z) => '${z['id']}:${z['name'] ?? z['id']}').join(', ')}");
+          } else {
+            log("[Zone] ❌ No zone matched for lat=$usedLat, lng=$usedLng — service not available in this area");
+            final liveCtx = navigatorKey.currentContext ?? context;
+            showSuccessToast(liveCtx, "Service not available in your area");
+          }
           SharedPreferences pref = await SharedPreferences.getInstance();
           pref.setString(session.zoneIds, idsString);
-          pref.setString(session.zoneIds, idsString);
-          final loc = Provider.of<SplashProvider>(context, listen: false);
-          loc.loadDashboardApis(context);
-          //log("message=-=-=-=-=-=-=-===-=====-=-- IsZone UPDATE DONE ${value.data}");
+          // Use navigatorKey.currentContext because the original context may be
+          // stale if the caller navigated away before getZoneId finished.
+          final liveCtx = navigatorKey.currentContext ?? context;
+          final loc = Provider.of<SplashProvider>(liveCtx, listen: false);
+          loc.loadDashboardApis(liveCtx);
         }
         notifyListeners();
       });
     } catch (e) {
-      // log("EEEE getZoneId :: $e====> $s");
-      // Consider providing a default zone ID or other fallback here
+      log("[Zone] ⚠️ getZoneId exception | error: $e");
+      final liveCtx = navigatorKey.currentContext ?? context;
+      final loc = Provider.of<SplashProvider>(liveCtx, listen: false);
+      loc.loadDashboardApis(liveCtx);
       notifyListeners();
     }
   }
@@ -657,6 +685,8 @@ class LocationProvider with ChangeNotifier {
       getAddressFromLatLng(context);
     } else {
       log("ISSSS");
+      newLat = null;
+      newLog = null;
       getUserCurrentLocation(context);
       isEdit = false;
     }

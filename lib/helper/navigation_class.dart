@@ -58,7 +58,7 @@ class NavigationClass {
       MaterialPageRoute(
         builder: (BuildContext context) => MultiProvider(providers: [
           ChangeNotifierProvider(create: (_) => HomeScreenProvider()),
-        ], child: const LoginScreen()),
+        ], child: const LoginWithPhoneScreen()),
       ),
 
       // this function should return true when we're done removing routes

@@ -195,7 +195,7 @@ class CategoryDetailScreen extends StatelessWidget {
                                     .paddingOnly(
                                         top: Insets.i10, bottom: Insets.i25)
                                 : const SizedBox.shrink(),
-                        value.isServiceLoading
+                        value.isLoader
                             ? const ServicesShimmer(count: 2)
                                 .padding(horizontal: Insets.i20)
                             : value.categoryProviders.isEmpty

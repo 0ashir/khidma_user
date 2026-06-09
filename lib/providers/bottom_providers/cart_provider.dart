@@ -234,6 +234,8 @@ class CartProvider with ChangeNotifier {
                 "description":
                     element.value.serviceList?.selectedServiceNote ?? "",
                 "additional_services": additionalServiceList,
+                if (element.value.serviceList?.carPlateNumbers?.isNotEmpty == true)
+                  "car_plate_numbers": element.value.serviceList!.carPlateNumbers,
                 if ((element.value.serviceList?.type == 'scheduled' ||
                         element.value.serviceList?.type == 'schedule') &&
                     element.value.serviceList?.isScheduledBooking == 1) ...{

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "additionalDirectories": [
+      "c:\\FlutterWork\\fixit_backend\\app\\Http\\Controllers\\Backend",
+      "c:\\FlutterWork\\fixit_backend\\app\\Http\\Controllers\\API"
+    ]
+  }
+}

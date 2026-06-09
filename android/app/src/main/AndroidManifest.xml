@@ -27,6 +27,10 @@
     <!-- <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/> -->
     <application android:label="Khidma Plus" android:name="${applicationName}" android:requestLegacyExternalStorage="true" android:icon="@mipmap/ic_launcher">
         <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyDNbeNlSQb8NyHK-z-JlVQWicssGnzyJms"/>
+        <!-- FCM: default channel for background/killed-state notifications -->
+        <meta-data android:name="com.google.firebase.messaging.default_notification_channel_id" android:value="high_importance_channel"/>
+        <!-- FCM: default notification sound (file: res/raw/notification_sound.mp3) -->
+        <meta-data android:name="com.google.firebase.messaging.default_notification_sound" android:resource="@raw/notification_sound"/>
 
         <activity android:name=".MainActivity" android:exported="true" android:launchMode="singleTop" android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode" android:hardwareAccelerated="true" android:enableOnBackInvokedCallback="true" android:windowSoftInputMode="adjustResize">
             <!-- Specifies an Android theme to apply to this Activity as soon as
@@ -34,7 +38,6 @@
                  while the Flutter UI initializes. After that, this theme continues
                  to determine the Window background behind the Flutter UI. -->
             <meta-data android:name="io.flutter.embedding.android.NormalTheme" android:resource="@style/NormalTheme"/>
-            <meta-data android:name="com.google.firebase.messaging.default_notification_channel_id" android:value="high_importance_channel"/>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

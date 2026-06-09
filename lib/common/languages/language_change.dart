@@ -197,14 +197,26 @@ class LanguageProvider with ChangeNotifier {
       case 'ar':
         translations!.requiredServicemen = 'كم العدد المطلوب';
         translations!.zipCode = 'رقم المبنى';
+        translations!.perServiceCharge = 'رسوم الخدمة';
+        if (translations!.carPlateNumber?.isEmpty ?? true) translations!.carPlateNumber = 'رقم لوحة السيارة';
+        if (translations!.carPlateNumbers?.isEmpty ?? true) translations!.carPlateNumbers = 'أرقام لوحات السيارات';
+        if (translations!.carPlateHint?.isEmpty ?? true) translations!.carPlateHint = 'لوحة السيارة رقم {n}';
         break;
       case 'de':
         translations!.requiredServicemen = 'Benötigte Menge';
         translations!.zipCode = 'Gebäudenummer';
+        translations!.perServiceCharge = 'Servicegebühr';
+        if (translations!.carPlateNumber?.isEmpty ?? true) translations!.carPlateNumber = 'Kfz-Kennzeichen';
+        if (translations!.carPlateNumbers?.isEmpty ?? true) translations!.carPlateNumbers = 'Kfz-Kennzeichen';
+        if (translations!.carPlateHint?.isEmpty ?? true) translations!.carPlateHint = 'Auto {n} Kennzeichen';
         break;
       default:
         translations!.requiredServicemen = 'Quantity Needed';
         translations!.zipCode = 'Building Number';
+        translations!.perServiceCharge = 'Per Service Charge';
+        if (translations!.carPlateNumber?.isEmpty ?? true) translations!.carPlateNumber = 'Car Plate Number';
+        if (translations!.carPlateNumbers?.isEmpty ?? true) translations!.carPlateNumbers = 'Car Plate Numbers';
+        if (translations!.carPlateHint?.isEmpty ?? true) translations!.carPlateHint = 'Car {n} plate number';
     }
   }
 }

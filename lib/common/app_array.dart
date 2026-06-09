@@ -105,6 +105,16 @@ class AppArray {
               "title": translations?.changeLanguage,
               "isArrow": true
             },
+            {
+              "icon": eSvgAssets.dark,
+              "title": translations?.changeTheme,
+              "isArrow": true
+            },
+            {
+              "icon": eSvgAssets.lock,
+              "title": translations?.changePassword,
+              "isArrow": true
+            },
           ]
         },
         {

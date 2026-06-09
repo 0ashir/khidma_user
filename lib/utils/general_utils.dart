@@ -453,5 +453,6 @@ RateMyApp rateMyApp = RateMyApp(
   minLaunches: 10,
   remindDays: 7,
   remindLaunches: 10,
-  googlePlayIdentifier: 'com.webiots.fixituserapi',
+  googlePlayIdentifier: 'com.services.khadamat',
+  appStoreIdentifier: '6755617892',
 );

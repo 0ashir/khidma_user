@@ -10,6 +10,8 @@ class CategoryModel {
   String? metaDescription;
   int? commission;
   int? status;
+  // 1 = car-related category, 0 = regular category
+  int? isCar;
   String? isFeatured;
   String? categoryType;
   int? createdBy;
@@ -17,7 +19,6 @@ class CategoryModel {
   String? updatedAt;
   String? deletedAt;
   List<Media>? media;
-  // Pivot? pivot;
 
   List<CategoryModel>? hasSubCategories;
 
@@ -31,6 +32,7 @@ class CategoryModel {
       this.metaDescription,
       this.commission,
       this.status,
+      this.isCar,
       this.isFeatured,
       this.categoryType,
       this.createdBy,
@@ -38,7 +40,6 @@ class CategoryModel {
       this.updatedAt,
       this.deletedAt,
       this.media,
-      // this.pivot,
       this.hasSubCategories});
 
   CategoryModel.fromJson(Map<String, dynamic> json) {
@@ -51,6 +52,9 @@ class CategoryModel {
     metaDescription = json['meta_description'];
     commission = json['commission'];
     status = json['status'];
+    isCar = json['is_car'] is bool
+        ? (json['is_car'] ? 1 : 0)
+        : int.tryParse(json['is_car']?.toString() ?? '0') ?? 0;
     isFeatured = json['is_featured']?.toString();
     categoryType = json['category_type'];
     createdBy = json['created_by'];
@@ -63,13 +67,6 @@ class CategoryModel {
         media!.add(Media.fromJson(v));
       }
     }
-    /*  if (json['media'] != null) {
-      media = <Media>[];
-      json['media'].forEach((v) {
-        media!.add(Media.fromJson(v));
-      });
-    } */
-    // pivot = json['pivot'] != null ? Pivot.fromJson(json['pivot']) : null;
     if (json['has_sub_categories'] != null) {
       hasSubCategories = <CategoryModel>[];
       json['has_sub_categories'].forEach((v) {
@@ -89,6 +86,7 @@ class CategoryModel {
     data['meta_description'] = metaDescription;
     data['commission'] = commission;
     data['status'] = status;
+    data['is_car'] = isCar;
     data['is_featured'] = isFeatured;
     data['category_type'] = categoryType;
     data['created_by'] = createdBy;
@@ -98,9 +96,6 @@ class CategoryModel {
     if (media != null) {
       data['media'] = media!.map((v) => v.toJson()).toList();
     }
-    // if (pivot != null) {
-    //   data['pivot'] = pivot!.toJson();
-    // }
     if (hasSubCategories != null) {
       data['has_sub_categories'] =
           hasSubCategories!.map((v) => v.toJson()).toList();
@@ -138,6 +133,7 @@ class HasSubCategories {
   String? metaDescription;
   String? commission;
   String? status;
+  int? isCar;
   String? isFeatured;
   String? categoryType;
   String? createdBy;
@@ -156,6 +152,7 @@ class HasSubCategories {
       this.metaDescription,
       this.commission,
       this.status,
+      this.isCar,
       this.isFeatured,
       this.categoryType,
       this.createdBy,
@@ -174,6 +171,9 @@ class HasSubCategories {
     metaDescription = json['meta_description'];
     commission = json['commission']?.toString();
     status = json['status']?.toString();
+    isCar = json['is_car'] is bool
+        ? (json['is_car'] ? 1 : 0)
+        : int.tryParse(json['is_car']?.toString() ?? '0') ?? 0;
     isFeatured = json['is_featured']?.toString();
     categoryType = json['category_type'];
     createdBy = json['created_by']?.toString();
@@ -199,6 +199,7 @@ class HasSubCategories {
     data['meta_description'] = metaDescription;
     data['commission'] = commission;
     data['status'] = status;
+    data['is_car'] = isCar;
     data['is_featured'] = isFeatured;
     data['category_type'] = categoryType;
     data['created_by'] = createdBy;

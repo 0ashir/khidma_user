@@ -240,7 +240,15 @@ class CommonApiProvider extends ChangeNotifier {
       final String effectiveZoneIds = (savedZoneIds != null && savedZoneIds.isNotEmpty)
           ? savedZoneIds
           : zoneIds;
-      final String dashboardUrl = '${api.dashboardHome}?zone_ids=${effectiveZoneIds.isNotEmpty ? effectiveZoneIds : '2'}';
+      if (effectiveZoneIds.isEmpty) {
+        isLoadingDashboard = false;
+        homeCategoryList = [];
+        homeServicePackagesList = [];
+        homeFeaturedService = [];
+        notifyListeners();
+        return;
+      }
+      final String dashboardUrl = '${api.dashboardHome}?zone_ids=$effectiveZoneIds';
       log('[Zone] getDashboardHome → effectiveZoneIds="$effectiveZoneIds" | url=$dashboardUrl');
       final response = await dioo.get(
         dashboardUrl,
@@ -313,7 +321,13 @@ class CommonApiProvider extends ChangeNotifier {
       final String effectiveZoneIds2 = (savedZoneIds2 != null && savedZoneIds2.isNotEmpty)
           ? savedZoneIds2
           : zoneIds;
-      final String dashboardUrl2 = '${api.dashboardHome1}?zone_ids=${effectiveZoneIds2.isNotEmpty ? effectiveZoneIds2 : '2'}';
+      if (effectiveZoneIds2.isEmpty) {
+        isLoadingDashboard = false;
+        homeProvider = [];
+        notifyListeners();
+        return;
+      }
+      final String dashboardUrl2 = '${api.dashboardHome1}?zone_ids=$effectiveZoneIds2';
       log('[Zone] getDashboardHome2 → effectiveZoneIds="$effectiveZoneIds2" | url=$dashboardUrl2');
       final response = await dioo.get(
         dashboardUrl2,

@@ -10,7 +10,7 @@ class CustomMessageLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(rtl(context) ? "ملاحظات اضافيه ( رقم لوحه السياره)" : "Additional Instruction (Car Plate No)",
+      Text(rtl(context) ? "ملاحظات اضافيه" : "Additional Instruction",
           style: appCss.dmDenseMedium14.textColor(appColor(context).darkText)),
       const VSpace(Sizes.s10),
       TextFieldCommon(

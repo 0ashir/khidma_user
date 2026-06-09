@@ -45,8 +45,7 @@ class ServicemanQuantityLayout extends StatelessWidget {
                                   ? 8
                                   : 0)),
                       Text(
-                        "${(value.servicesCart?.selectedRequiredServiceMan != null &&  value.servicesCart?.requiredServicemen != null &&
-                            value.servicesCart!.selectedRequiredServiceMan! > value.servicesCart!.requiredServicemen!) ? value.servicesCart!.selectedRequiredServiceMan : value.servicesCart!.requiredServicemen ?? 1}",
+                        "${value.servicesCart?.selectedRequiredServiceMan ?? value.servicesCart?.requiredServicemen ?? 1}",
                         style: appCss.dmDenseMedium14
                             .textColor(appColor(context).darkText),
                       ),

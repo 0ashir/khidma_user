@@ -211,45 +211,181 @@ class StatusDetailLayout extends StatelessWidget {
                 if (data!.bookingStatus?.slug != translations!.cancel &&
                     data!.bookingStatus?.slug != translations!.cancelled)
                   const VSpace(Sizes.s17),
-                // Address
+                // Address block
                 if (data!.bookingStatus?.slug != translations!.cancel &&
                     data!.bookingStatus?.slug != translations!.cancelled)
-                  IntrinsicHeight(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SvgPicture.asset(
-                          eSvgAssets.locationOut1,
-                          height: Sizes.s20,
-                          width: Sizes.s20,
-                          colorFilter: ColorFilter.mode(
-                            appColor(context).darkText,
-                            BlendMode.srcIn,
-                          ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Name + Phone row
+                      if ((data!.address?.alternativeName != null &&
+                              data!.address!.alternativeName!.isNotEmpty) ||
+                          data!.address?.alternativePhone != null)
+                        Row(
+                          children: [
+                            if (data!.address?.alternativeName != null &&
+                                data!.address!.alternativeName!.isNotEmpty)
+                              Expanded(
+                                child: _AddressInfoTile(
+                                  icon: Icons.person_outline,
+                                  label: "Name",
+                                  value: data!.address!.alternativeName!,
+                                  context: context,
+                                ),
+                              ),
+                            if (data!.address?.alternativeName != null &&
+                                data!.address!.alternativeName!.isNotEmpty &&
+                                data!.address?.alternativePhone != null)
+                              Container(
+                                      width: 1,
+                                      height: Sizes.s40,
+                                      color: appColor(context).stroke)
+                                  .paddingSymmetric(horizontal: Insets.i8),
+                            if (data!.address?.alternativePhone != null)
+                              Expanded(
+                                child: _AddressInfoTile(
+                                  icon: Icons.phone_outlined,
+                                  label: "Phone No",
+                                  value: "${data!.address?.code ?? ''}${data!.address!.alternativePhone}",
+                                  context: context,
+                                ),
+                              ),
+                          ],
+                        ).padding(horizontal: Insets.i10, bottom: Insets.i12),
+                      // Building No
+                      if (data!.address?.postalCode != null &&
+                          data!.address!.postalCode!.isNotEmpty)
+                        _AddressInfoTile(
+                          icon: Icons.home_outlined,
+                          label: "Building No",
+                          value: data!.address!.postalCode!,
+                          context: context,
+                        ).padding(horizontal: Insets.i10, bottom: Insets.i12),
+                      // Full address
+                      IntrinsicHeight(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SvgPicture.asset(
+                              eSvgAssets.locationOut1,
+                              height: Sizes.s20,
+                              width: Sizes.s20,
+                              colorFilter: ColorFilter.mode(
+                                appColor(context).darkText,
+                                BlendMode.srcIn,
+                              ),
+                            ),
+                            VerticalDivider(
+                              thickness: 1,
+                              indent: 2,
+                              endIndent: 20,
+                              width: 1,
+                              color: appColor(context).stroke,
+                            ).paddingSymmetric(horizontal: Insets.i9),
+                            Expanded(
+                              child: Text(
+                                data!.address != null
+                                    ? "${data!.address!.area != null ? "${data!.address!.area}, " : ""}${data!.address!.address ?? ''},${data!.address!.country?.name != null ? " ${data!.address!.country?.name}," : ""}${data!.address!.state?.name != null ? " ${data!.address!.state?.name}," : ""} ${data!.address!.postalCode ?? ''}"
+                                    : 'No address available',
+                                overflow: TextOverflow.fade,
+                                style: appCss.dmDenseRegular14
+                                    .textColor(appColor(context).darkText),
+                              ),
+                            ),
+                          ],
                         ),
-                        VerticalDivider(
-                          thickness: 1,
-                          indent: 2,
-                          endIndent: 20,
-                          width: 1,
-                          color: appColor(context).stroke,
-                        ).paddingSymmetric(horizontal: Insets.i9),
-                        Expanded(
-                          child: Text(
-                            data!.address != null
-                                ? "${data!.address!.area != null ? "${data!.address!.area}, " : ""}${data!.address!.address},${data!.address!.country?.name != null ? " ${data!.address!.country?.name}," : ""}${data!.address!.state?.name != null ? " ${data!.address!.state?.name}," : ""} ${data!.address!.postalCode ?? ''}"
-                                : 'No address available',
-                            overflow: TextOverflow.fade,
-                            style: appCss.dmDenseRegular14
-                                .textColor(appColor(context).darkText),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ).padding(horizontal: Insets.i10, bottom: Insets.i15),
+                      ).paddingSymmetric(horizontal: Insets.i10),
+                      const VSpace(Sizes.s10),
+                      const DottedLines(),
+                      // Google Maps link
+                      if (data!.address?.latitude != null &&
+                          data!.address?.longitude != null)
+                        Row(
+                          children: [
+                            Icon(Icons.map_outlined,
+                                size: Sizes.s18,
+                                color: appColor(context).primary),
+                            const HSpace(Sizes.s6),
+                            Text("Google Maps",
+                                style: appCss.dmDenseMedium13
+                                    .textColor(appColor(context).primary)),
+                            const Spacer(),
+                            Text("View Location",
+                                style: appCss.dmDenseMedium12
+                                    .textColor(appColor(context).primary)),
+                            const HSpace(Sizes.s4),
+                            SvgPicture.asset(
+                              eSvgAssets.anchorArrowRight,
+                              colorFilter: ColorFilter.mode(
+                                appColor(context).primary,
+                                BlendMode.srcIn,
+                              ),
+                            ),
+                          ],
+                        )
+                            .inkWell(
+                              onTap: () => launchMap(context,
+                                  "${data!.address!.latitude},${data!.address!.longitude}"),
+                            )
+                            .padding(
+                                horizontal: Insets.i15,
+                                top: Insets.i10,
+                                bottom: Insets.i15),
+                    ],
+                  ).paddingOnly(bottom: Insets.i10),
               ],
             ).boxBorderExtension(context),
+            // Car Plate Numbers
+            if (data!.carPlateNumbers != null &&
+                data!.carPlateNumbers!.isNotEmpty) ...[
+              const VSpace(Sizes.s15),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.directions_car,
+                          size: Sizes.s28,
+                          color: appColor(context).primary),
+                      const HSpace(Sizes.s10),
+                      Expanded(
+                        child: Text(
+                          data!.service?.categories?.isNotEmpty == true
+                              ? data!.service!.categories!.first.title ?? ''
+                              : '',
+                          style: appCss.dmDenseMedium14
+                              .textColor(appColor(context).darkText),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const VSpace(Sizes.s8),
+                  Text("Services",
+                      style: appCss.dmDenseRegular12
+                          .textColor(appColor(context).lightText)),
+                  Text(data!.service?.title ?? '',
+                      style: appCss.dmDenseMedium13
+                          .textColor(appColor(context).darkText)),
+                  const VSpace(Sizes.s12),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: data!.carPlateNumbers!
+                          .map((plate) => Padding(
+                                padding:
+                                    const EdgeInsets.only(right: Insets.i10),
+                                child: _PlateBadge(plateNumber: plate),
+                              ))
+                          .toList(),
+                    ),
+                  ),
+                ],
+              )
+                  .paddingAll(Insets.i15)
+                  .boxBorderExtension(context,
+                      isShadow: true, color: appColor(context).whiteBg),
+            ],
             // Booking Status
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -278,7 +414,7 @@ class StatusDetailLayout extends StatelessWidget {
                 : Container(),
 
             // Provider Details
-            SizedBox(
+            if (data!.bookingStatus?.slug?.toLowerCase() != "completed") SizedBox(
               child: Column(
                 children: [
                   Row(
@@ -422,9 +558,12 @@ class StatusDetailLayout extends StatelessWidget {
                 .boxShapeExtension(color: appColor(context).fieldCardBg),
 
             // Serviceman Details
-            if (data!.servicemen != null && data!.servicemen!.isNotEmpty)
+            if (data!.bookingStatus?.slug?.toLowerCase() != "completed" &&
+                data!.servicemen != null &&
+                data!.servicemen!.isNotEmpty)
               const VSpace(Sizes.s15),
-            if (data!.bookingStatus?.slug != translations!.cancel &&
+            if (data!.bookingStatus?.slug?.toLowerCase() != "completed" &&
+                data!.bookingStatus?.slug != translations!.cancel &&
                 data!.bookingStatus?.slug != translations!.cancelled)
               if (data!.servicemen != null && data!.servicemen!.isNotEmpty)
                 ...data!.servicemen!.asMap().entries.map((s) {
@@ -724,6 +863,110 @@ class StatusDetailLayout extends StatelessWidget {
             ),
       );
     });
+  }
+}
+
+class _PlateBadge extends StatelessWidget {
+  final String plateNumber;
+  const _PlateBadge({required this.plateNumber});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AppRadius.r4),
+      ),
+      child: IntrinsicHeight(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: Insets.i6, vertical: Insets.i5),
+              decoration: BoxDecoration(
+                color: appColor(context).primary,
+                border: Border(
+                    right: BorderSide(color: appColor(context).primary, width: 1.5)),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(AppRadius.r4),
+                  bottomLeft: Radius.circular(AppRadius.r4),
+                ),
+              ),
+              child: const Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("U.A.E",
+                      style: TextStyle(
+                          fontSize: 8,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          letterSpacing: 0.5)),
+                  Text("ر.ع.١",
+                      style: TextStyle(fontSize: 7, color: Colors.white)),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: Insets.i10, vertical: Insets.i6),
+              decoration: BoxDecoration(
+                color: appColor(context).fieldCardBg,
+                borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(AppRadius.r4),
+                  bottomRight: Radius.circular(AppRadius.r4),
+                ),
+              ),
+              child: Text(
+                plateNumber,
+                style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                    letterSpacing: 1),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AddressInfoTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  final BuildContext context;
+
+  const _AddressInfoTile({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.context,
+  });
+
+  @override
+  Widget build(BuildContext ctx) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: Sizes.s18, color: appColor(context).lightText),
+        const HSpace(Sizes.s8),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label,
+                  style: appCss.dmDenseRegular12
+                      .textColor(appColor(context).lightText)),
+              Text(value,
+                  style: appCss.dmDenseMedium13
+                      .textColor(appColor(context).darkText)),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }
 

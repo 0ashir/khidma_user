@@ -1,7 +1,3 @@
-export '../../screens/app_setting_screen/app_setting_screen.dart';
-export '../../screens/app_setting_screen/layouts/bullet_layout.dart';
-export '../../screens/app_setting_screen/layouts/app_setting_layout.dart';
-
 export '../../screens/app_pages_screens/change_language_screen/change_language_screen.dart';
 export '../../screens/app_pages_screens/change_language_screen/layouts/radio_layout.dart';
 export '../../screens/app_pages_screens/profile_detail_screen/profile_detail_screen.dart';

@@ -26,6 +26,7 @@ final dynamic de = {
   "google": "google",
   "phone": "Telefon",
   "continueAsGuest": "Weiter als Gast",
+  "changeTheme": "Design ändern",
   "continueWithGoogle": "Weiter mit Google",
   "continueWithEmail": "Weiter mit E-Mail",
   "loginWithPhone": "Melden Sie sich mit Telefon an",

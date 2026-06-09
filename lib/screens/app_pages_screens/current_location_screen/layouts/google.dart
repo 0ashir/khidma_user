@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'package:fixit_user/services/environment.dart';
@@ -16,36 +17,64 @@ class _SearchLocationState extends State<SearchLocation> {
   List placePredictions = [];
   FocusNode focusNode = FocusNode();
   TextEditingController search = TextEditingController();
+  int _autocompleteRequestId = 0;
+  bool _isNavigating = false;
+  Timer? _debounceTimer;
 
-  placeAutoComplete(query) async {
-    String api = "https://maps.googleapis.com/maps/api/place/autocomplete/json";
-    String request = "$api?input=${search.text}&key=$googleMapKey";
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    focusNode.dispose();
+    search.dispose();
+    super.dispose();
+  }
 
-    var res = await http.get(Uri.parse(request));
-
-    var result = res.body.toString();
-    log("result :$result");
-    if (res.statusCode == 200) {
-      setState(() {
-        placePredictions = jsonDecode(res.body.toString())['predictions'];
-      });
-    } else {
-      log("EEERE :${res.body}");
+  void placeAutoComplete(String query) {
+    _debounceTimer?.cancel();
+    if (query.isEmpty) {
+      setState(() => placePredictions = []);
+      return;
     }
-    print("HGDFjsgf:$res");
-    setState(() {});
+    _debounceTimer = Timer(const Duration(milliseconds: 400), () => _fetchPredictions(query));
+  }
+
+  Future<void> _fetchPredictions(String query) async {
+    final int requestId = ++_autocompleteRequestId;
+    final String url =
+        "https://maps.googleapis.com/maps/api/place/autocomplete/json"
+        "?input=${Uri.encodeComponent(query)}&key=$googleMapKey";
+
+    try {
+      var res = await http.get(Uri.parse(url));
+      if (requestId != _autocompleteRequestId) return;
+      if (res.statusCode == 200) {
+        setState(() {
+          placePredictions = jsonDecode(res.body)['predictions'] ?? [];
+        });
+      } else {
+        log("placeAutoComplete error: ${res.body}");
+      }
+    } catch (e) {
+      log("placeAutoComplete exception: $e");
+    }
   }
 
   findCord(context, placeID) async {
-    var d = await http.get(Uri.parse(
-        "https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeID&key=$googleMapKey"));
-    var result = d.body.toString();
-    dynamic a = jsonDecode(d.body);
-    log("result :${a['result']['geometry']['location']}");
-
-    route.pop(context,
-        arg: LatLng(a['result']['geometry']['location']['lat'],
-            a['result']['geometry']['location']['lng']));
+    if (_isNavigating) return;
+    _isNavigating = true;
+    try {
+      var d = await http.get(Uri.parse(
+          "https://maps.googleapis.com/maps/api/place/details/json"
+          "?place_id=$placeID&key=$googleMapKey"));
+      dynamic a = jsonDecode(d.body);
+      log("findCord result: ${a['result']['geometry']['location']}");
+      final lat = a['result']['geometry']['location']['lat'];
+      final lng = a['result']['geometry']['location']['lng'];
+      route.pop(context, arg: LatLng(lat + 0.0, lng + 0.0));
+    } catch (e) {
+      log("findCord exception: $e");
+      _isNavigating = false;
+    }
   }
 
   @override

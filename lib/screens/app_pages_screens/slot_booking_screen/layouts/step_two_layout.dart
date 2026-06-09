@@ -18,10 +18,17 @@ class StepTwoLayout extends StatelessWidget {
 
       double totalPrice =
           currencyValue * ((price / requiredServicemen) * selectedServicemen);
-      dynamic baseRate = value.servicesCart
-          ?.serviceRate /* currencyValue * (serviceRate * selectedServicemen) */;
-      double difference = totalPrice - baseRate;
-      log("message.  $difference");
+
+      final discountPct = (value.servicesCart?.discount ?? 0).toDouble();
+      final discountValue = totalPrice * (discountPct / 100);
+      final addonsTotal = value.step2Data?.additionalServices
+              ?.fold<double>(0.0,
+                  (sum, s) => sum + (currencyValue * (s.totalPrice ?? 0.0))) ??
+          0.0;
+      final computedTotal = totalPrice - discountValue + addonsTotal;
+      final formattedComputedTotal = computedTotal.toStringAsFixed(2);
+
+      dynamic baseRate = value.servicesCart?.serviceRate;
       num? scheduleCount = value.selectedDateList.length;
       double schedulePrice = (baseRate?.toDouble() ?? 0.0) * (scheduleCount);
 
@@ -141,19 +148,13 @@ class StepTwoLayout extends StatelessWidget {
                       BillRowCommon(
                           title: translations!.perServiceCharge,
                           price: symbolPosition
-                              ? "${getSymbol(context)}${value.step2Data?.perServicemanCharge ?? "00.00"}"
-                              : "${value.step2Data?.perServicemanCharge}${getSymbol(context)}"),
+                              ? "${getSymbol(context)}${(currencyValue * price).toStringAsFixed(2)}"
+                              : "${(currencyValue * price).toStringAsFixed(2)}${getSymbol(context)}"),
                       BillRowCommon(
-                              title: symbolPosition
-                                  ? "${value.step2Data?.requiredServicemen} ${language(context, translations!.serviceman)} "
-                                      "(${getSymbol(context)}${value.step2Data?.perServicemanCharge ?? "00.00"} × "
-                                      "${value.step2Data?.requiredServicemen})"
-                                  : "${value.servicesCart?.requiredServicemen ?? 0} ${language(context, translations!.serviceman)} "
-                                      "(${value.step2Data?.perServicemanCharge ?? "00.00"}${getSymbol(context)} × "
-                                      "${value.step2Data?.requiredServicemen})",
+                              title: "$selectedServicemen × ${language(context, translations!.perServiceCharge ?? '')}",
                               price: symbolPosition
-                                  ? "${getSymbol(context)}${value.step2Data?.totalServicemenCharge ?? "00.00"}"
-                                  : "${value.step2Data?.totalServicemenCharge ?? "00.00"}${getSymbol(context)}")
+                                  ? "${getSymbol(context)}${totalPrice.toStringAsFixed(2)}"
+                                  : "${totalPrice.toStringAsFixed(2)}${getSymbol(context)}")
                           .marginOnly(top: Insets.i20),
                       if (value.servicesCart!.discount != null &&
                           value.servicesCart!.discount != 0)
@@ -164,8 +165,8 @@ class StepTwoLayout extends StatelessWidget {
                                 price: (value.servicesCart?.discount == 0)
                                     ? "0"
                                     : symbolPosition
-                                        ? "-${getSymbol(context)}${value.step2Data?.discountAmount}"
-                                        : "-${value.step2Data?.discountAmount}${getSymbol(context)}")
+                                        ? "-${getSymbol(context)}${discountValue.toStringAsFixed(2)}"
+                                        : "-${discountValue.toStringAsFixed(2)}${getSymbol(context)}")
                             .marginOnly(top: Insets.i20),
                       if (value.servicesCart!.selectedAdditionalServices !=
                               null &&
@@ -219,8 +220,8 @@ class StepTwoLayout extends StatelessWidget {
                                     ? value.servicesCart!.type == "scheduled"
                                         ? formattedSchedulePrice
                                         : symbolPosition
-                                            ? "${getSymbol(context)}${value.step2Data?.totalAmount}"
-                                            : "${value.step2Data?.totalAmount ?? "00.00"}${getSymbol(context)}"
+                                            ? "${getSymbol(context)}$formattedComputedTotal"
+                                            : "$formattedComputedTotal${getSymbol(context)}"
                                     : "",
                                 style: appCss.dmDenseBold16
                                     .textColor(appColor(context).primary)),

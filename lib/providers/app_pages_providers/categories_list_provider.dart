@@ -52,13 +52,17 @@ class CategoriesListProvider with ChangeNotifier {
   }
 
   searchCategory(context) async {
+    if (zoneIds.isEmpty) {
+      categoryList = [];
+      notifyListeners();
+      return;
+    }
     try {
       String apiUrl = api.category;
-      final effectiveZone = zoneIds.isNotEmpty ? zoneIds : '2';
       if (searchCtrl.text.isNotEmpty) {
-        apiUrl = "${api.category}?zone_ids=$effectiveZone&search=${searchCtrl.text}";
+        apiUrl = "${api.category}?zone_ids=$zoneIds&search=${searchCtrl.text}";
       } else {
-        apiUrl = "${api.category}?zone_ids=$effectiveZone";
+        apiUrl = "${api.category}?zone_ids=$zoneIds";
       }
       log("CATEGIRY");
       await apiServices.getApi(apiUrl, []).then((value) {

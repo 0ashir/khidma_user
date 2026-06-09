@@ -61,6 +61,7 @@ class BookingModel {
   String? remainingPaymentStatus;
   double? remainingPaymentAmount;
   String? advancePaymentStatus;
+  List<String>? carPlateNumbers;
 
   BookingModel(
       {this.id,
@@ -121,7 +122,8 @@ class BookingModel {
       this.advancePaymentPercentage,
       this.remainingPaymentStatus,
       this.remainingPaymentAmount,
-      this.advancePaymentStatus});
+      this.advancePaymentStatus,
+      this.carPlateNumbers});
 
   BookingModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -242,6 +244,9 @@ class BookingModel {
     address = json['address'] != null
         ? PrimaryAddress.fromJson(json['address'])
         : null;
+    if (json['car_plate_numbers'] != null && json['car_plate_numbers'] is List) {
+      carPlateNumbers = List<String>.from(json['car_plate_numbers']);
+    }
 
     platformFeesType = json['platform_fees_type'];
     role = json['role'];

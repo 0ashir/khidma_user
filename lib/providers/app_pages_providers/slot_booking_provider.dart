@@ -71,6 +71,28 @@ class SlotBookingProvider with ChangeNotifier {
   TextEditingController txtNote = TextEditingController();
   int? amIndex;
 
+  // Car plate number controllers — one per quantity slot (max 4)
+  List<TextEditingController> plateControllers = [];
+
+  bool get isCarService =>
+      servicesCart?.categories?.any((c) => c.isCar == 1) ?? false;
+
+  void _syncPlateControllers() {
+    log('[CarService] _syncPlateControllers: isCarService=$isCarService, qty=${servicesCart?.selectedRequiredServiceMan}');
+    if (!isCarService) {
+      for (final c in plateControllers) { c.dispose(); }
+      plateControllers = [];
+      return;
+    }
+    final qty = (servicesCart?.selectedRequiredServiceMan ?? 1).clamp(1, 4);
+    while (plateControllers.length < qty) {
+      plateControllers.add(TextEditingController());
+    }
+    while (plateControllers.length > qty) {
+      plateControllers.removeLast().dispose();
+    }
+  }
+
   int? timeIndex;
   bool isVisible = false;
 
@@ -86,6 +108,7 @@ class SlotBookingProvider with ChangeNotifier {
     noteFocus.dispose();
     txtNote.clear();
     controller?.dispose();
+    for (final c in plateControllers) { c.dispose(); }
     super.dispose();
   }
 
@@ -490,6 +513,21 @@ class SlotBookingProvider with ChangeNotifier {
         }
       }
     } else {
+      // Validate car plate numbers before proceeding
+      if (isCarService) {
+        final emptyPlate = plateControllers.any((c) => c.text.trim().isEmpty);
+        if (emptyPlate) {
+          isNextLoading = false;
+          notifyListeners();
+          Fluttertoast.showToast(
+              msg: "Please enter all car plate numbers",
+              backgroundColor: Colors.red);
+          return;
+        }
+        servicesCart!.carPlateNumbers =
+            plateControllers.map((c) => c.text.trim()).toList();
+      }
+
       await callBookingApi(
           servicesCart?.id,
           servicesCart?.selectedRequiredServiceMan ?? servicesCart?.requiredServicemen,
@@ -498,7 +536,7 @@ class SlotBookingProvider with ChangeNotifier {
                     "id": service.id,
                     "qty": service.qty,
                   })
-              .toList() /* servicesCart?.selectedAdditionalServices?.map((e) => e.id).toList() */);
+              .toList());
 
       notifyListeners();
       //log("message -=-=-=-=-=-=-=-=-= ${servicesCart?.id}-=-=-=-=-=${servicesCart?.requiredServicemen}======== ${servicesCart?.selectedAdditionalServices?.map((e) => e.id).join(',')}");
@@ -1248,9 +1286,21 @@ class SlotBookingProvider with ChangeNotifier {
       }
 
       // Populate core fields immediately
-      servicesCart!.selectedRequiredServiceMan ??= 1;
+      servicesCart!.selectedRequiredServiceMan ??= servicesCart!.requiredServicemen ?? 1;
       isPackage = data['isPackage'] ?? false;
       selectProviderIndex = data['selectProviderIndex'] ?? 0;
+
+      // Log categories and car-service flag for debugging
+      final cats = servicesCart?.categories ?? [];
+      log('[CarService] categories received: ${cats.map((c) => '${c.id}/${c.title}/is_car=${c.isCar}').join(', ')}');
+      log('[CarService] isCarService = $isCarService');
+
+      // Initialise plate controllers for car-category services
+      _syncPlateControllers();
+      // Provider instance/controllers may be reused across bookings — start blank
+      for (final c in plateControllers) {
+        c.clear();
+      }
 
       // Initialize booking frequency for scheduled services
       initBookingFrequency();
@@ -1311,23 +1361,31 @@ class SlotBookingProvider with ChangeNotifier {
   }
 
   onRemoveService(context) {
-    if ((servicesCart!.selectedRequiredServiceMan!) <= 1) {
+    final minQty = servicesCart!.requiredServicemen ?? 1;
+    if ((servicesCart!.selectedRequiredServiceMan!) <= minQty) {
       Fluttertoast.showToast(
-          msg: "Minimum 1 serviceman required",
+          msg: "Minimum $minQty serviceman required",
           backgroundColor: Colors.red);
       return;
     }
     servicesCart!.selectedRequiredServiceMan =
         (servicesCart!.selectedRequiredServiceMan!) - 1;
+    _syncPlateControllers();
     notifyListeners();
   }
 
   onAdd() {
     int count = (servicesCart!.selectedRequiredServiceMan!);
+    if (count >= 4) {
+      Fluttertoast.showToast(
+          msg: "Maximum 4 allowed",
+          backgroundColor: Colors.red);
+      return;
+    }
     count++;
     log("count::$count");
     servicesCart!.selectedRequiredServiceMan = count;
-
+    _syncPlateControllers();
     notifyListeners();
   }
 
@@ -1632,6 +1690,8 @@ class SlotBookingProvider with ChangeNotifier {
       "service_id": serviceId,
       "required_servicemen": requiredServicemen,
       "additional_services": additionalServices,
+      if (servicesCart?.carPlateNumbers?.isNotEmpty == true)
+        "car_plate_numbers": servicesCart!.carPlateNumbers,
     };
 
     // if (servicesCart?.type == 'scheduled' || servicesCart?.type == 'schedule') {

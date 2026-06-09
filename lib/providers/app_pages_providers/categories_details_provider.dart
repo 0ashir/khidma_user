@@ -227,14 +227,14 @@ class CategoriesDetailsProvider with ChangeNotifier {
   void onSubCategories(context, index, id) {
     selectedIndex = index;
     subCategoryId = id;
+    serviceList = [];
+    isLoader = true;
     notifyListeners();
     log('Selected sub-category ID: $id, Index: $index');
 
     if (id == 0) {
-      // "All" selected — reload with the parent category
       getServiceByCategoryId(context, id: categoryModel?.id);
     } else {
-      // Specific subcategory selected — fetch providers for it
       getServiceByCategoryId(context, id: id);
     }
   }
@@ -441,16 +441,20 @@ class CategoriesDetailsProvider with ChangeNotifier {
     mediaUrls = [];
     widget1Opacity = 1;
 
-    // categoryModel is pre-set by the tap handler before navigation,
-    // so the page already shows the correct title and shimmer on frame 1.
+    // Always clear stale data from any previous category before loading new one
+    demoList = [];
+    serviceDemo.clear();
+    serviceList = [];
+    selectedIndex = 0;
+    isServiceLoading = true;
+    isLoader = true;
+    notifyListeners();
+
+    // categoryModel is pre-set by the tap handler before navigation.
     // Fall back to route args only if navigating from a non-Dubai layout.
     if (categoryModel == null) {
       dynamic data = ModalRoute.of(context)!.settings.arguments;
       categoryModel = data;
-      isServiceLoading = true;
-      demoList = [];
-      serviceDemo.clear();
-      notifyListeners();
     }
 
     final dash = Provider.of<DashboardProvider>(context, listen: false);
@@ -460,12 +464,15 @@ class CategoriesDetailsProvider with ChangeNotifier {
     final bool isGuest = preferences.getBool(session.isContinueAsGuest) ?? false;
     log("isGuest::$isGuest");
 
-    // Fire all data calls concurrently — shimmers already visible
-    await Future.wait([
+    // Fire all data calls concurrently so subcategories and providers
+    // both appear at the same time with no delay between them
+    final List<Future<void>> calls = [
       getCategoryService(id: categoryModel!.id),
       getService(id: categoryModel!.id),
-      if (isGuest == false) fetchBannerAdsData(context),
-    ]);
+      getServiceByCategoryId(context, id: categoryModel!.id),
+    ];
+    if (isGuest == false) calls.add(fetchBannerAdsData(context));
+    await Future.wait(calls);
 
     notifyListeners();
   }
@@ -495,11 +502,15 @@ class CategoriesDetailsProvider with ChangeNotifier {
   var cachedServiceList = [];
 
   getServiceByCategoryId(context, {id}) async {
+    if (zoneIds.isEmpty) {
+      isLoader = false;
+      notifyListeners();
+      return;
+    }
     isLoader = true;
     notifyListeners();
     try {
-      final effectiveZone = zoneIds.isNotEmpty ? zoneIds : '2';
-      String apiUrl = "${api.service}?categoryIds=$id&zone_ids=$effectiveZone";
+      String apiUrl = "${api.service}?categoryIds=$id&zone_ids=$zoneIds";
 
       if (selectedRates.isNotEmpty) {
         apiUrl += "&rating=${selectedRates.join(',')}";

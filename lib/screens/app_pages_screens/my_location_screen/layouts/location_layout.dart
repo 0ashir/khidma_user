@@ -18,7 +18,7 @@ class LocationLayout extends StatelessWidget {
     return Column(children: [
       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         Row(children: [
-          data!.isPrimary == 1 || selectedIndex
+          selectedIndex
               ? SvgPicture.asset(
                   eSvgAssets.tickCircle,
                   height: Sizes.s40,

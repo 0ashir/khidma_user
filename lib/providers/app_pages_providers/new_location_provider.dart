@@ -40,6 +40,18 @@ class NewLocationProvider with ChangeNotifier {
   CountryStateModel? country;
   StateModel? state;
 
+  String _bestStreetText(Placemark p) {
+    final thoroughfare = p.thoroughfare ?? '';
+    if (thoroughfare.isNotEmpty && !thoroughfare.toLowerCase().contains('unnamed')) {
+      final sub = p.subThoroughfare ?? '';
+      return sub.isNotEmpty ? '$sub $thoroughfare' : thoroughfare;
+    }
+    return [
+      if (p.subLocality?.isNotEmpty == true) p.subLocality!,
+      if (p.postalCode?.isNotEmpty == true) p.postalCode!,
+    ].join(', ');
+  }
+
   getOnInitData(context) {
     dynamic data = ModalRoute.of(context)!.settings.arguments;
 
@@ -56,7 +68,7 @@ class NewLocationProvider with ChangeNotifier {
       numberCtrl.text = address!.alternativePhone!.toString();
       if (address!.latitude.toString() != position!.latitude.toString() &&
           address!.longitude.toString() != position!.longitude.toString()) {
-        streetCtrl.text = locationCtrl.place!.street!;
+        streetCtrl.text = _bestStreetText(locationCtrl.place!);
         cityCtrl.text = locationCtrl.place!.locality!;
         zipCtrl.text = locationCtrl.place!.postalCode!;
       } else {
@@ -121,7 +133,7 @@ class NewLocationProvider with ChangeNotifier {
       }
       notifyListeners();
 
-      streetCtrl.text = locationCtrl.place!.street!;
+      streetCtrl.text = _bestStreetText(locationCtrl.place!);
       /* countryValue = locationCtrl.countryStateList[0].id!;
       int index = locationCtrl.countryStateList
           .indexWhere((element) => element.id == countryValue);
