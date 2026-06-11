@@ -64,6 +64,7 @@ class SingleServices {
   int? addressId;
   dynamic price;
   double? perServicemanCharge;
+  double? perServiceCharge;
   String? dateTime;
   List<AdditionalService>? additionalServices;
   List<Tax>? taxes;
@@ -91,6 +92,7 @@ class SingleServices {
       this.taxes,
       this.type,
       this.perServicemanCharge,
+      this.perServiceCharge,
       this.dateTime,
       this.additionalServices,
       this.total,
@@ -116,6 +118,8 @@ class SingleServices {
     type = json['type'];
     perServicemanCharge =
         double.parse(json['per_serviceman_charge'].toString());
+    perServiceCharge = double.parse(
+        (json['per_service_charge'] ?? json['price']).toString());
     dateTime = json['date_time'];
     additionalServices = json["additional_services"] == null
         ? []
@@ -156,6 +160,7 @@ class SingleServices {
     data['price'] = price;
     data['type'] = type;
     data['per_serviceman_charge'] = perServicemanCharge;
+    data['per_service_charge'] = perServiceCharge;
     data['date_time'] = dateTime;
     if (total != null) {
       data['total'] = total!.toJson();
@@ -314,6 +319,8 @@ class Total {
   int? totalExtraServicemen;
   int? totalServicemen;
   double? totalServicemanCharge;
+  int? quantity;
+  double? totalServiceCharge;
   double? couponTotalDiscount;
   double? platformFees;
   String? platformFeesType;
@@ -326,6 +333,8 @@ class Total {
       this.totalExtraServicemen,
       this.totalServicemen,
       this.totalServicemanCharge,
+      this.quantity,
+      this.totalServiceCharge,
       this.couponTotalDiscount,
       this.platformFees,
       this.platformFeesType,
@@ -339,6 +348,9 @@ class Total {
     totalServicemen = int.parse(json['total_servicemen'].toString());
     totalServicemanCharge =
         double.parse(json['total_serviceman_charge'].toString());
+    quantity = json['quantity'] ?? 1;
+    totalServiceCharge = double.parse(
+        (json['total_service_charge'] ?? json['subtotal']).toString());
     couponTotalDiscount =
         double.parse(json['coupon_total_discount'].toString());
     platformFees = double.parse(json['platform_fees'].toString());
@@ -354,6 +366,8 @@ class Total {
     data['total_extra_servicemen'] = totalExtraServicemen;
     data['total_servicemen'] = totalServicemen;
     data['total_serviceman_charge'] = totalServicemanCharge;
+    data['quantity'] = quantity;
+    data['total_service_charge'] = totalServiceCharge;
     data['coupon_total_discount'] = couponTotalDiscount;
     data['platform_fees'] = platformFees;
     data['platform_fees_type'] = platformFeesType;

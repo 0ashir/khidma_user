@@ -8,7 +8,11 @@
     ],
     "additionalDirectories": [
       "c:\\FlutterWork\\fixit_backend\\app\\Http\\Controllers\\Backend",
-      "c:\\FlutterWork\\fixit_backend\\app\\Http\\Controllers\\API"
+      "c:\\FlutterWork\\fixit_backend\\app\\Http\\Controllers\\API",
+      "c:\\FlutterWork\\fixit_backend\\app\\Models",
+      "c:\\FlutterWork\\fixit_backend\\app\\Http\\Requests\\API",
+      "c:\\FlutterWork\\fixit_backend\\app\\Http\\Traits",
+      "c:\\FlutterWork\\fixit_backend\\app\\Repositories\\API"
     ]
   }
 }

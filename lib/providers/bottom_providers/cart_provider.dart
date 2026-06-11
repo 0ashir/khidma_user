@@ -219,6 +219,9 @@ class CartProvider with ChangeNotifier {
                 "type": element.value.serviceList!.type ?? 'fixed',
                 "required_servicemen": element.value.serviceList!
                     .requiredServicemen /*  element.value.serviceList!.selectedRequiredServiceMan */,
+                "quantity":
+                    element.value.serviceList!.selectedRequiredServiceMan ??
+                        1,
                 if (element.value.serviceList!.type != "scheduled")
                   "date_time": _buildDateTime(
                     element.value.serviceList?.serviceDate ?? DateTime.now(),
@@ -436,24 +439,14 @@ class CartProvider with ChangeNotifier {
   }
 
   onRemoveService(context, index) async {
-    if ((cartList[index].serviceList!.selectedRequiredServiceMan!) == 1) {
+    if ((cartList[index].serviceList!.selectedRequiredServiceMan!) <= 1) {
       route.pop(context);
       isAlert = false;
       notifyListeners();
     } else {
-      if ((cartList[index].serviceList!.requiredServicemen!) ==
-          (cartList[index].serviceList!.selectedRequiredServiceMan!)) {
-        isAlert = true;
-        notifyListeners();
-        await Future.delayed(DurationClass.s3);
-        isAlert = false;
-        notifyListeners();
-      } else {
-        isAlert = false;
-        notifyListeners();
-        cartList[index].serviceList!.selectedRequiredServiceMan =
-            ((cartList[index].serviceList!.selectedRequiredServiceMan!) - 1);
-      }
+      isAlert = false;
+      cartList[index].serviceList!.selectedRequiredServiceMan =
+          ((cartList[index].serviceList!.selectedRequiredServiceMan!) - 1);
     }
     notifyListeners();
   }
@@ -462,6 +455,11 @@ class CartProvider with ChangeNotifier {
     isAlert = false;
     notifyListeners();
     int count = (cartList[index].serviceList!.selectedRequiredServiceMan!);
+    if (count >= 4) {
+      isAlert = false;
+      notifyListeners();
+      return;
+    }
     count++;
     cartList[index].serviceList!.selectedRequiredServiceMan = count;
 

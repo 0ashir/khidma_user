@@ -28,52 +28,62 @@ class ServiceDetailLayout extends StatelessWidget {
             SvgPicture.asset(eSvgAssets.close)
                 .inkWell(onTap: () => route.pop(context)),
           ]).paddingAll(Insets.i20),
-          Container(
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: AssetImage(eImageAssets.detailsBg),
-                      fit: BoxFit.fill)),
-              child: Column(children: [
-                Column(children: [
-                  BillRowCommon(
-                      title: translations!.perServiceCharge,
-                      price: symbolPosition
-                          ? "${getSymbol(context)}${(currency(context).currencyVal * (data != null ? data!.perServicemanCharge! : packageService!.perServicemanCharge!)).toStringAsFixed(2)}"
-                          : "${(currency(context).currencyVal * (data != null ? data!.perServicemanCharge! : packageService!.perServicemanCharge!)).toStringAsFixed(2)}${getSymbol(context)}"),
-                  const VSpace(Sizes.s20),
-                  BillRowCommon(
-                      title:
-                          "\$${data != null ? data!.total!.totalServicemen! : packageService!.total!.totalServicemen!} servicemen (${getSymbol(context)}${"${(currency(context).currencyVal * (data != null ? data!.perServicemanCharge! : packageService!.perServicemanCharge!)).toStringAsFixed(2)} × ${data != null ? data!.total!.totalServicemen! : packageService!.total!.totalServicemen!}"})",
-                      price: symbolPosition
-                          ? "${getSymbol(context)}${(currency(context).currencyVal * (data != null ? (data!.total!.subtotal! * (data != null ? data!.total!.totalServicemen! : packageService!.total!.totalServicemen!)) : packageService!.total!.subtotal!)).toStringAsFixed(2)}"
-                          : "${(currency(context).currencyVal * (data != null ? (data!.total!.subtotal! * (data != null ? data!.total!.totalServicemen! : packageService!.total!.totalServicemen!)) : packageService!.total!.subtotal!)).toStringAsFixed(2)}${getSymbol(context)}")
-                ]).paddingSymmetric(
-                  vertical: Insets.i20,
-                ),
-                const VSpace(Sizes.s6),
-                Divider(
-                    color: appColor(context).stroke,
-                    thickness: 1,
-                    height: 1,
-                    endIndent: 6,
-                    indent: 6),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(language(context, translations!.totalAmount),
-                          style: appCss.dmDenseMedium14
-                              .textColor(appColor(context).darkText)),
-                      Text(
-                          symbolPosition
-                              ? "${getSymbol(context)}${(currency(context).currencyVal * (data != null ? (data!.total!.subtotal! * (data != null ? data!.total!.totalServicemen! : packageService!.total!.totalServicemen!)) : packageService!.total!.subtotal!)).toStringAsFixed(2)}"
-                              : "${(currency(context).currencyVal * (data != null ? (data!.total!.subtotal! * (data != null ? data!.total!.totalServicemen! : packageService!.total!.totalServicemen!)) : packageService!.total!.subtotal!)).toStringAsFixed(2)}${getSymbol(context)}",
-                          /*  "${getSymbol(context)}${(currency(context).currencyVal * (data != null ? data!.total!.subtotal! : packageService!.total!.subtotal!)).toStringAsFixed(2)}", */
-                          style: appCss.dmDenseBold16
-                              .textColor(appColor(context).primary))
-                    ]).paddingSymmetric(
-                    vertical: Insets.i20, horizontal: Insets.i15)
-              ])).paddingSymmetric(horizontal: Insets.i15)
+          Builder(builder: (context) {
+            final perCharge = data != null
+                ? (data!.perServiceCharge ?? data!.perServicemanCharge ?? 0)
+                : (packageService!.perServicemanCharge ?? 0);
+            final quantity = data?.total?.quantity ?? 1;
+            final totalCharge = data != null
+                ? (data!.total?.totalServiceCharge ?? perCharge * quantity)
+                : (packageService!.total?.subtotal ?? 0);
+
+            return Container(
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: AssetImage(eImageAssets.detailsBg),
+                        fit: BoxFit.fill)),
+                child: Column(children: [
+                  Column(children: [
+                    BillRowCommon(
+                        title: translations!.perServiceCharge,
+                        price: symbolPosition
+                            ? "${getSymbol(context)}${(currency(context).currencyVal * perCharge).toStringAsFixed(2)}"
+                            : "${(currency(context).currencyVal * perCharge).toStringAsFixed(2)}${getSymbol(context)}"),
+                    const VSpace(Sizes.s20),
+                    BillRowCommon(
+                        title: data != null
+                            ? "$quantity × ${language(context, translations!.perServiceCharge ?? '')}"
+                            : "\$${packageService!.total!.totalServicemen!} servicemen (${getSymbol(context)}${"${(currency(context).currencyVal * perCharge).toStringAsFixed(2)} × ${packageService!.total!.totalServicemen!}"})",
+                        price: symbolPosition
+                            ? "${getSymbol(context)}${(currency(context).currencyVal * totalCharge).toStringAsFixed(2)}"
+                            : "${(currency(context).currencyVal * totalCharge).toStringAsFixed(2)}${getSymbol(context)}")
+                  ]).paddingSymmetric(
+                    vertical: Insets.i20,
+                  ),
+                  const VSpace(Sizes.s6),
+                  Divider(
+                      color: appColor(context).stroke,
+                      thickness: 1,
+                      height: 1,
+                      endIndent: 6,
+                      indent: 6),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(language(context, translations!.totalAmount),
+                            style: appCss.dmDenseMedium14
+                                .textColor(appColor(context).darkText)),
+                        Text(
+                            symbolPosition
+                                ? "${getSymbol(context)}${(currency(context).currencyVal * totalCharge).toStringAsFixed(2)}"
+                                : "${(currency(context).currencyVal * totalCharge).toStringAsFixed(2)}${getSymbol(context)}",
+                            style: appCss.dmDenseBold16
+                                .textColor(appColor(context).primary))
+                      ]).paddingSymmetric(
+                      vertical: Insets.i20, horizontal: Insets.i15)
+                ])).paddingSymmetric(horizontal: Insets.i15);
+          })
         ]));
   }
 }

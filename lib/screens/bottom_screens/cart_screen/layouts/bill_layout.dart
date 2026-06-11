@@ -116,11 +116,15 @@ class BillLayout extends StatelessWidget {
                           final int serviceCount =
                               checkoutService.scheduledServicesCount ?? 1;
                           final double price = (service?.price ?? 0).toDouble();
+                          final double totalServiceCharge =
+                              checkoutService.total?.totalServiceCharge ??
+                                  price;
                           final double finalPrice = isScheduled
                               ? scheduledPrice * serviceCount.toDouble()
-                              : price;
-                          final double discountedAmount =
-                              discount > 0 ? (price * discount / 100) : 0;
+                              : totalServiceCharge;
+                          final double discountedAmount = discount > 0
+                              ? (totalServiceCharge * discount / 100)
+                              : 0;
 
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,

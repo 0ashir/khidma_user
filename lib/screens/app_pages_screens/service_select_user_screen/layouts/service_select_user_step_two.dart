@@ -193,19 +193,14 @@ class ServiceSelectUserStepTwo extends StatelessWidget {
                             BillRowCommon(
                                 title: translations!.perServiceCharge,
                                 price: symbolPosition
-                                    ? "${getSymbol(context)}${slot.step2Data?.perServicemanCharge}"
-                                    : "${slot.step2Data?.perServicemanCharge}${getSymbol(context)}"),
+                                    ? "${getSymbol(context)}${slot.step2Data?.perServiceCharge}"
+                                    : "${slot.step2Data?.perServiceCharge}${getSymbol(context)}"),
                             BillRowCommon(
-                                    title: symbolPosition
-                                        ? "${slot.step2Data?.requiredServicemen} ${language(context, translations!.serviceman)} "
-                                            "(${getSymbol(context)}${slot.step2Data?.perServicemanCharge} × "
-                                            "${value.servicesCart?.requiredServicemen ?? 0})"
-                                        : "${slot.step2Data?.requiredServicemen} ${language(context, translations!.serviceman)} "
-                                            "(${slot.step2Data?.perServicemanCharge}${getSymbol(context)} × "
-                                            "${value.servicesCart?.requiredServicemen ?? 0})",
+                                    title:
+                                        "${slot.step2Data?.quantity ?? 1} × ${language(context, translations!.perServiceCharge ?? '')}",
                                     price: symbolPosition
-                                        ? "${getSymbol(context)}${slot.step2Data?.totalServicemenCharge}"
-                                        : "${slot.step2Data?.totalServicemenCharge}${getSymbol(context)}")
+                                        ? "${getSymbol(context)}${slot.step2Data?.totalServiceCharge}"
+                                        : "${slot.step2Data?.totalServiceCharge}${getSymbol(context)}")
                                 .marginOnly(top: Insets.i20),
                             if (value.servicesCart!.discount != null &&
                                 value.servicesCart!.discount != 0)

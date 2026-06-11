@@ -530,7 +530,7 @@ class SlotBookingProvider with ChangeNotifier {
 
       await callBookingApi(
           servicesCart?.id,
-          servicesCart?.selectedRequiredServiceMan ?? servicesCart?.requiredServicemen,
+          servicesCart?.selectedRequiredServiceMan ?? 1,
           servicesCart?.selectedAdditionalServices
               ?.map((service) => {
                     "id": service.id,
@@ -1286,7 +1286,7 @@ class SlotBookingProvider with ChangeNotifier {
       }
 
       // Populate core fields immediately
-      servicesCart!.selectedRequiredServiceMan ??= servicesCart!.requiredServicemen ?? 1;
+      servicesCart!.selectedRequiredServiceMan ??= 1;
       isPackage = data['isPackage'] ?? false;
       selectProviderIndex = data['selectProviderIndex'] ?? 0;
 
@@ -1361,10 +1361,10 @@ class SlotBookingProvider with ChangeNotifier {
   }
 
   onRemoveService(context) {
-    final minQty = servicesCart!.requiredServicemen ?? 1;
+    const minQty = 1;
     if ((servicesCart!.selectedRequiredServiceMan!) <= minQty) {
       Fluttertoast.showToast(
-          msg: "Minimum $minQty serviceman required",
+          msg: "Minimum quantity is $minQty",
           backgroundColor: Colors.red);
       return;
     }
@@ -1378,7 +1378,7 @@ class SlotBookingProvider with ChangeNotifier {
     int count = (servicesCart!.selectedRequiredServiceMan!);
     if (count >= 4) {
       Fluttertoast.showToast(
-          msg: "Maximum 4 allowed",
+          msg: "Maximum quantity is 4",
           backgroundColor: Colors.red);
       return;
     }
@@ -1684,11 +1684,11 @@ class SlotBookingProvider with ChangeNotifier {
   Step2Model? step2Data;
 
   Future<void> callBookingApi(
-      int? serviceId, int? requiredServicemen, additionalServices) async {
+      int? serviceId, int? quantity, additionalServices) async {
     log("Query Params: $additionalServices");
     Map<String, dynamic> queryParams = {
       "service_id": serviceId,
-      "required_servicemen": requiredServicemen,
+      "quantity": quantity,
       "additional_services": additionalServices,
       if (servicesCart?.carPlateNumbers?.isNotEmpty == true)
         "car_plate_numbers": servicesCart!.carPlateNumbers,

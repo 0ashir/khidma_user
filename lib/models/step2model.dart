@@ -196,9 +196,9 @@ class Step2Model {
 
 class Step2Model {
   int? serviceId;
-  String? perServicemanCharge;
-  int? requiredServicemen;
-  String? totalServicemenCharge;
+  String? perServiceCharge;
+  int? quantity;
+  String? totalServiceCharge;
   int? discountPercent;
   String? discountAmount;
   String? addonsTotalAmount;
@@ -207,9 +207,9 @@ class Step2Model {
 
   Step2Model(
       {this.serviceId,
-      this.perServicemanCharge,
-      this.requiredServicemen,
-      this.totalServicemenCharge,
+      this.perServiceCharge,
+      this.quantity,
+      this.totalServiceCharge,
       this.discountPercent,
       this.discountAmount,
       this.addonsTotalAmount,
@@ -218,9 +218,9 @@ class Step2Model {
 
   Step2Model.fromJson(Map<String, dynamic> json) {
     serviceId = json['service_id'];
-    perServicemanCharge = json['per_serviceman_charge'];
-    requiredServicemen = json['required_servicemen'];
-    totalServicemenCharge = json['total_servicemen_charge'];
+    perServiceCharge = json['per_service_charge'];
+    quantity = json['quantity'];
+    totalServiceCharge = json['total_service_charge'];
     discountPercent = json['discount_percent'];
     discountAmount = json['discount_amount'];
     addonsTotalAmount = json['addons_total_amount'];
@@ -236,9 +236,9 @@ class Step2Model {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['service_id'] = serviceId;
-    data['per_serviceman_charge'] = perServicemanCharge;
-    data['required_servicemen'] = requiredServicemen;
-    data['total_servicemen_charge'] = totalServicemenCharge;
+    data['per_service_charge'] = perServiceCharge;
+    data['quantity'] = quantity;
+    data['total_service_charge'] = totalServiceCharge;
     data['discount_percent'] = discountPercent;
     data['discount_amount'] = discountAmount;
     data['addons_total_amount'] = addonsTotalAmount;

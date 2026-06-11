@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:intl/intl.dart';
 import '../../../../config.dart';
 
@@ -12,20 +10,35 @@ class StepTwoLayout extends StatelessWidget {
       final currencyValue = currency(context).currencyVal;
 
       final price = value.servicesCart?.price ?? 0;
-      final requiredServicemen = value.servicesCart?.requiredServicemen ?? 1;
       final selectedServicemen =
-          value.servicesCart?.selectedRequiredServiceMan ?? requiredServicemen;
+          value.servicesCart?.selectedRequiredServiceMan ?? 1;
 
-      double totalPrice =
-          currencyValue * ((price / requiredServicemen) * selectedServicemen);
+      final perServiceCharge =
+          double.tryParse(value.step2Data?.perServiceCharge ?? '') ??
+              price.toDouble();
+      final quantity = value.step2Data?.quantity ?? selectedServicemen;
+      final baseTotalServiceCharge =
+          double.tryParse(value.step2Data?.totalServiceCharge ?? '') ??
+              (perServiceCharge * quantity);
 
       final discountPct = (value.servicesCart?.discount ?? 0).toDouble();
-      final discountValue = totalPrice * (discountPct / 100);
-      final addonsTotal = value.step2Data?.additionalServices
-              ?.fold<double>(0.0,
-                  (sum, s) => sum + (currencyValue * (s.totalPrice ?? 0.0))) ??
-          0.0;
-      final computedTotal = totalPrice - discountValue + addonsTotal;
+      final baseDiscountValue =
+          double.tryParse(value.step2Data?.discountAmount ?? '') ??
+              (baseTotalServiceCharge * (discountPct / 100));
+
+      final baseAddonsTotal =
+          double.tryParse(value.step2Data?.addonsTotalAmount ?? '') ??
+              (value.step2Data?.additionalServices?.fold<double>(
+                      0.0, (sum, s) => sum + (s.totalPrice ?? 0.0)) ??
+                  0.0);
+
+      final baseTotalAmount =
+          double.tryParse(value.step2Data?.totalAmount ?? '') ??
+              (baseTotalServiceCharge - baseDiscountValue + baseAddonsTotal);
+
+      final totalPrice = currencyValue * baseTotalServiceCharge;
+      final discountValue = currencyValue * baseDiscountValue;
+      final computedTotal = currencyValue * baseTotalAmount;
       final formattedComputedTotal = computedTotal.toStringAsFixed(2);
 
       dynamic baseRate = value.servicesCart?.serviceRate;
@@ -148,10 +161,10 @@ class StepTwoLayout extends StatelessWidget {
                       BillRowCommon(
                           title: translations!.perServiceCharge,
                           price: symbolPosition
-                              ? "${getSymbol(context)}${(currencyValue * price).toStringAsFixed(2)}"
-                              : "${(currencyValue * price).toStringAsFixed(2)}${getSymbol(context)}"),
+                              ? "${getSymbol(context)}${(currencyValue * perServiceCharge).toStringAsFixed(2)}"
+                              : "${(currencyValue * perServiceCharge).toStringAsFixed(2)}${getSymbol(context)}"),
                       BillRowCommon(
-                              title: "$selectedServicemen × ${language(context, translations!.perServiceCharge ?? '')}",
+                              title: "$quantity × ${language(context, translations!.perServiceCharge ?? '')}",
                               price: symbolPosition
                                   ? "${getSymbol(context)}${totalPrice.toStringAsFixed(2)}"
                                   : "${totalPrice.toStringAsFixed(2)}${getSymbol(context)}")
