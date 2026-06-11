@@ -221,6 +221,12 @@ class CommonApiProvider extends ChangeNotifier {
   DashboardModel2? dashboardModel2;
   CategoryModel? categoryModel;
   bool isLoadingDashboard = false;
+
+  void showDashboardLoading() {
+    isLoadingDashboard = true;
+    notifyListeners();
+  }
+
   List<String> mediaUrls = [];
   List<String> videoUrls = [];
 
@@ -245,6 +251,16 @@ class CommonApiProvider extends ChangeNotifier {
         homeCategoryList = [];
         homeServicePackagesList = [];
         homeFeaturedService = [];
+        // Keep dashboardModel non-null (so the body shows its empty-state UI
+        // instead of falling back to a perpetual loading skeleton) but with
+        // every section emptied out.
+        dashboardModel = DashboardModel(
+          banners: [],
+          coupons: [],
+          categories: [],
+          servicePackages: [],
+          featuredServices: [],
+        );
         notifyListeners();
         return;
       }
@@ -324,6 +340,17 @@ class CommonApiProvider extends ChangeNotifier {
       if (effectiveZoneIds2.isEmpty) {
         isLoadingDashboard = false;
         homeProvider = [];
+        // Keep dashboardModel2 non-null but with every section emptied out,
+        // so banner ads / blogs / highest-rated providers from the previous
+        // zone don't keep showing on the home screen.
+        dashboardModel2 = DashboardModel2(
+          highestRatedProviders: [],
+          blogs: [],
+          homeBannerAdvertisements: [],
+          homeServicesAdvertisements: [],
+        );
+        mediaUrls = [];
+        videoUrls = [];
         notifyListeners();
         return;
       }

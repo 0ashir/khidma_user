@@ -196,13 +196,18 @@ class DashboardProvider with ChangeNotifier {
   Future getBanner() async {
     isBannerLoader = true;
     try {
-      //log("zoneIds :$zoneIds");
-      String apiUrl = "${api.banner}?zone_ids=$zoneIds";
-      if (zoneIds.isNotEmpty) {
-        apiUrl = "${api.banner}?zone_ids=$zoneIds";
-      } else {
-        apiUrl = api.banner;
+      SharedPreferences pref = await SharedPreferences.getInstance();
+      final String? savedZoneIds = pref.getString(session.zoneIds);
+      final String effectiveZoneIds = (savedZoneIds != null && savedZoneIds.isNotEmpty)
+          ? savedZoneIds
+          : zoneIds;
+      if (effectiveZoneIds.isEmpty) {
+        isBannerLoader = false;
+        bannerList = [];
+        notifyListeners();
+        return;
       }
+      String apiUrl = "${api.banner}?zone_ids=$effectiveZoneIds";
 
       await apiServices.getApi(apiUrl, []).then((value) {
         if (value.isSuccess!) {
@@ -311,9 +316,19 @@ class DashboardProvider with ChangeNotifier {
     log("CHHHH======> COUPON CALLING");
     try {
       SharedPreferences pref = await SharedPreferences.getInstance();
+      final String? savedZoneIds = pref.getString(session.zoneIds);
+      final String effectiveZoneIds = (savedZoneIds != null && savedZoneIds.isNotEmpty)
+          ? savedZoneIds
+          : zoneIds;
+      if (effectiveZoneIds.isEmpty) {
+        isCoupons = false;
+        couponList = [];
+        notifyListeners();
+        return;
+      }
 
       await apiServices.getApi(
-          "${api.coupon}?zone_ids=${pref.getString(session.zoneIds)}",
+          "${api.coupon}?zone_ids=$effectiveZoneIds",
           []).then((value) {
         if (value.isSuccess!) {
           isCoupons = false;
@@ -344,20 +359,20 @@ class DashboardProvider with ChangeNotifier {
     // notifyListeners();
     debugPrint("zoneIds zoneIds:$zoneIds");
     try {
-      String apiUrl = "${api.category}?zone_ids=$zoneIds";
-      if (zoneIds.isNotEmpty) {
-        if (search != null) {
-          apiUrl = "${api.category}?search=$search&zone_ids=$zoneIds";
-        } else {
-          apiUrl = "${api.category}?zone_ids=$zoneIds";
-        }
-      } else {
-        if (search != null) {
-          apiUrl = "${api.category}?search=$search";
-        } else {
-          apiUrl = api.category;
-        }
+      SharedPreferences pref = await SharedPreferences.getInstance();
+      final String? savedZoneIds = pref.getString(session.zoneIds);
+      final String effectiveZoneIds = (savedZoneIds != null && savedZoneIds.isNotEmpty)
+          ? savedZoneIds
+          : zoneIds;
+      if (effectiveZoneIds.isEmpty) {
+        isCategory = false;
+        categoryList = [];
+        notifyListeners();
+        return;
       }
+      String apiUrl = search != null
+          ? "${api.category}?search=$search&zone_ids=$effectiveZoneIds"
+          : "${api.category}?zone_ids=$effectiveZoneIds";
 
       await apiServices.getApi(apiUrl, []).then((value) {
         if (value.isSuccess!) {
@@ -389,13 +404,18 @@ class DashboardProvider with ChangeNotifier {
     isServiceList = true;
     debugPrint("SERR :$zoneIds");
     try {
-      String apiUrl = api.servicePackages;
-      if (zoneIds.isNotEmpty) {
-        apiUrl =
-            "${api.servicePackages}?zone_ids=${pref.getString(session.zoneIds)}";
-      } else {
-        apiUrl = api.servicePackages;
+      final String? savedZoneIds = pref.getString(session.zoneIds);
+      final String effectiveZoneIds = (savedZoneIds != null && savedZoneIds.isNotEmpty)
+          ? savedZoneIds
+          : zoneIds;
+      if (effectiveZoneIds.isEmpty) {
+        isServiceList = false;
+        servicePackagesList = [];
+        firstThreeServiceList = [];
+        notifyListeners();
+        return;
       }
+      String apiUrl = "${api.servicePackages}?zone_ids=$effectiveZoneIds";
       await apiServices.getApi(apiUrl, []).then((value) {
         if (value.isSuccess!) {
           isServiceList = false;

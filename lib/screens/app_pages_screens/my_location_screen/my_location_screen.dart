@@ -139,6 +139,14 @@ class _MyLocationScreenState extends State<MyLocationScreen>
                                           log("message-=-=-=-=-==-=-=-=-==-=-=-=-=-=-=-=-=-");
                                           if (locationCtrl.selectedIndex !=
                                               null) {
+                                            // Show the home skeleton right away so the
+                                            // zone/dashboard refresh for the newly
+                                            // selected location feels immediate instead
+                                            // of appearing after a delay.
+                                            Provider.of<CommonApiProvider>(
+                                                    context,
+                                                    listen: false)
+                                                .showDashboardLoading();
                                             locationCtrl.setDefault(context);
                                             locationCtrl.getZoneId(context,
                                                 isLocation: true,

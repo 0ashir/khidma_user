@@ -175,16 +175,23 @@ class LocationProvider with ChangeNotifier {
       final String mainAddress = streetNumber.isNotEmpty
           ? '$streetNumber $streetName'
           : streetName;
-      currentAddress = mainAddress.isNotEmpty
-          ? mainAddress
-          : (place!.subLocality ?? place!.locality ?? place!.name ?? '');
 
-      final List<String> streetParts = [
-        if (place!.subLocality?.isNotEmpty == true) place!.subLocality!,
-        if (place!.locality?.isNotEmpty == true) place!.locality!,
-        if (place!.postalCode?.isNotEmpty == true) place!.postalCode!,
-      ];
-      street = streetParts.isNotEmpty ? streetParts.join(', ') : (place!.street ?? '');
+      // Don't let a GPS-based reverse geocode overwrite the home top bar
+      // once the user has a saved/selected address as primary — otherwise
+      // background location refreshes (e.g. loadDashboardApis) replace the
+      // selected address with the device's current location.
+      if (userPrimaryAddress == null) {
+        currentAddress = mainAddress.isNotEmpty
+            ? mainAddress
+            : (place!.subLocality ?? place!.locality ?? place!.name ?? '');
+
+        final List<String> streetParts = [
+          if (place!.subLocality?.isNotEmpty == true) place!.subLocality!,
+          if (place!.locality?.isNotEmpty == true) place!.locality!,
+          if (place!.postalCode?.isNotEmpty == true) place!.postalCode!,
+        ];
+        street = streetParts.isNotEmpty ? streetParts.join(', ') : (place!.street ?? '');
+      }
       markers.add(Marker(
         draggable: true,
         onDrag: (value) {
@@ -263,6 +270,10 @@ class LocationProvider with ChangeNotifier {
       primaryAddress = index;
       setPrimaryAddress = index;
       userPrimaryAddress = addressList[primaryAddress];
+      // Always reflect the user's saved/selected address on the home top
+      // bar — don't leave it showing a stale GPS-based address.
+      street = addressList[primaryAddress].address;
+      currentAddress = addressList[primaryAddress].address;
     } else {
       await getUserCurrentLocation(context);
 
@@ -291,39 +302,54 @@ class LocationProvider with ChangeNotifier {
   Future<void> getZoneId(context,
       {String? lat, String? lan, bool isLocation = false}) async {
     try {
-      // Check if location services are enabled
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        // Handle case where location services are disabled
-        log("Location services are disabled");
-        return;
+      double? usedLat;
+      double? usedLng;
+
+      // When the caller passes explicit coordinates (e.g. the user picked a
+      // saved address), use them directly and skip the device-GPS lookup
+      // entirely. This makes the zone + dashboard refetch fire immediately and
+      // not be blocked/failed by a slow GPS fix, disabled location services or
+      // a denied permission — so the home page always reflects the newly
+      // selected location's zone.
+      if (isLocation) {
+        usedLat = double.tryParse(lat ?? '');
+        usedLng = double.tryParse(lan ?? '');
       }
 
-      // Check permissions
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          // Handle permanent denial
-          log("Location permissions are denied");
+      if (usedLat == null || usedLng == null) {
+        // No explicit coordinates — fall back to the device's GPS position.
+        bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+        if (!serviceEnabled) {
+          // Handle case where location services are disabled
+          log("Location services are disabled");
           return;
         }
+
+        // Check permissions
+        LocationPermission permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied) {
+          permission = await Geolocator.requestPermission();
+          if (permission == LocationPermission.denied) {
+            // Handle permanent denial
+            log("Location permissions are denied");
+            return;
+          }
+        }
+
+        if (permission == LocationPermission.deniedForever) {
+          log("Location permissions are permanently denied");
+          return;
+        }
+
+        // Get position only if we have permission
+        Position position = await Geolocator.getCurrentPosition(
+            locationSettings:
+                const LocationSettings(accuracy: LocationAccuracy.high));
+        usedLat = position.latitude;
+        usedLng = position.longitude;
       }
 
-      if (permission == LocationPermission.deniedForever) {
-        log("Location permissions are permanently denied");
-        return;
-      }
-
-      // Get position only if we have permission
-      Position position = await Geolocator.getCurrentPosition(
-          locationSettings:
-              const LocationSettings(accuracy: LocationAccuracy.high));
-
-      final double usedLat = isLocation ? double.tryParse(lat ?? '') ?? position.latitude : position.latitude;
-      final double usedLng = isLocation ? double.tryParse(lan ?? '') ?? position.longitude : position.longitude;
       log("[Zone] ── getZoneId called | isLocation=$isLocation");
-      log("[Zone] ── GPS position   : lat=${position.latitude}, lng=${position.longitude}");
       log("[Zone] ── Using lat/lng  : lat=$usedLat, lng=$usedLng");
       log("[Zone] ── API URL        : ${api.zoneByPoint}?lat=$usedLat&lng=$usedLng");
 
@@ -339,18 +365,31 @@ class LocationProvider with ChangeNotifier {
             currentZoneModel.add(Datum1.fromJson(data));
           }
           zoneIds = idsString;
-          if (idsString.isNotEmpty) {
-            log("[Zone] ✅ Zone match found | zone_ids=$idsString | zones=${o.map((z) => '${z['id']}:${z['name'] ?? z['id']}').join(', ')}");
-          } else {
-            log("[Zone] ❌ No zone matched for lat=$usedLat, lng=$usedLng — service not available in this area");
-            final liveCtx = navigatorKey.currentContext ?? context;
-            showSuccessToast(liveCtx, "Service not available in your area");
-          }
+          // Persist the new zone before triggering any zone-scoped refetches
+          // below — they read this saved value to build their requests.
           SharedPreferences pref = await SharedPreferences.getInstance();
-          pref.setString(session.zoneIds, idsString);
+          await pref.setString(session.zoneIds, idsString);
           // Use navigatorKey.currentContext because the original context may be
           // stale if the caller navigated away before getZoneId finished.
           final liveCtx = navigatorKey.currentContext ?? context;
+          final dash = Provider.of<DashboardProvider>(liveCtx, listen: false);
+          if (idsString.isNotEmpty) {
+            log("[Zone] ✅ Zone match found | zone_ids=$idsString | zones=${o.map((z) => '${z['id']}:${z['name'] ?? z['id']}').join(', ')}");
+            // Refresh the other zone-scoped home sections for the new zone.
+            dash.getServicePackage();
+            dash.getCoupons();
+          } else {
+            log("[Zone] ❌ No zone matched for lat=$usedLat, lng=$usedLng — service not available in this area");
+            showSuccessToast(liveCtx, "Service not available in your area");
+            // No zone for this location — don't show stale data from the
+            // previous zone in any home section.
+            dash.servicePackagesList = [];
+            dash.firstThreeServiceList = [];
+            dash.couponList = [];
+            dash.categoryList = [];
+            dash.bannerList = [];
+            dash.notifyListeners();
+          }
           final loc = Provider.of<SplashProvider>(liveCtx, listen: false);
           loc.loadDashboardApis(liveCtx);
         }
@@ -419,7 +458,10 @@ class LocationProvider with ChangeNotifier {
     notifyListeners();
     //getAddressFromLatLng();
     route.pop(context);
-    getZoneId(context);
+    // Zone refresh for the newly selected address is triggered explicitly
+    // by the caller with the selected address's lat/lng (isLocation: true) —
+    // calling getZoneId() here too would race it using the device's GPS
+    // position instead and could overwrite the correct zone result.
   }
 
   //set primary address

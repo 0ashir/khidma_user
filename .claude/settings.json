@@ -1,11 +1,14 @@
 {
   "permissions": {
+    "allow": [
+      "Bash(git rm *)",
+      "Bash(Select-String -Pattern \"error|warning|No issues|info -\")",
+      "Bash(Select-Object -Last 20)",
+      "Bash(grep -n \"providers/index.dart\\\\|providers\\\\\\\\\\\\\\\\index.dart\" \"c:\\\\FlutterWork\\\\fixit_user\\\\lib\\\\config.dart\")"
+    ],
     "additionalDirectories": [
       "c:\\FlutterWork\\fixit_backend\\app\\Http\\Controllers\\Backend",
       "c:\\FlutterWork\\fixit_backend\\app\\Http\\Controllers\\API"
-    ],
-    "allow": [
-      "Bash(git rm *)"
     ]
   }
 }

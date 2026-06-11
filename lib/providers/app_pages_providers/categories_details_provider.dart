@@ -59,9 +59,17 @@ class CategoriesDetailsProvider with ChangeNotifier {
     notifyListeners();
     SharedPreferences pref = await SharedPreferences.getInstance();
     final savedZone = pref.getString(session.zoneIds);
-    final effectiveZone = (savedZone != null && savedZone.isNotEmpty) ? savedZone : '2';
+    final effectiveZone = (savedZone != null && savedZone.isNotEmpty) ? savedZone : zoneIds;
 
     log("message=-=-=--=-=-ZONE IDS $savedZone → using: $effectiveZone");
+
+    if (effectiveZone.isEmpty) {
+      demoList = [];
+      isGridLoader = false;
+      isLoading = false;
+      notifyListeners();
+      return;
+    }
 
     try {
       demoList = [];
@@ -159,7 +167,14 @@ class CategoriesDetailsProvider with ChangeNotifier {
 
       SharedPreferences pref = await SharedPreferences.getInstance();
       final savedZone2 = pref.getString(session.zoneIds);
-      final effectiveZone2 = (savedZone2 != null && savedZone2.isNotEmpty) ? savedZone2 : '2';
+      final effectiveZone2 = (savedZone2 != null && savedZone2.isNotEmpty) ? savedZone2 : zoneIds;
+
+      if (effectiveZone2.isEmpty) {
+        serviceDemo.clear();
+        isServiceLoading = false;
+        notifyListeners();
+        return;
+      }
 
       // Build the API URL with optional search
       String url = '${api.categoryService}?category_id=$id&zone_ids=$effectiveZone2';
