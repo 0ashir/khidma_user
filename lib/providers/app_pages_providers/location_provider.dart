@@ -439,7 +439,7 @@ class LocationProvider with ChangeNotifier {
 //     }
 //   }
 
-  setDefault(context) {
+  setDefault(context) async {
     primaryAddress = selectedIndex!;
     log("primaryAddress :$primaryAddress");
     log("primaryAddress :${addressList[primaryAddress].address}");
@@ -448,9 +448,6 @@ class LocationProvider with ChangeNotifier {
     currentAddress = addressList[primaryAddress].address;
     //log("street :$street");
     setPrimaryAddress = selectedIndex;
-    getLocationList(context);
-    notifyListeners();
-    setAddressPrimary(context, userPrimaryAddress!.id);
     if (addressList[primaryAddress].latitude != null) {
       position = LatLng(double.parse(addressList[primaryAddress].latitude!),
           double.parse(addressList[primaryAddress].longitude!));
@@ -462,6 +459,14 @@ class LocationProvider with ChangeNotifier {
     // by the caller with the selected address's lat/lng (isLocation: true) —
     // calling getZoneId() here too would race it using the device's GPS
     // position instead and could overwrite the correct zone result.
+
+    // Persist the new primary address on the server BEFORE refetching the
+    // address list. getLocationList() re-derives street/currentAddress from
+    // the server's isPrimary flag via getDefaultAddress() — if that refetch
+    // ran before this PUT was applied, it would still see the OLD address
+    // as primary and revert the home page back to it.
+    await setAddressPrimary(context, userPrimaryAddress!.id);
+    await getLocationList(context);
   }
 
   //set primary address
