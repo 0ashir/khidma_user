@@ -1,0 +1,15 @@
+{
+  "error": false,
+  "message": "Data fetched successfully",
+  "data": {
+    "currency": "AED",
+    "currency_symbol": "AED",
+    "currency_decimal_places": 0,
+    "date_format": "DD-MM-YYYY",
+    "time_format": "h:i A",
+    "cod_setting": 0,
+    "payment_gateway_setting": 0,
+    "payment_gateways": []
+  },
+  "code": 200
+}

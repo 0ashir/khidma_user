@@ -1,0 +1,247 @@
+[
+  {
+    "name": "Home dubai",
+    "passed": true,
+    "seconds": 1.262,
+    "sections": [
+      {
+        "type": "all_categories",
+        "counts": {
+          "categories": 3
+        }
+      },
+      {
+        "type": "recommended_service",
+        "counts": {
+          "services": 6
+        }
+      },
+      {
+        "type": "near_by_provider",
+        "counts": {
+          "providers": 2
+        }
+      }
+    ]
+  },
+  {
+    "name": "Home sharjah",
+    "passed": true,
+    "seconds": 1.326,
+    "sections": [
+      {
+        "type": "all_categories",
+        "counts": {
+          "categories": 3
+        }
+      },
+      {
+        "type": "recommended_service",
+        "counts": {
+          "services": 9
+        }
+      },
+      {
+        "type": "near_by_provider",
+        "counts": {
+          "providers": 3
+        }
+      }
+    ]
+  },
+  {
+    "name": "Home abu_dhabi",
+    "passed": true,
+    "seconds": 1.271,
+    "sections": [
+      {
+        "type": "all_categories",
+        "counts": {
+          "categories": 3
+        }
+      },
+      {
+        "type": "recommended_service",
+        "counts": {
+          "services": 10
+        }
+      },
+      {
+        "type": "near_by_provider",
+        "counts": {
+          "providers": 1
+        }
+      }
+    ]
+  },
+  {
+    "name": "Home al_ain",
+    "passed": true,
+    "seconds": 1.168,
+    "sections": [
+      {
+        "type": "all_categories",
+        "counts": {
+          "categories": 3
+        }
+      },
+      {
+        "type": "recommended_service",
+        "counts": {
+          "services": 3
+        }
+      },
+      {
+        "type": "near_by_provider",
+        "counts": {
+          "providers": 1
+        }
+      }
+    ]
+  },
+  {
+    "name": "Home rak",
+    "passed": true,
+    "seconds": 3.431,
+    "sections": [
+      {
+        "type": "all_categories",
+        "counts": {
+          "categories": 3
+        }
+      },
+      {
+        "type": "recommended_service",
+        "counts": {
+          "services": 9
+        }
+      },
+      {
+        "type": "near_by_provider",
+        "counts": {
+          "providers": 3
+        }
+      }
+    ]
+  },
+  {
+    "name": "Home fujairah",
+    "passed": true,
+    "seconds": 1.07,
+    "sections": [
+      {
+        "type": "all_categories",
+        "counts": {
+          "categories": 3
+        }
+      },
+      {
+        "type": "recommended_service",
+        "counts": {
+          "services": 6
+        }
+      },
+      {
+        "type": "near_by_provider",
+        "counts": {
+          "providers": 2
+        }
+      }
+    ]
+  },
+  {
+    "name": "Country and AED",
+    "passed": true,
+    "seconds": 1.137
+  },
+  {
+    "name": "Provider discovery",
+    "passed": true,
+    "seconds": 1.13
+  },
+  {
+    "name": "Provider detail",
+    "passed": true,
+    "seconds": 1.107
+  },
+  {
+    "name": "Service discovery",
+    "passed": true,
+    "seconds": 1.082
+  },
+  {
+    "name": "Service detail",
+    "passed": true,
+    "seconds": 1.11
+  },
+  {
+    "name": "Provider search",
+    "passed": true,
+    "seconds": 1.159
+  },
+  {
+    "name": "Service search",
+    "passed": true,
+    "seconds": 1.195
+  },
+  {
+    "name": "Arabic home",
+    "passed": true,
+    "seconds": 1.099,
+    "sections": [
+      {
+        "type": "all_categories",
+        "counts": {
+          "categories": 3
+        }
+      },
+      {
+        "type": "recommended_service",
+        "counts": {
+          "services": 6
+        }
+      },
+      {
+        "type": "near_by_provider",
+        "counts": {
+          "providers": 2
+        }
+      }
+    ]
+  },
+  {
+    "name": "Theme",
+    "passed": true,
+    "seconds": 1.015
+  },
+  {
+    "name": "Languages",
+    "passed": true,
+    "seconds": 1.064
+  },
+  {
+    "name": "English translations",
+    "passed": true,
+    "seconds": 1.362
+  },
+  {
+    "name": "Arabic translations",
+    "passed": true,
+    "seconds": 1.312
+  },
+  {
+    "name": "Guest access blocked: get_cart",
+    "passed": true,
+    "seconds": 1.02
+  },
+  {
+    "name": "Guest access blocked: get_address",
+    "passed": true,
+    "seconds": 0.992
+  },
+  {
+    "name": "Guest access blocked: get_all_bookings",
+    "passed": true,
+    "seconds": 0.998
+  }
+]

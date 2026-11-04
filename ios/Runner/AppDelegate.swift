@@ -1,0 +1,67 @@
+import UIKit
+import Flutter
+import GoogleMaps
+
+@main
+@objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
+  override var window: UIWindow? {
+    get {
+      if let w = super.window {
+        return w
+      }
+      if #available(iOS 13.0, *) {
+        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+          return scene.windows.first { $0.isKeyWindow } ?? scene.windows.first
+        }
+      }
+      return nil
+    }
+    set {
+      super.window = newValue
+    }
+  }
+
+  override func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+  ) -> Bool {
+    GMSServices.provideAPIKey("AIzaSyDNbeNlSQb8NyHK-z-JlVQWicssGnzyJms")
+    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
+    GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+  }
+}
+
+
+class AppLinks {
+
+    var window: UIWindow?
+
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        return handleDeepLink(url: url)
+    }
+
+    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        if userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+           let url = userActivity.webpageURL {
+            return handleDeepLink(url: url)
+        }
+        return false
+    }
+
+    private func handleDeepLink(url: URL) -> Bool {
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
+            return false
+        }
+
+        if let urlPattern = components.path.split(separator: "/").last {
+            print("URL pattern: \(urlPattern)")
+            return true
+        }
+
+        return false
+    }
+
+}

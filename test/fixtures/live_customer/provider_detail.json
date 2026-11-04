@@ -1,0 +1,124 @@
+{
+  "error": false,
+  "message": "Provider details fetched successfully",
+  "data": {
+    "partner_id": 118,
+    "slug": "khidma-qa-dubai",
+    "company_name": "Khidma Dubai Services (Test)",
+    "provider_type": "organization",
+    "is_verified": 0,
+    "is_bookmarked": 0,
+    "profile_image": "https://admin.khidmaplus.com/uploads/categories/legacy_fixit/33/18208377.png",
+    "at_store": 0,
+    "at_doorstep": 1,
+    "total_services": 3,
+    "number_of_orders": 0,
+    "about": "TEST BUSINESS for Khidma Plus app testing. Not a real service provider. Do not place genuine bookings.",
+    "long_description": "TEST BUSINESS for Khidma Plus app testing. Not a real service provider. Do not place genuine bookings.",
+    "average_rating": 0,
+    "number_of_ratings": 0,
+    "rating_breakdown": {
+      "5": 0,
+      "4": 0,
+      "3": 0,
+      "2": 0,
+      "1": 0
+    },
+    "distance": 0,
+    "latitude": 25.2048,
+    "longitude": 55.2708,
+    "country_code": "+971",
+    "phone": "",
+    "email": "khidma-qa-dubai@qa.khidmaplus.invalid",
+    "shifts_by_day": {
+      "monday": {
+        "is_open": "1",
+        "shifts": [
+          {
+            "shift_number": "1",
+            "opening_time": "09:00:00",
+            "closing_time": "20:00:00",
+            "is_open": "1",
+            "on_leave": "0"
+          }
+        ]
+      },
+      "tuesday": {
+        "is_open": "1",
+        "shifts": [
+          {
+            "shift_number": "1",
+            "opening_time": "09:00:00",
+            "closing_time": "20:00:00",
+            "is_open": "1",
+            "on_leave": "0"
+          }
+        ]
+      },
+      "wednesday": {
+        "is_open": "1",
+        "shifts": [
+          {
+            "shift_number": "1",
+            "opening_time": "09:00:00",
+            "closing_time": "20:00:00",
+            "is_open": "1",
+            "on_leave": "0"
+          }
+        ]
+      },
+      "thursday": {
+        "is_open": "1",
+        "shifts": [
+          {
+            "shift_number": "1",
+            "opening_time": "09:00:00",
+            "closing_time": "20:00:00",
+            "is_open": "1",
+            "on_leave": "0"
+          }
+        ]
+      },
+      "friday": {
+        "is_open": "1",
+        "shifts": [
+          {
+            "shift_number": "1",
+            "opening_time": "09:00:00",
+            "closing_time": "20:00:00",
+            "is_open": "1",
+            "on_leave": "0"
+          }
+        ]
+      },
+      "saturday": {
+        "is_open": "1",
+        "shifts": [
+          {
+            "shift_number": "1",
+            "opening_time": "09:00:00",
+            "closing_time": "20:00:00",
+            "is_open": "1",
+            "on_leave": "0"
+          }
+        ]
+      },
+      "sunday": {
+        "is_open": "1",
+        "shifts": [
+          {
+            "shift_number": "1",
+            "opening_time": "09:00:00",
+            "closing_time": "20:00:00",
+            "is_open": "1",
+            "on_leave": "0"
+          }
+        ]
+      }
+    },
+    "address": "Downtown Dubai — test service location",
+    "banner": "https://admin.khidmaplus.com/uploads/services/legacy_fixit/281/Screenshot-2026-06-10-212507.webp",
+    "other_images": [],
+    "pre_booking_chat_allowed": 1
+  }
+}

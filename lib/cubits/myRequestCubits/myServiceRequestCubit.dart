@@ -1,0 +1,77 @@
+import 'package:dio/dio.dart';
+import 'package:e_demand/app/generalImports.dart';
+import 'package:path/path.dart' as p;
+
+abstract class MyRequestState {}
+
+class MyRequestInitial extends MyRequestState {}
+
+class MyRequestLoading extends MyRequestState {}
+
+class MyRequestFailure extends MyRequestState {
+  final String errorMessage;
+  MyRequestFailure(this.errorMessage);
+}
+
+class MyRequestSSuccess extends MyRequestState {
+  MyRequestSSuccess(this.response);
+  final Map<String, dynamic> response;
+}
+
+class MyRequestCubit extends Cubit<MyRequestState> {
+  MyRequestCubit() : super(MyRequestInitial());
+  final MyRequestRepository _myRequestRepository = MyRequestRepository();
+
+  Future<void> submitCustomJobRequest({
+    required Map<String, dynamic> parameters,
+    List<String>? filePaths,
+  }) async {
+    emit(MyRequestLoading());
+    try {
+      emit(MyRequestLoading());
+      if (filePaths != null && filePaths.isNotEmpty) {
+        for (int i = 0; i < filePaths.length; i++) {
+          final path = filePaths[i];
+          final mimeType = lookupMimeType(path) ?? 'application/octet-stream';
+          final parts = mimeType.split('/');
+          parameters['files[$i]'] = await MultipartFile.fromFile(
+            path,
+            filename: p.basename(path),
+            contentType: MediaType(parts[0], parts[1]),
+          );
+        }
+      }
+      final result = await _myRequestRepository.submitCustomJobRequest(
+        parameters: parameters,
+      );
+
+      if (result['error'] == false) {
+        ClarityService.logAction(ClarityActions.customJobRequestCreated, {
+          'custom_job_request_id': result['data']?['id']?.toString() ?? '',
+          'category_id': parameters['category_id']?.toString() ?? '',
+          'service_title': parameters['service_title']?.toString() ?? '',
+          'min_price': parameters['min_price']?.toString() ?? '',
+          'max_price': parameters['max_price']?.toString() ?? '',
+          'requested_start_date':
+              parameters['requested_start_date']?.toString() ?? '',
+          'requested_start_time':
+              parameters['requested_start_time']?.toString() ?? '',
+          'requested_end_date':
+              parameters['requested_end_date']?.toString() ?? '',
+          'requested_end_time':
+              parameters['requested_end_time']?.toString() ?? '',
+          'status': 'success',
+        });
+        emit(MyRequestSSuccess(result));
+      } else {
+        emit(MyRequestFailure(result['message'].toString()));
+      }
+    } catch (e) {
+      ClarityService.logAction(ClarityActions.customJobRequestCreated, {
+        'status': 'error',
+        'message': e.toString(),
+      });
+      emit(MyRequestFailure(e.toString()));
+    }
+  }
+}

@@ -1,0 +1,55 @@
+import 'package:e_demand/app/generalImports.dart';
+
+class DeleteUserAccountCubit extends Cubit<DeleteUserAccountState> {
+  DeleteUserAccountCubit(this.authenticationRepository)
+    : super(DeleteUserAccountInitial());
+  AuthenticationRepository authenticationRepository;
+
+  void deleteUserAccount({String? password}) {
+    emit(DeleteUserAccountInProgress());
+
+    authenticationRepository
+        .deleteUserAccount(password: password)
+        .then((final value) {
+          if (value['error']) {
+            emit(DeleteUserAccountFailure(errorMessage: value['message']));
+            return;
+          }
+          emit(
+            DeleteUserAccountSuccess(
+              message: value['message'],
+              error: value['error'],
+            ),
+          );
+          ClarityService.logAction(ClarityActions.deleteAccountConfirmed, {
+            'message': value['message']?.toString() ?? '',
+          });
+        })
+        .catchError((final e) {
+          ClarityService.logAction(ClarityActions.deleteAccountConfirmed, {
+            'status': 'error',
+            'message': e.toString(),
+          });
+          emit(DeleteUserAccountFailure(errorMessage: e.toString()));
+        });
+  }
+}
+
+//State
+@immutable
+abstract class DeleteUserAccountState {}
+
+class DeleteUserAccountInitial extends DeleteUserAccountState {}
+
+class DeleteUserAccountInProgress extends DeleteUserAccountState {}
+
+class DeleteUserAccountSuccess extends DeleteUserAccountState {
+  DeleteUserAccountSuccess({required this.error, required this.message});
+  final String message;
+  final bool error;
+}
+
+class DeleteUserAccountFailure extends DeleteUserAccountState {
+  DeleteUserAccountFailure({required this.errorMessage});
+  final String errorMessage;
+}

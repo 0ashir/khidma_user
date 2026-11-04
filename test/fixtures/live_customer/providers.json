@@ -1,0 +1,51 @@
+{
+  "error": false,
+  "message": "Providers fetched successfully",
+  "data": [
+    {
+      "id": 120,
+      "slug": "khidma-qa-ras-al-khaimah",
+      "company_name": "Khidma Ras Al Khaimah Services (Test)",
+      "latitude": 25.7895,
+      "longitude": 55.9432,
+      "average_rating": 0,
+      "number_of_ratings": 0,
+      "total_services": 3,
+      "distance": 93.71,
+      "starting_price": 65,
+      "banner": "https://admin.khidmaplus.com/uploads/services/legacy_fixit/281/Screenshot-2026-06-10-212507.webp",
+      "profile_image": "https://admin.khidmaplus.com/uploads/categories/legacy_fixit/33/18208377.png",
+      "is_verified": 0,
+      "is_bookmarked": 0,
+      "next_available_slot": {
+        "date": "2026-10-29",
+        "starting_time": "09:00:00",
+        "ending_time": "09:30:00"
+      }
+    },
+    {
+      "id": 118,
+      "slug": "khidma-qa-dubai",
+      "company_name": "Khidma Dubai Services (Test)",
+      "latitude": 25.2048,
+      "longitude": 55.2708,
+      "average_rating": 0,
+      "number_of_ratings": 0,
+      "total_services": 3,
+      "distance": 0,
+      "starting_price": 65,
+      "banner": "https://admin.khidmaplus.com/uploads/services/legacy_fixit/281/Screenshot-2026-06-10-212507.webp",
+      "profile_image": "https://admin.khidmaplus.com/uploads/categories/legacy_fixit/33/18208377.png",
+      "is_verified": 0,
+      "is_bookmarked": 0,
+      "next_available_slot": {
+        "date": "2026-10-29",
+        "starting_time": "09:00:00",
+        "ending_time": "09:30:00"
+      }
+    }
+  ],
+  "total": 2,
+  "service_min_price": 65,
+  "service_max_price": 299
+}

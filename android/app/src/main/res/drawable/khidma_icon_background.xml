@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Launcher icon background: brand gradient primary500 -> primary600. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <gradient android:angle="270"
+        android:startColor="#5465FF" android:endColor="#4351CC" />
+</shape>

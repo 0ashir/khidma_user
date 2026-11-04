@@ -1,0 +1,41 @@
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.buildDir = '../build'
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    project.evaluationDependsOn(':app')
+}
+
+// Align Kotlin jvmTarget with each module's Java target (Kotlin defaults to the JDK running Gradle)
+subprojects { sub ->
+    sub.plugins.withId("kotlin-android") {
+        sub.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach { task ->
+            task.compilerOptions.jvmTarget.set(sub.provider {
+                def android = sub.extensions.findByName("android")
+                def target = android?.compileOptions?.targetCompatibility?.toString() ?: "17"
+                org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(target)
+            })
+        }
+    }
+}
+
+// stripe_android's lint classpath needs com.google.android.gms:play-services-tapandpay, which is not on public Maven.
+// Skip release lint-vital for plugin modules so it doesn't fail the build.
+subprojects { sub ->
+    sub.tasks.configureEach { task ->
+        if (task.name.startsWith("lintVital")) {
+            task.enabled = false
+        }
+    }
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}

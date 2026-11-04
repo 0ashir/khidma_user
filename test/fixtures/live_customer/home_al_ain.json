@@ -1,0 +1,186 @@
+{
+  "error": false,
+  "message": "Data fetched successfully",
+  "data": {
+    "sliders": [
+      {
+        "id": "5",
+        "type": "URL",
+        "type_id": "0",
+        "slider_app_image": "https://admin.khidmaplus.com/uploads/sliders/khidma-bareeq-banner-v2.png",
+        "slider_web_image": "https://admin.khidmaplus.com/uploads/sliders/khidma-bareeq-banner-v2.png",
+        "category_parent_id": 0,
+        "category_name": "",
+        "provider_name": "",
+        "url": "https://app.khidmaplus.com/services",
+        "original_type": "url"
+      },
+      {
+        "id": "6",
+        "type": "URL",
+        "type_id": "0",
+        "slider_app_image": "https://admin.khidmaplus.com/uploads/sliders/legacy_fixit/71/g876rs1920x800.webp",
+        "slider_web_image": "https://admin.khidmaplus.com/uploads/sliders/legacy_fixit/71/g876rs1920x800.webp",
+        "category_parent_id": 0,
+        "category_name": "",
+        "provider_name": "",
+        "url": "https://app.khidmaplus.com/services",
+        "original_type": "url"
+      },
+      {
+        "id": "7",
+        "type": "URL",
+        "type_id": "0",
+        "slider_app_image": "https://admin.khidmaplus.com/uploads/sliders/legacy_fixit/38/WhatsApp-Image-2026-05-15-at-01.10.51-%282%29.jpeg",
+        "slider_web_image": "https://admin.khidmaplus.com/uploads/sliders/legacy_fixit/38/WhatsApp-Image-2026-05-15-at-01.10.51-%282%29.jpeg",
+        "category_parent_id": 0,
+        "category_name": "",
+        "provider_name": "",
+        "url": "https://app.khidmaplus.com/services",
+        "original_type": "url"
+      },
+      {
+        "id": "8",
+        "type": "URL",
+        "type_id": "0",
+        "slider_app_image": "https://admin.khidmaplus.com/uploads/sliders/legacy_fixit/72/65ders1920x800.webp",
+        "slider_web_image": "https://admin.khidmaplus.com/uploads/sliders/legacy_fixit/72/65ders1920x800.webp",
+        "category_parent_id": 0,
+        "category_name": "",
+        "provider_name": "",
+        "url": "https://app.khidmaplus.com/services",
+        "original_type": "url"
+      }
+    ],
+    "featured_sections": [
+      {
+        "id": "1",
+        "section_type": "all_categories",
+        "title": "Browse services",
+        "description": "",
+        "categories": [
+          {
+            "id": "3",
+            "slug": "hourly-maids",
+            "name": "Hourly Maids",
+            "category_image": "https://admin.khidmaplus.com/uploads/categories/legacy_fixit/260/kh%D9%81%D8%BAns.png",
+            "total_providers": 1,
+            "total_services": 1
+          },
+          {
+            "id": "6",
+            "slug": "car-wash",
+            "name": "Car wash",
+            "category_image": "https://admin.khidmaplus.com/uploads/categories/legacy_fixit/67/car-wash.png",
+            "total_providers": 1,
+            "total_services": 1
+          },
+          {
+            "id": "12",
+            "slug": "car-polishing",
+            "name": "Car polishing",
+            "category_image": "https://admin.khidmaplus.com/uploads/categories/legacy_fixit/33/18208377.png",
+            "total_providers": 1,
+            "total_services": 1
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "section_type": "recommended_service",
+        "title": "Services",
+        "description": "",
+        "services": [
+          {
+            "id": "77",
+            "slug": "khidma-qa-al-ain-3",
+            "title": "Four-hour home cleaning (Test)",
+            "description": "TEST BUSINESS for Khidma Plus app testing. Not a real service provider. Do not place genuine bookings. General cleaning of living areas, bedrooms, kitchen surfaces and bathrooms. Cleaning materials are not included.",
+            "category_name": "Hourly Maids",
+            "image": "https://admin.khidmaplus.com/uploads/services/legacy_fixit/281/Screenshot-2026-06-10-212507.webp",
+            "number_of_members_required": "1",
+            "duration": "240",
+            "duration_type": "Minutes",
+            "price": "160",
+            "discounted_price": "140",
+            "average_rating": "0",
+            "discount_percentage": 12.5,
+            "max_quantity_allowed": 3,
+            "is_bookmarked": 0,
+            "provider_id": 119,
+            "company_name": "Khidma Al Ain Services (Test)",
+            "is_provider_verified": 0
+          },
+          {
+            "id": "78",
+            "slug": "khidma-qa-al-ain-6",
+            "title": "Exterior car wash (Test)",
+            "description": "TEST BUSINESS for Khidma Plus app testing. Not a real service provider. Do not place genuine bookings. Exterior hand wash, wheel cleaning and drying for one passenger vehicle. Water and a suitable working area must be available.",
+            "category_name": "Car wash",
+            "image": "https://admin.khidmaplus.com/uploads/categories/legacy_fixit/33/18208377.png",
+            "number_of_members_required": "1",
+            "duration": "45",
+            "duration_type": "Minutes",
+            "price": "75",
+            "discounted_price": "65",
+            "average_rating": "0",
+            "discount_percentage": 13.33,
+            "max_quantity_allowed": 3,
+            "is_bookmarked": 0,
+            "provider_id": 119,
+            "company_name": "Khidma Al Ain Services (Test)",
+            "is_provider_verified": 0
+          },
+          {
+            "id": "79",
+            "slug": "khidma-qa-al-ain-12",
+            "title": "Exterior car polishing (Test)",
+            "description": "TEST BUSINESS for Khidma Plus app testing. Not a real service provider. Do not place genuine bookings. Exterior paint polishing and finishing for one passenger vehicle. Deep scratches and body repairs are excluded.",
+            "category_name": "Car polishing",
+            "image": "https://admin.khidmaplus.com/uploads/categories/legacy_fixit/33/18208377.png",
+            "number_of_members_required": "2",
+            "duration": "180",
+            "duration_type": "Minutes",
+            "price": "350",
+            "discounted_price": "299",
+            "average_rating": "0",
+            "discount_percentage": 14.57,
+            "max_quantity_allowed": 3,
+            "is_bookmarked": 0,
+            "provider_id": 119,
+            "company_name": "Khidma Al Ain Services (Test)",
+            "is_provider_verified": 0
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "section_type": "near_by_provider",
+        "title": "Providers",
+        "description": "",
+        "layout_type": "style_1",
+        "providers": [
+          {
+            "id": 119,
+            "slug": "khidma-qa-al-ain",
+            "company_name": "Khidma Al Ain Services (Test)",
+            "average_rating": 0,
+            "total_services": 3,
+            "distance": "0.00",
+            "starting_price": 65,
+            "is_verified": 0,
+            "is_bookmarked": 0,
+            "profile_image": "https://admin.khidmaplus.com/uploads/categories/legacy_fixit/33/18208377.png",
+            "banner": "https://admin.khidmaplus.com/uploads/services/legacy_fixit/281/Screenshot-2026-06-10-212507.webp",
+            "next_available_slot": {
+              "date": "2026-10-29",
+              "starting_time": "09:00:00",
+              "ending_time": "09:30:00"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "code": 200
+}
