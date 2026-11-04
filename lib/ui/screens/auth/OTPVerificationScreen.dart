@@ -1,5 +1,6 @@
 import 'package:e_demand/app/generalImports.dart';
 import 'package:e_demand/data/enums/userStatusEnum.dart';
+import 'package:e_demand/utils/verifiedPhoneNumber.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart'; // ignore_for_file: use_build_context_synchronously
 
@@ -522,6 +523,30 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         return;
       }
 
+      var verifiedMobileNumber = widget.phoneNumberWithOutCountryCode;
+      var verifiedCountryCode = widget.countryCode;
+      var verifiedInternationalNumber = widget.phoneNumberWithCountryCode;
+      if (!_isEmail && widget.authenticationType != 'sms_gateway') {
+        try {
+          // Firebase may normalize the typed number (for example a trunk zero).
+          // Carry the successful OTP credential's identity into every next step.
+          final phone = VerifiedPhoneNumber.fromFirebase(
+            phoneNumber: verifyOtpState.signinCredential?.user?.phoneNumber,
+            countryCode: widget.countryCode,
+          );
+          verifiedMobileNumber = phone.nationalNumber;
+          verifiedCountryCode = phone.countryCode;
+          verifiedInternationalNumber = phone.internationalNumber;
+        } on FormatException {
+          UiUtils.showMessage(
+            context,
+            'somethingWentWrong'.translate(context: context),
+            ToastificationType.error,
+          );
+          return;
+        }
+      }
+
       UiUtils.showMessage(
         context,
         'otpVerifiedSuccessfully'.translate(context: context),
@@ -549,10 +574,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
             'source': widget.source,
             'resetToken': verifyOtpState.resetToken,
             'email': isEmail ? widget.email : null,
-            'phoneNumber': isEmail
-                ? null
-                : widget.phoneNumberWithOutCountryCode,
-            'countryCode': isEmail ? null : widget.countryCode,
+            'phoneNumber': isEmail ? null : verifiedMobileNumber,
+            'countryCode': isEmail ? null : verifiedCountryCode,
             'isFirstTimePasswordSet': isFirstTimeSet,
             'authenticationType': widget.authenticationType,
           },
@@ -583,7 +606,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               'source': widget.source,
               'prefillValue': isEmail
                   ? widget.email
-                  : widget.phoneNumberWithCountryCode,
+                  : verifiedInternationalNumber,
               'needsPasswordSet': true,
             },
           );
@@ -604,12 +627,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
           uid: '',
           latitude: latitude.toString(),
           longitude: longitude.toString(),
-          loginType: widget.email != null ? LogInType.email : LogInType.phone,
-          email: widget.email,
-          countryCode: widget.email != null ? null : widget.countryCode,
-          mobileNumber: widget.email != null
-              ? null
-              : widget.phoneNumberWithOutCountryCode,
+          loginType: _isEmail ? LogInType.email : LogInType.phone,
+          email: _isEmail ? widget.email : null,
+          countryCode: _isEmail ? null : verifiedCountryCode,
+          mobileNumber: _isEmail ? null : verifiedMobileNumber,
         ).then((final UserDetailsModel value) {
           HiveRepository.setUserFirstTimeInApp = false;
           HiveRepository.setUserLoggedIn = true;
@@ -658,10 +679,9 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
           context,
           editProfileRoute,
           arguments: {
-            'phoneNumberWithCountryCode': widget.phoneNumberWithCountryCode,
-            'phoneNumberWithOutCountryCode':
-                widget.phoneNumberWithOutCountryCode,
-            'countryCode': widget.countryCode,
+            'phoneNumberWithCountryCode': verifiedInternationalNumber,
+            'phoneNumberWithOutCountryCode': verifiedMobileNumber,
+            'countryCode': verifiedCountryCode,
             'source': widget.source,
             'uid': '',
             "isNewUser": true,
