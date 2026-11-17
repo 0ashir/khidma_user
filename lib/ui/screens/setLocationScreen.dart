@@ -80,7 +80,7 @@ class _SetLocationScreenState extends State<SetLocationScreen> {
               context
                   .read<GooglePlaceAutocompleteCubit>()
                   .searchLocationFromPlacesAPI(
-                    text: Uri.encodeComponent(_searchLocation.text.trim()),
+                    text: _searchLocation.text.trim(), // Dio encodes query params
                   );
               searchedTextLength = Uri.encodeComponent(
                 _searchLocation.text,
@@ -227,6 +227,7 @@ class _SetLocationScreenState extends State<SetLocationScreen> {
             'navigateToMap': true,
             "latitude": finalLatitude,
             "longitude": finalLongitude,
+            'placeName': placeName,
           });
         }
       } catch (e) {

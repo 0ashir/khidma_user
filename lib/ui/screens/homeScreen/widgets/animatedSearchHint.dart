@@ -91,7 +91,7 @@ class _AnimatedSearchHintState extends State<AnimatedSearchHint>
               child: CustomText(
                 _searchValues[searchValueIndex].translate(context: context),
                 color: context.colors.textPrimary,
-                fontWeight: FontWeight.w400,
+                fontWeight: FontWeight.w500,
                 fontStyle: FontStyle.normal,
                 fontSize: 14,
                 maxLines: 1,

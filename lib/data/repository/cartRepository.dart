@@ -443,6 +443,9 @@ class CartRepository {
 
     /// True when [billingAddress] is just the service address.
     final bool billingSameAsShipping = false,
+
+    /// Car plate for car services; null when the cart doesn't need one.
+    final String? carPlateNumber,
   }) async {
     try {
       final parameter = <String, dynamic>{
@@ -470,6 +473,10 @@ class CartRepository {
       parameter.removeWhere(
         (key, value) => value == null || value == "null" || value == '',
       );
+      // Sent even when empty so the server can reject a missing plate.
+      if (carPlateNumber != null) {
+        parameter[ApiParam.carPlateNumber] = carPlateNumber.trim();
+      }
 
       final orderData = await ApiClient.post(
         url: ApiUrl.placeOrder,

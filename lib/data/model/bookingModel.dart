@@ -252,6 +252,7 @@ class BookingDetailModel {
         json['is_cancelable'] == true ||
         json['is_cancelable']?.toString() == '1';
     remarks = json['remarks']?.toString() ?? '';
+    carPlateNumber = json['car_plate_number']?.toString() ?? '';
     liveTrackingStarted =
         json['live_tracking_started'] == true ||
         json['live_tracking_started']?.toString() == '1';
@@ -412,6 +413,7 @@ class BookingDetailModel {
     data['is_pay_later_allowed'] = isPayLaterAllowed;
     data['is_cancelable'] = isCancelable;
     data['remarks'] = remarks;
+    data['car_plate_number'] = carPlateNumber;
     data['live_tracking_started'] = liveTrackingStarted;
     if (customJobRequest != null) {
       data['custom_job_request'] = customJobRequest!.toJson();
@@ -446,6 +448,7 @@ class BookingDetailModel {
   bool? isPayLaterAllowed;
   bool? isCancelable;
   String? remarks;
+  String? carPlateNumber;
   bool? liveTrackingStarted;
   BookingCustomJobRequest? customJobRequest;
 

@@ -62,6 +62,7 @@ class PlaceOrderCubit extends Cubit<PlaceOrderState> {
     final String? cartId,
     final GetAddressModel? billingAddress,
     final bool billingSameAsShipping = false,
+    final String? carPlateNumber,
   }) async {
     try {
       emit(PlaceOrderInProgress());
@@ -98,6 +99,7 @@ class PlaceOrderCubit extends Cubit<PlaceOrderState> {
         cartId: cartId,
         billingAddress: billingAddress,
         billingSameAsShipping: billingSameAsShipping,
+        carPlateNumber: carPlateNumber,
       );
 
       String razorpayOrderId = '';

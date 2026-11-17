@@ -171,7 +171,7 @@ class CustomNavigationBarState extends State<CustomNavigationBar>
                             width: double.infinity,
                             color: context.colors.backgroundPrimary,
                             padding: const EdgeInsets.symmetric(
-                              vertical: 8,
+                              vertical: 4,
                               horizontal: 4,
                             ),
                             borderRadiusStyle: attachedToCartBar
@@ -202,14 +202,14 @@ class CustomNavigationBarState extends State<CustomNavigationBar>
                               selectedItemColor: context.colors.textBrand,
                               unselectedItemColor: context.colors.textSecondary,
                               selectedLabelStyle: const TextStyle(
-                                fontSize: 12,
-                                height: 18 / 12,
-                                fontWeight: FontWeight.w600,
+                                fontSize: 11,
+                                height: 16 / 11,
+                                fontWeight: FontWeight.w700,
                               ),
                               unselectedLabelStyle: const TextStyle(
-                                fontSize: 12,
-                                height: 18 / 12,
-                                fontWeight: FontWeight.w400,
+                                fontSize: 11,
+                                height: 16 / 11,
+                                fontWeight: FontWeight.w500,
                               ),
                               currentIndex:
                                   selectedIndexOfBottomNavigationBar.value,
@@ -270,7 +270,7 @@ class CustomNavigationBarState extends State<CustomNavigationBar>
                                 _getBottomNavigationBarItem(
                                   activeImage: AppAssets.activeExplore,
                                   deActiveImage: AppAssets.inactiveExplore,
-                                  title: 'explore'.translate(context: context),
+                                  title: 'home'.translate(context: context),
                                   index: 0,
                                   currentIndex:
                                       selectedIndexOfBottomNavigationBar.value,
@@ -335,24 +335,24 @@ class CustomNavigationBarState extends State<CustomNavigationBar>
   }) {
     final icon = currentIndex == index
         ? CustomContainer(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            borderRadius: 16,
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            borderRadius: 14,
             color: context.colors.backgroundBrandSubtle,
             child: CustomSvgPicture(
               svgImage: activeImage,
-              height: 24,
-              width: 24,
+              height: 21,
+              width: 21,
               color: context.colors.textBrand,
               avoideResponsive: true,
             ),
           )
         : Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
             child: CustomSvgPicture(
               svgImage: deActiveImage,
               color: context.colors.iconSecondary,
-              height: 24,
-              width: 24,
+              height: 21,
+              width: 21,
               avoideResponsive: true,
             ),
           );

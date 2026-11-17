@@ -26,13 +26,14 @@ class HomeCategorySection extends StatelessWidget {
     child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        // Wide, short tile: shorter than the old 48px circle, slightly wider.
         CustomContainer(
-          width: 48,
-          height: 48,
-          borderRadius: 24,
+          width: 60,
+          height: 40,
+          borderRadius: 12,
           color: context.colors.backgroundSecondary,
           clipBehavior: Clip.antiAlias,
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
           child: CustomCachedNetworkImage(
             networkImageUrl: category.categoryImage ?? '',
             width: 24,
@@ -41,7 +42,7 @@ class HomeCategorySection extends StatelessWidget {
             defaultColourFilter: false,
           ),
         ),
-        const CustomSizedBox(height: 6),
+        const CustomSizedBox(height: 4),
         CustomText(
           category.name ?? '',
           fontSize: 12,
@@ -61,13 +62,13 @@ class HomeCategorySection extends StatelessWidget {
       final int crossAxisCount = ResponsiveHelper.isTabletDevice(context)
           ? 6
           : 4;
-      const double spacing = 24;
+      const double spacing = 12;
       final double itemWidth =
           (constraints.maxWidth - spacing * (crossAxisCount - 1)) /
           crossAxisCount;
       return Wrap(
         spacing: spacing,
-        runSpacing: 16,
+        runSpacing: 12,
         children: List.generate(categoryList.length, (index) {
           return SizedBox(
             width: itemWidth,
@@ -168,7 +169,7 @@ class HomeCategorySection extends StatelessWidget {
                   children: categories
                       .map(
                         (final category) => CustomSizedBox(
-                          width: 64,
+                          width: 72,
                           child: _categoryItem(context, category),
                         ),
                       )

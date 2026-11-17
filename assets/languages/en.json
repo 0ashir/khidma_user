@@ -907,5 +907,19 @@
   "budgetRange": "Budget Range",
   "viewRequestDetails": "View Request Details",
   "attachment": "Attachment",
-  "paymentNotCompleted": "Payment wasn't completed. You can try again or choose another payment method."
+  "paymentNotCompleted": "Payment wasn't completed. You can try again or choose another payment method.",
+  "homeHeadline": "Your day, made easier.",
+  "allServices": "All services",
+  "whatCanWeHelpWith": "What can we help with?",
+  "needDifferentService": "Need a different service?",
+  "requestIt": "Request it",
+  "carPlateNumber": "Car plate number",
+  "carPlateNumberHint": "e.g. Dubai A 12345",
+  "pleaseEnterCarPlateNumber": "Please enter your car plate number",
+  "chooseAProvider": "Choose a Provider",
+  "ourServices": "Our Services",
+  "searchForAService": "Search for a Service",
+  "appName": "Khidma Plus",
+  "pleaseEnterCarPlateForEachCar": "Please enter the plate number for each car",
+  "serviceAddressHint": "Please make sure of the service address, as it may differ from your current location."
 }

@@ -16,6 +16,13 @@ class Cart {
   String? appliedPromoCodeName;
   String? isPayLaterAllowed;
   String? isOnlinePaymentAllowed;
+
+  /// True when a service in this cart is car-related; checkout then asks
+  /// for the car plate number.
+  bool requiresCarPlateNumber = false;
+
+  /// Plate fields to show: one per car (summed quantity of car services).
+  int carPlateCount = 0;
   String? visitingCharges;
   String? advanceBookingDays;
   String? companyName;
@@ -120,6 +127,14 @@ class Cart {
     isPayLaterAllowed = json['is_pay_later_allowed']?.toString() ?? '';
     isOnlinePaymentAllowed =
         json['is_online_payment_allowed']?.toString() ?? '';
+    requiresCarPlateNumber =
+        json['requires_car_plate_number'] == true ||
+        json['requires_car_plate_number']?.toString() == '1' ||
+        json['requires_car_plate_number']?.toString() == 'true';
+    carPlateCount =
+        int.tryParse(json['car_plate_count']?.toString() ?? '') ??
+        (requiresCarPlateNumber ? 1 : 0);
+    if (requiresCarPlateNumber && carPlateCount < 1) carPlateCount = 1;
     isAtStoreAvailable = json['at_store']?.toString() ?? '';
     isAtDoorstepAvailable = json['at_doorstep']?.toString() ?? '';
     isProviderVerified = json['is_provider_verified']?.toString() == "1";

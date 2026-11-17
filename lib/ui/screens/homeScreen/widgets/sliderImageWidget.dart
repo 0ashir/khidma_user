@@ -8,7 +8,10 @@ import 'package:flutter/material.dart';
 class SliderImageWidget extends StatefulWidget {
   final List<SliderImage> sliderImages;
 
-  const SliderImageWidget({Key? key, required this.sliderImages})
+  /// Overrides the default phone height (200) when set.
+  final double? height;
+
+  const SliderImageWidget({Key? key, required this.sliderImages, this.height})
     : super(key: key);
 
   @override
@@ -40,7 +43,7 @@ class _SliderImageWidgetState extends State<SliderImageWidget> {
   Widget build(BuildContext context) {
     final double sliderHeight = ResponsiveHelper.isTabletDevice(context)
         ? 280
-        : 200.rs(context);
+        : (widget.height ?? 200).rs(context);
     return CustomSizedBox(
       height: sliderHeight,
       child: Stack(
@@ -73,7 +76,7 @@ class _SliderImageWidgetState extends State<SliderImageWidget> {
             items: List.generate(widget.sliderImages.length, (index) {
               final SliderImage sliderImage = widget.sliderImages[index];
               return Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15.rs(context)),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: SingleSliderImageWidget(sliderImage: sliderImage),
               );
             }),

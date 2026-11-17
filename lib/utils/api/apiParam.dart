@@ -98,6 +98,7 @@ class ApiParam {
   static const String message = "message";
   static const String dateOfService = "date_of_service";
   static const String orderNote = "order_note";
+  static const String carPlateNumber = "car_plate_number";
   static const String startingTime = "starting_time";
   static const String atStore = "at_store";
   static const String billingSameAsShipping = "billing_same_as_shipping";

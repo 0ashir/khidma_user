@@ -152,6 +152,7 @@ class _AllowLocationScreenState extends State<AllowLocationScreen>
             arguments: {
               "defaultLatitude": value['latitude'].toString(),
               "defaultLongitude": value['longitude'].toString(),
+              'placeName': value['placeName'],
               'showAddressForm': false,
               'screenType': GoogleMapScreenType.selectLocationOnMap,
             },

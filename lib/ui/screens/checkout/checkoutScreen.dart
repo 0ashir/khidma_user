@@ -138,6 +138,84 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   String? selectedPaymentMethod;
   final TextEditingController _instructionController = TextEditingController();
 
+  /// One controller per car; grows with the cart quantity and keeps typed
+  /// plates when the count goes down and back up. Only the first
+  /// [_carPlateCount] are shown and submitted.
+  final List<TextEditingController> _carPlateControllers = [];
+
+  /// Car services (flagged per category by the admin) need the plate number.
+  bool get _requiresCarPlate => _carPlateCount > 0;
+
+  /// One plate per car: the summed quantity of car services in the cart.
+  int get _carPlateCount => widget.isFrom == "customJobRequest"
+      ? 0
+      : context.read<CartCubit>().carPlateCount(isFrom: widget.isFrom);
+
+  TextEditingController _carPlateControllerAt(final int index) {
+    while (_carPlateControllers.length <= index) {
+      _carPlateControllers.add(TextEditingController());
+    }
+    return _carPlateControllers[index];
+  }
+
+  String _normalizedPlate(final String plate) =>
+      plate.trim().replaceAll(RegExp(r'\s+'), ' ').toUpperCase();
+
+  static final RegExp _carPlatePattern = RegExp(
+    r'^[\p{L}\p{N}][\p{L}\p{N} \-]*$',
+    unicode: true,
+  );
+
+  bool _isValidCarPlate(final String plate) =>
+      plate.isNotEmpty &&
+      plate.length <= 20 &&
+      _carPlatePattern.hasMatch(plate);
+
+  Widget _buildCarPlateFields() {
+    final int count = _carPlateCount;
+    return Column(
+      children: List.generate(
+        count,
+        (final int index) => _buildCarPlateField(index: index, count: count),
+      ),
+    );
+  }
+
+  Widget _buildCarPlateField({
+    required final int index,
+    required final int count,
+  }) => Padding(
+    padding: const EdgeInsets.only(top: 12),
+    child: CustomTextFormField(
+      controller: _carPlateControllerAt(index),
+      bottomPadding: 0,
+      isRequired: true,
+      labelText: count > 1
+          ? '${_checkoutText('carPlateNumber', 'Car plate number')} ${index + 1}'
+          : _checkoutText('carPlateNumber', 'Car plate number'),
+      hintText: _checkoutText('carPlateNumberHint', 'e.g. Dubai A 12345'),
+      fillColor: context.colors.backgroundPrimary,
+      textCapitalization: TextCapitalization.characters,
+      textInputAction: index < count - 1
+          ? TextInputAction.next
+          : TextInputAction.done,
+      maxLength: 20,
+      prefix: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Icon(
+          Icons.directions_car_outlined,
+          size: 20,
+          color: context.colors.iconSecondary,
+        ),
+      ),
+    ),
+  );
+
+  String _checkoutText(final String key, final String fallback) {
+    final String value = key.translate(context: context);
+    return value == key ? fallback : value;
+  }
+
   final List<Map<String, String>> deliverableOptions = [
     {
       "title": 'atHome',
@@ -827,6 +905,85 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     ),
   );
 
+  /// Service address the booking is for: a reminder that it may differ from
+  /// the customer's current location, then the full address (Building Number,
+  /// Street Address, Area, City as composed by the server) with a Change
+  /// button that opens the address picker.
+  Widget _buildServiceAddressCard({
+    required final String value,
+    required final VoidCallback onTap,
+  }) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      CustomText(
+        'serviceLocation'.translate(context: context),
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        color: context.colors.textSecondary,
+      ),
+      const CustomSizedBox(height: 2),
+      CustomText(
+        _checkoutText(
+          'serviceAddressHint',
+          'Please make sure of the service address, as it may differ from your current location.',
+        ),
+        fontSize: 11,
+        color: context.colors.textError,
+        maxLines: 3,
+      ),
+      const CustomSizedBox(height: 8),
+      CustomContainer(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        color: context.colors.backgroundPrimary,
+        borderRadius: 12,
+        border: Border.all(color: context.colors.borderDefault),
+        child: Row(
+          children: [
+            Icon(
+              Icons.location_on_outlined,
+              size: 20,
+              color: context.colors.iconBrand,
+            ),
+            const CustomSizedBox(width: 8),
+            Expanded(
+              child: CustomText(
+                value.trim().isEmpty
+                    ? 'selectAddress'.translate(context: context)
+                    : value,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                maxLines: 3,
+                color: context.colors.textPrimary,
+              ),
+            ),
+            const CustomSizedBox(width: 8),
+            CustomInkWellContainer(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(8),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: context.colors.textBrand),
+                ),
+                child: CustomText(
+                  'change'.translate(context: context),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: context.colors.textBrand,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+
   /// Billing address under the service location. Doorstep: a "same as service
   /// location" tick and, when unticked, a picker styled like the service
   /// location value. At-store there is no service address to match, so the
@@ -978,7 +1135,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
                   return BlocListener<AddAddressCubit, AddAddressState>(
                     listener: (context, state) {},
-                    child: buildServiceLocationValue(
+                    child: _buildServiceAddressCard(
                       value: selectedAddress?.address?.toString() ?? '',
                       onTap: () {
                         UiUtils.showBottomSheet(
@@ -1525,6 +1682,30 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   void placeOrder() {
+    final int plateCount = _carPlateCount;
+    final bool requiresCarPlate = plateCount > 0;
+    final List<String> carPlates = List.generate(
+      plateCount,
+      (final int i) => _normalizedPlate(_carPlateControllerAt(i).text),
+    );
+    if (requiresCarPlate && !carPlates.every(_isValidCarPlate)) {
+      UiUtils.showMessage(
+        context,
+        plateCount > 1
+            ? _checkoutText(
+                'pleaseEnterCarPlateForEachCar',
+                'Please enter the plate number for each car',
+              )
+            : _checkoutText(
+                'pleaseEnterCarPlateNumber',
+                'Please enter your car plate number',
+              ),
+        ToastificationType.warning,
+      );
+      return;
+    }
+    // Plates go to the server comma-separated (plates never contain commas).
+    final String carPlate = carPlates.join(', ');
     if (_isBillingSeparate && _effectiveBillingAddress == null) {
       UiUtils.showMessage(
         context,
@@ -1558,6 +1739,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       cartId: context.read<CartCubit>().getCartId(isFrom: widget.isFrom),
       billingAddress: _effectiveBillingAddress,
       billingSameAsShipping: _billingSameAsShippingFlag,
+      carPlateNumber: requiresCarPlate ? carPlate : null,
     );
   }
 
@@ -2471,6 +2653,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   List<Widget> _buildServicesFooter(final String? providerId) => [
     buildAddMoreAndInstructionPills(providerId),
+    BlocBuilder<CartCubit, CartState>(
+      builder: (context, _) =>
+          _requiresCarPlate ? _buildCarPlateFields() : const CustomSizedBox(),
+    ),
     ValueListenableBuilder<TextEditingValue>(
       valueListenable: _instructionController,
       builder: (context, value, child) => value.text.trim().isEmpty
@@ -3157,6 +3343,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   @override
   void dispose() {
     _instructionController.dispose();
+    for (final TextEditingController controller in _carPlateControllers) {
+      controller.dispose();
+    }
     paymentButtonName.dispose();
     _isLocationUnavailableAtDoorstep.dispose();
     _cartSubscription?.cancel();

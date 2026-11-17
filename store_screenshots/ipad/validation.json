@@ -1,0 +1,98 @@
+[
+  {
+    "file": "ipad_2064x2752\\01_home_en.png",
+    "width": 2064,
+    "height": 2752,
+    "mode": "RGB"
+  },
+  {
+    "file": "ipad_2064x2752\\02_provider_en.png",
+    "width": 2064,
+    "height": 2752,
+    "mode": "RGB"
+  },
+  {
+    "file": "ipad_2064x2752\\03_service_en.png",
+    "width": 2064,
+    "height": 2752,
+    "mode": "RGB"
+  },
+  {
+    "file": "ipad_2064x2752\\04_checkout_en.png",
+    "width": 2064,
+    "height": 2752,
+    "mode": "RGB"
+  },
+  {
+    "file": "ipad_2064x2752\\05_booking_en.png",
+    "width": 2064,
+    "height": 2752,
+    "mode": "RGB"
+  },
+  {
+    "file": "ipad_2064x2752\\06_bookings_en.png",
+    "width": 2064,
+    "height": 2752,
+    "mode": "RGB"
+  },
+  {
+    "file": "ipad_2064x2752\\07_chat_en.png",
+    "width": 2064,
+    "height": 2752,
+    "mode": "RGB"
+  },
+  {
+    "file": "ipad_2064x2752\\08_request_en.png",
+    "width": 2064,
+    "height": 2752,
+    "mode": "RGB"
+  },
+  {
+    "file": "ipad_2048x2732\\01_home_en.png",
+    "width": 2048,
+    "height": 2732,
+    "mode": "RGB"
+  },
+  {
+    "file": "ipad_2048x2732\\02_provider_en.png",
+    "width": 2048,
+    "height": 2732,
+    "mode": "RGB"
+  },
+  {
+    "file": "ipad_2048x2732\\03_service_en.png",
+    "width": 2048,
+    "height": 2732,
+    "mode": "RGB"
+  },
+  {
+    "file": "ipad_2048x2732\\04_checkout_en.png",
+    "width": 2048,
+    "height": 2732,
+    "mode": "RGB"
+  },
+  {
+    "file": "ipad_2048x2732\\05_booking_en.png",
+    "width": 2048,
+    "height": 2732,
+    "mode": "RGB"
+  },
+  {
+    "file": "ipad_2048x2732\\06_bookings_en.png",
+    "width": 2048,
+    "height": 2732,
+    "mode": "RGB"
+  },
+  {
+    "file": "ipad_2048x2732\\07_chat_en.png",
+    "width": 2048,
+    "height": 2732,
+    "mode": "RGB"
+  },
+  {
+    "file": "ipad_2048x2732\\08_request_en.png",
+    "width": 2048,
+    "height": 2732,
+    "mode": "RGB"
+  }
+]

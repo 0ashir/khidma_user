@@ -2,7 +2,8 @@ import 'package:e_demand/app/generalImports.dart';
 import 'package:e_demand/ui/widgets/scheduledMaintainanceContainer.dart';
 import 'package:flutter/material.dart';
 
-import 'widgets/homeHeader.dart';
+import 'package:e_demand/ui/screens/homeScreen/widgets/homeCategoryShowcase.dart';
+import 'package:e_demand/ui/screens/homeScreen/widgets/homeHeader.dart';
 import 'widgets/homeScreenShimmer.dart';
 import 'widgets/homeSections.dart';
 import 'widgets/sliderImageWidget.dart';
@@ -98,6 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
             arguments: {
               "defaultLatitude": value['latitude'].toString(),
               "defaultLongitude": value['longitude'].toString(),
+              'placeName': value['placeName'],
               'showAddressForm': false,
               'screenType': GoogleMapScreenType.selectLocationOnMap,
             },
@@ -135,16 +137,54 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
+    // Category sections and the request-service section are drawn by the
+    // dedicated top layout; everything else keeps the admin-defined order.
+    Sections? allCategoriesSection;
+    final List<Sections> groupSections = [];
+    bool showRequestService = false;
+    final List<Sections> otherSections = [];
+    for (final Sections section in sections) {
+      switch (section.sectionType) {
+        case 'all_categories':
+          allCategoriesSection ??= section;
+        case 'categories':
+          if (section.categories.isNotEmpty) groupSections.add(section);
+        case 'custom_job_requests':
+          showRequestService = true;
+        default:
+          otherSections.add(section);
+      }
+    }
+    final bool hasShowcase =
+        (allCategoriesSection?.categories.isNotEmpty ?? false) ||
+        groupSections.isNotEmpty;
+
     final Widget content = Column(
       children: [
-        const CustomSizedBox(height: 25),
+        const CustomSizedBox(height: 2),
         if (appSetting != null)
           ScheduledMaintenanceContainer(appSettings: appSetting),
-        if (sliders.isNotEmpty) ...[
-          SliderImageWidget(sliderImages: sliders),
+        if (hasShowcase) ...[
+          HomeCategoryShowcase(
+            allCategoriesSection: allCategoriesSection,
+            groupSections: groupSections,
+            banner: sliders.isEmpty
+                ? null
+                : SliderImageWidget(sliderImages: sliders, height: 140),
+          ),
+          const CustomSizedBox(height: 20),
+        ] else if (sliders.isNotEmpty) ...[
+          SliderImageWidget(sliderImages: sliders, height: 140),
+          const CustomSizedBox(height: 16),
+        ],
+        if (showRequestService) ...[
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: RequestServiceBannerWidget(),
+          ),
           const CustomSizedBox(height: 24),
         ],
-        HomeSections(sectionsList: sections),
+        HomeSections(sectionsList: otherSections),
       ],
     );
 
@@ -196,45 +236,51 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-  Widget build(final BuildContext context) =>
-      AnnotatedRegion<SystemUiOverlayStyle>(
-        value: UiUtils.getSystemUiOverlayStyle(context: context).copyWith(
-          statusBarColor: Colors.transparent,
-          statusBarIconBrightness: Brightness.light,
-          statusBarBrightness: Brightness.dark,
-        ),
-        child: SafeArea(
-          top: false,
-          child: Scaffold(
-            body: Stack(
+  Widget build(
+    final BuildContext context,
+  ) => AnnotatedRegion<SystemUiOverlayStyle>(
+    value: UiUtils.getSystemUiOverlayStyle(context: context).copyWith(
+      statusBarColor: Colors.transparent,
+      // White header: dark status-bar icons in light theme.
+      statusBarIconBrightness: Theme.of(context).brightness == Brightness.dark
+          ? Brightness.light
+          : Brightness.dark,
+      statusBarBrightness: Theme.of(context).brightness == Brightness.dark
+          ? Brightness.dark
+          : Brightness.light,
+    ),
+    child: SafeArea(
+      top: false,
+      child: Scaffold(
+        backgroundColor: context.colors.backgroundPrimary,
+        body: Stack(
+          children: [
+            Column(
               children: [
-                Column(
-                  children: [
-                    HomeHeader(
-                      scrollController: widget.scrollController,
-                      onLocationTap: locationOnTap,
-                    ),
-                    Expanded(
-                      child:
-                          BlocBuilder<SystemSettingCubit, SystemSettingState>(
-                            builder: (context, systemSettingState) =>
-                                _buildHomeBody(systemSettingState),
-                          ),
-                    ),
-                  ],
+                HomeHeader(
+                  scrollController: widget.scrollController,
+                  onLocationTap: locationOnTap,
                 ),
-                const Padding(
-                  padding: EdgeInsetsDirectional.only(
-                    bottom: kBottomNavigationBarHeight + 18,
-                  ),
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: CartSubDetailsContainer(),
+                Expanded(
+                  child: BlocBuilder<SystemSettingCubit, SystemSettingState>(
+                    builder: (context, systemSettingState) =>
+                        _buildHomeBody(systemSettingState),
                   ),
                 ),
               ],
             ),
-          ),
+            const Padding(
+              padding: EdgeInsetsDirectional.only(
+                bottom: kBottomNavigationBarHeight + 18,
+              ),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: CartSubDetailsContainer(),
+              ),
+            ),
+          ],
         ),
-      );
+      ),
+    ),
+  );
 }

@@ -393,6 +393,10 @@ class _BookingDetailsState extends State<BookingDetails> {
             const CustomSizedBox(height: 16),
             _buildCustomJobProviderNoteContainer(),
           ],
+          if ((booking.carPlateNumber ?? '').isNotEmpty) ...[
+            const CustomSizedBox(height: 16),
+            _buildCarPlateSection(booking.carPlateNumber!),
+          ],
           if (hasRemarks) ...[
             const CustomSizedBox(height: 16),
             _buildRemarksSection(),
@@ -413,6 +417,55 @@ class _BookingDetailsState extends State<BookingDetails> {
     return LiveTrackingMiniMapSection(
       orderId: _bookingDetails!.id!,
       addressId: _bookingDetails!.addressId ?? '',
+    );
+  }
+
+  Widget _buildCarPlateSection(final String plate) {
+    final String label = 'carPlateNumber'.translate(context: context);
+    // Several cars are stored comma-separated, one plate per car.
+    final List<String> plates = plate
+        .split(',')
+        .map((final String p) => p.trim())
+        .where((final String p) => p.isNotEmpty)
+        .toList();
+    return CustomContainer(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      color: context.colors.backgroundPrimary,
+      borderRadius: 12,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.directions_car_outlined,
+            size: 22,
+            color: context.colors.iconBrand,
+          ),
+          const CustomSizedBox(width: 10),
+          Expanded(
+            child: CustomText(
+              label == 'carPlateNumber' ? 'Car plate number' : label,
+              fontSize: 14,
+              color: context.colors.textSecondary,
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              for (int i = 0; i < plates.length; i++)
+                Padding(
+                  padding: EdgeInsets.only(top: i == 0 ? 0 : 6),
+                  child: CustomText(
+                    plates.length > 1 ? '${i + 1}. ${plates[i]}' : plates[i],
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: context.colors.textPrimary,
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 

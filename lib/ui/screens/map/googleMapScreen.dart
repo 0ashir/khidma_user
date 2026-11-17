@@ -35,6 +35,7 @@ class GoogleMapScreen extends StatefulWidget {
     required this.defaultLatitude,
     required this.defaultLongitude,
     this.screenType = GoogleMapScreenType.selectLocationOnMap,
+    this.placeName,
   }) : super(key: key);
 
   final bool showAddressForm;
@@ -42,6 +43,10 @@ class GoogleMapScreen extends StatefulWidget {
   final String defaultLatitude;
   final String defaultLongitude;
   final GoogleMapScreenType screenType;
+
+  /// Name of the place picked in search; shown instead of the reverse-geocoded
+  /// address for the initial pin.
+  final String? placeName;
 
   @override
   State<GoogleMapScreen> createState() => _GoogleMapScreenState();
@@ -78,6 +83,7 @@ class GoogleMapScreen extends StatefulWidget {
             screenType:
                 argument["screenType"] ??
                 GoogleMapScreenType.selectLocationOnMap,
+            placeName: argument['placeName']?.toString(),
           ),
         ),
       ),
@@ -197,7 +203,11 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
 
     initialCenter = AppLatLng(selectedLatitude!, selectedLongitude!);
 
-    createAddressFromCoOrdinates(selectedLatitude!, selectedLongitude!);
+    createAddressFromCoOrdinates(
+      selectedLatitude!,
+      selectedLongitude!,
+      placeName: widget.placeName,
+    );
 
     // Ensure we zoom to the marker location after initialization
     Future.delayed(const Duration(milliseconds: 100), () {
@@ -244,8 +254,9 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
 
   Future<void> createAddressFromCoOrdinates(
     final double latitude,
-    final double longitude,
-  ) async {
+    final double longitude, {
+    final String? placeName,
+  }) async {
     final int requestId = ++_addressRequestId;
     isResolvingAddress.value = true;
     try {
@@ -257,6 +268,11 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
       //a newer call already started (and maybe already finished) while this
       //one was in flight — this result is stale, drop it
       if (requestId != _addressRequestId) return;
+      // The device geocoder often names a nearby street or plus code instead
+      // of the place the user searched for, so prefer the searched name.
+      if (placeName != null && placeName.trim().isNotEmpty) {
+        newAddress['lineOneAddress'] = placeName.trim();
+      }
       selectedAddress.value = newAddress;
     } finally {
       //always clear, even if hideInfoWindow or geocoding throws — otherwise
@@ -287,6 +303,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
   Future<void> _placeMarkerOnLatitudeAndLongitude({
     required final double latitude,
     required final double longitude,
+    final String? placeName,
   }) async {
     selectedLatitude = latitude;
     selectedLongitude = longitude;
@@ -315,7 +332,11 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
       latitude: selectedLatitude.toString(),
       longitude: selectedLongitude.toString(),
     );
-    await createAddressFromCoOrdinates(selectedLatitude!, selectedLongitude!);
+    await createAddressFromCoOrdinates(
+      selectedLatitude!,
+      selectedLongitude!,
+      placeName: placeName,
+    );
   }
 
   void _switchToLocationSelectionMode() {
@@ -401,6 +422,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
         context: context,
         backgroundColor: context.colors.backgroundPrimary,
         titleWidget: MapTitleWidget(
+          selectedAddress: selectedAddress,
           currentScreenType: currentScreenType,
           showAddressForm: widget.showAddressForm,
         ),
@@ -432,6 +454,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                         _placeMarkerOnLatitudeAndLongitude(
                           latitude: newLatitude,
                           longitude: newLongitude,
+                          placeName: value['placeName']?.toString(),
                         );
                       }
                     });
@@ -552,6 +575,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
         _placeMarkerOnLatitudeAndLongitude(
           latitude: newLatitude,
           longitude: newLongitude,
+          placeName: value['placeName']?.toString(),
         );
       }
     });

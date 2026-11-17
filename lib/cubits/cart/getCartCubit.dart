@@ -217,6 +217,28 @@ class CartCubit extends Cubit<CartState> {
     return false;
   }
 
+  bool requiresCarPlateNumber({required String isFrom}) {
+    if (state is CartFetchSuccess) {
+      final Cart? cartData = isFrom == "cart"
+          ? (state as CartFetchSuccess).cartData
+          : (state as CartFetchSuccess).reOrderCartData;
+      return cartData?.requiresCarPlateNumber ?? false;
+    }
+    return false;
+  }
+
+  /// How many car plate numbers checkout must collect (one per car).
+  int carPlateCount({required String isFrom}) {
+    if (state is CartFetchSuccess) {
+      final Cart? cartData = isFrom == "cart"
+          ? (state as CartFetchSuccess).cartData
+          : (state as CartFetchSuccess).reOrderCartData;
+      if (cartData == null || !cartData.requiresCarPlateNumber) return 0;
+      return cartData.carPlateCount < 1 ? 1 : cartData.carPlateCount;
+    }
+    return 0;
+  }
+
   String getServiceCartQuantity({required final String serviceId}) {
     if (state is CartFetchSuccess) {
       final cartData = (state as CartFetchSuccess).cartData;

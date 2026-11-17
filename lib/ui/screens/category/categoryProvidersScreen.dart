@@ -1,4 +1,6 @@
 import 'package:e_demand/app/generalImports.dart';
+import 'package:e_demand/ui/screens/homeScreen/widgets/homeHeader.dart'
+    show homeText;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -359,8 +361,10 @@ class _CategoryProvidersScreenState extends State<CategoryProvidersScreen> {
                                     horizontal: 16,
                                   ),
                                   child: CustomText(
-                                    'recommendedForYou'.translate(
-                                      context: context,
+                                    homeText(
+                                      context,
+                                      'chooseAProvider',
+                                      'Choose a Provider',
                                     ),
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,

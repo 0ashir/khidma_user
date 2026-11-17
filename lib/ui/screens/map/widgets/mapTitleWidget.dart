@@ -5,11 +5,22 @@ class MapTitleWidget extends StatelessWidget {
   final ValueNotifier<GoogleMapScreenType> currentScreenType;
   final bool showAddressForm;
 
+  /// Address of the pin currently on the map (not yet confirmed).
+  final ValueNotifier? selectedAddress;
+
   const MapTitleWidget({
     Key? key,
+    this.selectedAddress,
     required this.currentScreenType,
     required this.showAddressForm,
   }) : super(key: key);
+
+  static String? _pinName(final dynamic address) {
+    final String name = address is Map
+        ? (address['lineOneAddress']?.toString() ?? '').trim()
+        : '';
+    return name.isEmpty ? null : name;
+  }
 
   @override
   Widget build(
@@ -66,17 +77,16 @@ class MapTitleWidget extends StatelessWidget {
               MarqueeWidget(
                 direction: Axis.horizontal,
                 child: ValueListenableBuilder(
-                  valueListenable: Hive.box(
-                    HiveRepository.userDetailBoxKey,
-                  ).listenable(),
-                  builder: (BuildContext context, Box box, _) => CustomText(
-                    " ${HiveRepository.getLocationName ?? "selectYourLocation".translate(context: context)} ",
-                    color: context.colors.textPrimary,
-                    fontWeight: FontWeight.w500,
-                    fontStyle: FontStyle.normal,
-                    fontSize: 14,
-                    maxLines: 1,
-                  ),
+                  valueListenable: selectedAddress ?? ValueNotifier(null),
+                  builder: (BuildContext context, dynamic pinAddress, _) =>
+                      CustomText(
+                        " ${_pinName(pinAddress) ?? HiveRepository.getLocationName ?? "selectYourLocation".translate(context: context)} ",
+                        color: context.colors.textPrimary,
+                        fontWeight: FontWeight.w500,
+                        fontStyle: FontStyle.normal,
+                        fontSize: 14,
+                        maxLines: 1,
+                      ),
                 ),
               ),
           ],
