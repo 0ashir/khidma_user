@@ -102,6 +102,27 @@ class HiveRepository {
   static set setLocationName(locationName) =>
       Hive.box(userDetailBoxKey).put(locationNameKey, locationName);
 
+  /// Saved address picked as the current location (home "location" sheet):
+  /// {id, label, latitude, longitude}. It only counts while the current
+  /// coordinates are still its own, so picking a place any other way
+  /// (map, search, GPS) switches it off without extra bookkeeping.
+  static const String selectedAddressKey = 'selectedAddress';
+
+  static Map<String, String>? get getSelectedAddress {
+    final dynamic raw = Hive.box(userDetailBoxKey).get(selectedAddressKey);
+    if (raw is! Map) return null;
+    final Map<String, String> value = raw.map(
+      (k, v) => MapEntry(k.toString(), v?.toString() ?? ''),
+    );
+    final bool stillCurrent =
+        value['latitude'] == getLatitude?.toString() &&
+        value['longitude'] == getLongitude?.toString();
+    return stillCurrent ? value : null;
+  }
+
+  static set setSelectedAddress(final Map<String, String>? value) =>
+      Hive.box(userDetailBoxKey).put(selectedAddressKey, value);
+
   static String? get getLocationArea =>
       Hive.box(userDetailBoxKey).get(locationAreaKey);
 
@@ -244,6 +265,7 @@ class HiveRepository {
     await Hive.openBox(userDetailBoxKey);
     await Hive.openBox(languageBoxKey);
     await Hive.openBox(placesBoxKey);
+    await ApiResponseCache.init();
   }
 
   static dynamic getAllValueOf({required String boxName}) {

@@ -49,13 +49,12 @@ class GetAllPromocodesCubit extends Cubit<GetAllPromocodesState> {
     _type = type;
     emit(GetAllPromocodesFetchInProgress());
     try {
-      final Map<String, dynamic> data = await cartRepository
-          .fetchAllPromocodes(
-            offset: "0",
-            limit: UiUtils.limitOfAPIData,
-            providerIdOrSlug: _providerIdOrSlug,
-            type: _type,
-          );
+      final Map<String, dynamic> data = await cartRepository.fetchAllPromocodes(
+        offset: "0",
+        limit: UiUtils.limitOfAPIData,
+        providerIdOrSlug: _providerIdOrSlug,
+        type: _type,
+      );
       emit(
         GetAllPromocodesFetchSuccess(
           promocodeList: List<Promocode>.from(data['promocodeList'] ?? []),
@@ -77,13 +76,12 @@ class GetAllPromocodesCubit extends Cubit<GetAllPromocodesState> {
 
     emit(currentState.copyWith(isLoadingMore: true));
     try {
-      final Map<String, dynamic> data = await cartRepository
-          .fetchAllPromocodes(
-            offset: currentState.promocodeList.length.toString(),
-            limit: UiUtils.limitOfAPIData,
-            providerIdOrSlug: _providerIdOrSlug,
-            type: _type,
-          );
+      final Map<String, dynamic> data = await cartRepository.fetchAllPromocodes(
+        offset: currentState.promocodeList.length.toString(),
+        limit: UiUtils.limitOfAPIData,
+        providerIdOrSlug: _providerIdOrSlug,
+        type: _type,
+      );
       emit(
         currentState.copyWith(
           isLoadingMore: false,

@@ -30,13 +30,19 @@ class SystemSettingCubit extends Cubit<SystemSettingState> {
   final CountrySettingsCubit? countrySettingsCubit;
 
   Future<void> getSystemSettings() async {
-    emit(SystemSettingFetchInProgress());
+    // A refresh keeps the current settings on screen (no full-page shimmer);
+    // the new ones replace them when they arrive.
+    if (state is! SystemSettingFetchSuccess) {
+      emit(SystemSettingFetchInProgress());
+    }
     settingRepository
         .getSystemSetting()
         .then((final SystemSettingsModel value) {
           emit(SystemSettingFetchSuccess(systemSettingDetails: value));
         })
         .catchError((final error) {
+          // A failed background refresh keeps the settings already shown.
+          if (state is SystemSettingFetchSuccess) return;
           emit(SystemSettingFetchFailure(errorMessage: error.toString()));
         });
   }

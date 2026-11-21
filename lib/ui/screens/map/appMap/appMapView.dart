@@ -23,6 +23,8 @@ class AppMapView extends StatefulWidget {
     this.polylines = const [],
     this.onTap,
     this.onCameraMove,
+    this.onCameraMoveStarted,
+    this.onCameraIdle,
     this.onMapReady,
     this.zoomControlsEnabled = true,
     this.scrollGesturesEnabled = true,
@@ -41,6 +43,13 @@ class AppMapView extends StatefulWidget {
   final List<AppMapPolyline> polylines;
   final void Function(double latitude, double longitude)? onTap;
   final VoidCallback? onCameraMove;
+
+  /// The user (or code) started moving the camera.
+  final VoidCallback? onCameraMoveStarted;
+
+  /// The camera came to rest; [center] is the map point under the screen
+  /// centre (used by the fixed centre-pin location picker).
+  final void Function(AppLatLng center)? onCameraIdle;
   final void Function(AppMapController controller)? onMapReady;
   final bool zoomControlsEnabled;
   final bool scrollGesturesEnabled;
@@ -66,6 +75,9 @@ class AppMapView extends StatefulWidget {
 class _AppMapViewState extends State<AppMapView> {
   late final bool _isOsm;
   late final AppMapController _mapController;
+
+  /// Last known Google camera target, reported by [AppMapView.onCameraIdle].
+  late AppLatLng _googleTarget = widget.initialCenter;
 
   @override
   void initState() {
@@ -135,14 +147,47 @@ class _AppMapViewState extends State<AppMapView> {
       onTap: widget.onTap == null
           ? null
           : (pos) => widget.onTap!(pos.latitude, pos.longitude),
-      onCameraMove: widget.onCameraMove == null
+      onCameraMove: (position) {
+        _googleTarget = AppLatLng(
+          position.target.latitude,
+          position.target.longitude,
+        );
+        widget.onCameraMove?.call();
+      },
+      onCameraMoveStarted: widget.onCameraMoveStarted,
+      onCameraIdle: widget.onCameraIdle == null
           ? null
-          : (_) => widget.onCameraMove!(),
+          : () => widget.onCameraIdle!(_googleTarget),
       onMapCreated: (controller) {
         _mapController.attachGoogleController(controller);
         widget.onMapReady?.call(_mapController);
       },
     );
+  }
+
+  /// Maps flutter_map gesture events onto move-started / camera-idle.
+  /// Programmatic moves (controller.move) have no end event, so they count
+  /// as idle straight away.
+  void _onOsmMapEvent(final fmap.MapEvent event) {
+    if (event is fmap.MapEventMoveStart ||
+        event is fmap.MapEventFlingAnimationStart ||
+        event is fmap.MapEventDoubleTapZoomStart) {
+      widget.onCameraMoveStarted?.call();
+      return;
+    }
+    final bool ended =
+        event is fmap.MapEventMoveEnd ||
+        event is fmap.MapEventFlingAnimationEnd ||
+        event is fmap.MapEventFlingAnimationNotStarted ||
+        event is fmap.MapEventDoubleTapZoomEnd ||
+        event is fmap.MapEventScrollWheelZoom ||
+        (event is fmap.MapEventMove &&
+            event.source == fmap.MapEventSource.mapController);
+    if (ended) {
+      widget.onCameraIdle?.call(
+        AppLatLng(event.camera.center.latitude, event.camera.center.longitude),
+      );
+    }
   }
 
   Widget _buildOsmMap() {
@@ -200,6 +245,10 @@ class _AppMapViewState extends State<AppMapView> {
         onPositionChanged: widget.onCameraMove == null
             ? null
             : (_, __) => widget.onCameraMove!(),
+        onMapEvent:
+            widget.onCameraIdle == null && widget.onCameraMoveStarted == null
+            ? null
+            : _onOsmMapEvent,
         onMapReady: () => widget.onMapReady?.call(_mapController),
       ),
       children: [

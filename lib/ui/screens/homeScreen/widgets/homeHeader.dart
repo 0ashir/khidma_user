@@ -151,9 +151,13 @@ class _HomeHeaderState extends State<HomeHeader> {
     child: ValueListenableBuilder(
       valueListenable: Hive.box(HiveRepository.userDetailBoxKey).listenable(),
       builder: (BuildContext context, Box box, _) {
-        final String locationName = cleanLocationLabel(
-          HiveRepository.getLocationName,
-        );
+        // A saved address picked in the location sheet shows its own label
+        // ("Apartment · Marina Tower, Apt 304"); otherwise the place name.
+        final String savedLabel =
+            HiveRepository.getSelectedAddress?['label']?.trim() ?? '';
+        final String locationName = savedLabel.isNotEmpty
+            ? savedLabel
+            : cleanLocationLabel(HiveRepository.getLocationName);
         // Single compact line: pin · address · chevron.
         return Row(
           children: [

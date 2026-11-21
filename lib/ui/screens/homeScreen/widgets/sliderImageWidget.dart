@@ -273,12 +273,7 @@ class SingleSliderImageWidget extends StatelessWidget {
                       BlendMode.srcIn,
                     ),
                     placeholderBuilder: (final BuildContext context) =>
-                        const Center(
-                          child: CustomSvgPicture(
-                            svgImage: AppAssets.placeHolder,
-                            boxFit: BoxFit.contain,
-                          ),
-                        ),
+                        const ImageLoadingPlaceholder(avoideResponsive: true),
                   ),
                 )
               : CachedNetworkImage(
@@ -301,14 +296,7 @@ class SingleSliderImageWidget extends StatelessWidget {
                             ),
                           ),
                   placeholder: (final BuildContext context, final String url) =>
-                      const Center(
-                        child: CustomSvgPicture(
-                          svgImage: AppAssets.placeHolder,
-                          width: 100,
-                          height: 100,
-                          boxFit: BoxFit.contain,
-                        ),
-                      ),
+                      const ImageLoadingPlaceholder(avoideResponsive: true),
                 ),
         ),
       ),

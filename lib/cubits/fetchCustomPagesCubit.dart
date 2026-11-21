@@ -21,12 +21,14 @@ class FetchCustomPagesFailure extends FetchCustomPagesState {
 class FetchCustomPagesCubit extends Cubit<FetchCustomPagesState> {
   final CustomPageRepository customPageRepository;
 
-  FetchCustomPagesCubit(this.customPageRepository) : super(FetchCustomPagesInitial());
+  FetchCustomPagesCubit(this.customPageRepository)
+    : super(FetchCustomPagesInitial());
 
   Future<void> fetchCustomPages() async {
     try {
       emit(FetchCustomPagesInProgress());
-      final List<CustomPageModel> customPages = await customPageRepository.getCustomPages();
+      final List<CustomPageModel> customPages = await customPageRepository
+          .getCustomPages();
       emit(FetchCustomPagesSuccess(customPages: customPages));
     } catch (e) {
       emit(FetchCustomPagesFailure(errorMessage: e.toString()));

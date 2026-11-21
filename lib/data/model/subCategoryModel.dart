@@ -9,7 +9,6 @@ class SubCategory {
     this.totalProviders,
     this.totalServices,
     this.childrenCount,
-
   });
 
   SubCategory.fromJson(final Map<String, dynamic> json)
@@ -31,5 +30,4 @@ class SubCategory {
   final String? totalProviders;
   final String? totalServices;
   final String? childrenCount;
-
 }

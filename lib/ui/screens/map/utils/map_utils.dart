@@ -59,7 +59,35 @@ class MapUtils {
       final administrativeArea = placeMark[0].administrativeArea;
       final String? postalCode = placeMark[0].postalCode;
 
+      String clean(final String? v) {
+        final String t = (v ?? '').trim();
+        // Plus codes ("8H54+C7P") and the literal "null" are not names.
+        return (t.toLowerCase() == 'null' || t.contains('+')) ? '' : t;
+      }
+
+      // First usable value across all placemarks (the first one often lacks
+      // the street or area that a later one has).
+      String firstOf(final String? Function(Placemark) pick) {
+        for (final Placemark p in placeMark) {
+          final String v = clean(pick(p));
+          if (v.isNotEmpty) return v;
+        }
+        return '';
+      }
+
+      final String city = firstOf(
+        (p) =>
+            (p.locality ?? '').isNotEmpty ? p.locality : p.administrativeArea,
+      );
+      String area = firstOf((p) => p.subLocality);
+      if (area == city) area = '';
+
       return {
+        // Structured parts for the address form (pin decides Area / City).
+        "street": firstOf((p) => p.thoroughfare),
+        "area": area,
+        "city": city,
+        "country": clean(country),
         "lineOneAddress": _filterAddressString(
           "$name,$subLocality,$locality,$country",
         ),
@@ -70,7 +98,15 @@ class MapUtils {
       };
     } catch (e) {
       debugPrint("Error in createAddressFromCoordinates: $e");
-      return {"lineOneAddress": '', "lineTwoAddress": '', "selectedCity": ''};
+      return {
+        "lineOneAddress": '',
+        "lineTwoAddress": '',
+        "selectedCity": '',
+        "street": '',
+        "area": '',
+        "city": '',
+        "country": '',
+      };
     }
   }
 

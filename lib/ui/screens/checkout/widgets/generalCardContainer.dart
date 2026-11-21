@@ -81,10 +81,7 @@ class GeneralCardContainer extends StatelessWidget {
               ),
             ),
             if (showNextIcon ?? false) ...[
-              Icon(
-                Icons.arrow_forward_ios,
-                color: context.colors.textPrimary,
-              ),
+              Icon(Icons.arrow_forward_ios, color: context.colors.textPrimary),
             ],
           ],
         ),

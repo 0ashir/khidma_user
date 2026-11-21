@@ -89,7 +89,8 @@ class AuthenticationRepository {
         ApiParam.longitude: longitude,
         ApiParam.loginType: loginType.apiValue,
       };
-      parameters['firebase_id_token'] = await FirebaseAuth.instance.currentUser?.getIdToken();
+      parameters['firebase_id_token'] = await FirebaseAuth.instance.currentUser
+          ?.getIdToken();
       parameters['login_proof'] = _loginProof;
       if (fcmId != null) {
         parameters[ApiParam.fcmId] = fcmId;
@@ -202,7 +203,9 @@ class AuthenticationRepository {
         url: ApiUrl.verifyOTP,
         useAuthToken: false,
       );
-      _loginProof = response['error'] == false ? response['login_proof'] as String? : null;
+      _loginProof = response['error'] == false
+          ? response['login_proof'] as String?
+          : null;
       return {
         "error": response['error'],
         "message": response['message'],
@@ -486,7 +489,8 @@ class AuthenticationRepository {
         parameters[ApiParam.resetToken] = resetToken;
       }
 
-      parameters['firebase_id_token'] = await FirebaseAuth.instance.currentUser?.getIdToken();
+      parameters['firebase_id_token'] = await FirebaseAuth.instance.currentUser
+          ?.getIdToken();
 
       // For Firebase authentication - send phone number and country code instead of reset_token
       if (phoneNumber != null && countryCode != null) {

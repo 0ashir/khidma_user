@@ -32,6 +32,19 @@ class CustomFieldModel {
   /// Parsed from the [file_config] object, e.g. ["jpg", "jpeg", "png", "pdf"]
   final List<String> allowedExtensions;
 
+  /// Address-form role from `file_config.address_role` (customer_address
+  /// fields only), e.g. building, apartment, floor, company, street, area,
+  /// city, directions. Null for fields without a role.
+  final String? addressRole;
+
+  /// Address types the field is shown for (`file_config.address_types`),
+  /// e.g. ["apartment", "office"]. Empty = every type.
+  final List<String> addressTypes;
+
+  /// Whether the field is shown for [type] ("apartment" / "villa" / "office").
+  bool appliesTo(final String type) =>
+      addressTypes.isEmpty || addressTypes.contains(type);
+
   const CustomFieldModel({
     required this.id,
     required this.name,
@@ -40,13 +53,23 @@ class CustomFieldModel {
     this.visible = true,
     this.sortOrder = 0,
     this.allowedExtensions = const [],
+    this.addressRole,
+    this.addressTypes = const [],
   });
 
   factory CustomFieldModel.fromJson(final Map<String, dynamic> json) {
     // Parse allowed extensions from file_config if present
     List<String> extensions = [];
+    String? addressRole;
+    List<String> addressTypes = const [];
     final fileConfig = json['file_config'];
     if (fileConfig is Map) {
+      final role = fileConfig['address_role']?.toString().trim() ?? '';
+      if (role.isNotEmpty) addressRole = role;
+      final types = fileConfig['address_types'];
+      if (types is List) {
+        addressTypes = types.map((e) => e.toString()).toList();
+      }
       final raw = fileConfig['allowed_extensions'];
       if (raw is List) {
         extensions = raw.map((e) => e.toString()).toList();
@@ -67,6 +90,8 @@ class CustomFieldModel {
       visible: json['visible'] == true || json['visible']?.toString() == '1',
       sortOrder: (json['sort_order'] as num?)?.toInt() ?? 0,
       allowedExtensions: extensions,
+      addressRole: addressRole,
+      addressTypes: addressTypes,
     );
   }
 
@@ -78,6 +103,8 @@ class CustomFieldModel {
     'visible': visible,
     'sort_order': sortOrder,
     'allowed_extensions': allowedExtensions,
+    'address_role': addressRole,
+    'address_types': addressTypes,
   };
 
   @override

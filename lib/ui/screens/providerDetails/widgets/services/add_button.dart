@@ -119,122 +119,132 @@ class AddButton extends StatelessWidget {
                           children: [
                             CustomInkWellContainer(
                               onTap: () async {
-                            if (isProviderAvailableAtLocation == "0") {
-                              UiUtils.showMessage(
-                                context,
-                                'currentlyNotAvailableAtSelectedAddress'
-                                    .translate(context: context),
-                                ToastificationType.warning,
-                              );
-                              return;
-                            }
-                            final authStatus = context
-                                .read<AuthenticationCubit>()
-                                .state;
-                            if (authStatus is UnAuthenticatedState) {
-                              await UiUtils.showBottomSheet(
-                                context: context,
-                                enableDrag: true,
-                                isScrollControlled: true,
-                                useSafeArea: true,
-                                child: const LoginRequiredBottomSheet(),
-                              );
-
-                              return;
-                            }
-                            if (alreadyAddedQuantity < maximumAllowedQuantity) {
-                              final cartSettings = context
-                                  .read<SystemSettingCubit>()
-                                  .cartSettings;
-                              final restrictionError = context
-                                  .read<CartCubit>()
-                                  .checkCartRestrictions(
-                                    providerId: providerId,
-                                    maxItemsPerProvider:
-                                        cartSettings?.maxItemsPerProvider ?? 5,
-                                    maxCartsPerUser:
-                                        cartSettings?.maxCartsPerUser ?? 3,
+                                if (isProviderAvailableAtLocation == "0") {
+                                  UiUtils.showMessage(
+                                    context,
+                                    'currentlyNotAvailableAtSelectedAddress'
+                                        .translate(context: context),
+                                    ToastificationType.warning,
                                   );
-                              if (restrictionError != null) {
-                                UiUtils.showMessage(
-                                  context,
-                                  restrictionError.translate(context: context),
-                                  ToastificationType.warning,
-                                );
-                                return;
-                              }
-
-                              await context
-                                  .read<AddServiceIntoCartCubit>()
-                                  .addServiceIntoCart(
-                                    serviceId: int.parse(serviceId),
-                                    quantity: 1,
-                                    serviceProviderId: providerId,
-                                    serviceProviderName: serviceProviderName,
-                                    cartCubit: context.read<CartCubit>(),
+                                  return;
+                                }
+                                final authStatus = context
+                                    .read<AuthenticationCubit>()
+                                    .state;
+                                if (authStatus is UnAuthenticatedState) {
+                                  await UiUtils.showBottomSheet(
+                                    context: context,
+                                    enableDrag: true,
+                                    isScrollControlled: true,
+                                    useSafeArea: true,
+                                    child: const LoginRequiredBottomSheet(),
                                   );
-                            } else {
-                              UiUtils.showMessage(
-                                context,
-                                'maximumLimitReached'.translate(
-                                  context: context,
-                                ),
-                                ToastificationType.warning,
-                              );
-                            }
-                          },
-                          child: addButtonWithIcon == true
-                              ? Center(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      CustomText(
-                                        'add'.translate(context: context),
-                                        textAlign: TextAlign.left,
-                                        color:
-                                            isProviderAvailableAtLocation == "0"
-                                            ? context.colors.textTertiary
-                                            : context.colors.textBrand,
-                                        fontStyle: FontStyle.normal,
-                                        fontSize: 14,
+
+                                  return;
+                                }
+                                if (alreadyAddedQuantity <
+                                    maximumAllowedQuantity) {
+                                  final cartSettings = context
+                                      .read<SystemSettingCubit>()
+                                      .cartSettings;
+                                  final restrictionError = context
+                                      .read<CartCubit>()
+                                      .checkCartRestrictions(
+                                        providerId: providerId,
+                                        maxItemsPerProvider:
+                                            cartSettings?.maxItemsPerProvider ??
+                                            5,
+                                        maxCartsPerUser:
+                                            cartSettings?.maxCartsPerUser ?? 3,
+                                      );
+                                  if (restrictionError != null) {
+                                    UiUtils.showMessage(
+                                      context,
+                                      restrictionError.translate(
+                                        context: context,
                                       ),
-                                      const CustomSizedBox(width: 10),
-                                      Icon(
-                                        Icons.add_circle_rounded,
-                                        color: context.colors.iconBrand,
-                                        size: 20,
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              : CustomContainer(
-                                  borderRadius: UiUtils.borderRadiusOf8,
-                                  color: backgroundColor,
-                                  border: Border.all(
-                                    color: context.colors.borderBrand,
-                                  ),
-                                  height: height ?? 35,
-                                  width: padding != null ? null : (width ?? 80),
-                                  padding: padding != null
-                                      ? EdgeInsets.symmetric(
-                                          horizontal: padding!,
-                                        )
-                                      : null,
-                                  child: Center(
-                                    child: CustomText(
-                                      'add'.translate(context: context),
-                                      textAlign: TextAlign.center,
-                                      color:
-                                          isProviderAvailableAtLocation == "0"
-                                          ? context.colors.textTertiary
-                                          : context.colors.textBrand,
-                                      fontStyle: FontStyle.normal,
-                                      fontSize: 14,
+                                      ToastificationType.warning,
+                                    );
+                                    return;
+                                  }
+
+                                  await context
+                                      .read<AddServiceIntoCartCubit>()
+                                      .addServiceIntoCart(
+                                        serviceId: int.parse(serviceId),
+                                        quantity: 1,
+                                        serviceProviderId: providerId,
+                                        serviceProviderName:
+                                            serviceProviderName,
+                                        cartCubit: context.read<CartCubit>(),
+                                      );
+                                } else {
+                                  UiUtils.showMessage(
+                                    context,
+                                    'maximumLimitReached'.translate(
+                                      context: context,
                                     ),
-                                  ),
-                                ),
+                                    ToastificationType.warning,
+                                  );
+                                }
+                              },
+                              child: addButtonWithIcon == true
+                                  ? Center(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          CustomText(
+                                            'add'.translate(context: context),
+                                            textAlign: TextAlign.left,
+                                            color:
+                                                isProviderAvailableAtLocation ==
+                                                    "0"
+                                                ? context.colors.textTertiary
+                                                : context.colors.textBrand,
+                                            fontStyle: FontStyle.normal,
+                                            fontSize: 14,
+                                          ),
+                                          const CustomSizedBox(width: 10),
+                                          Icon(
+                                            Icons.add_circle_rounded,
+                                            color: context.colors.iconBrand,
+                                            size: 20,
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  : CustomContainer(
+                                      borderRadius: UiUtils.borderRadiusOf8,
+                                      color: backgroundColor,
+                                      border: Border.all(
+                                        color: context.colors.borderBrand,
+                                      ),
+                                      height: height ?? 35,
+                                      width: padding != null
+                                          ? null
+                                          : (width ?? 80),
+                                      padding: padding != null
+                                          ? EdgeInsets.symmetric(
+                                              horizontal: padding!,
+                                            )
+                                          : null,
+                                      child: Center(
+                                        child: CustomText(
+                                          'add'.translate(context: context),
+                                          textAlign: TextAlign.center,
+                                          color:
+                                              isProviderAvailableAtLocation ==
+                                                  "0"
+                                              ? context.colors.textTertiary
+                                              : context.colors.textBrand,
+                                          fontStyle: FontStyle.normal,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ),
                             ),
                             if (isAddOrRemoveInProgress)
                               CustomShimmerLoadingContainer(

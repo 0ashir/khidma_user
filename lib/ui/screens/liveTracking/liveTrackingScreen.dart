@@ -125,10 +125,7 @@ class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
     assetPath,
     height: 48,
     width: 48,
-    colorFilter: ColorFilter.mode(
-      context.colors.textBrand,
-      BlendMode.srcIn,
-    ),
+    colorFilter: ColorFilter.mode(context.colors.textBrand, BlendMode.srcIn),
   );
 
   void _updateMap(LiveTrackingDataModel data) {

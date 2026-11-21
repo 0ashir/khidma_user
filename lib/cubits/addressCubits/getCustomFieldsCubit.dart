@@ -24,11 +24,19 @@ class GetCustomFieldsCubit extends Cubit<GetCustomFieldsState> {
 
   final AddressRepository _addressRepository = AddressRepository();
 
-  Future<void> fetchCustomFields({String? addressId}) async {
+  Future<void> fetchCustomFields({
+    String? addressId,
+    String? latitude,
+    String? longitude,
+  }) async {
     try {
       emit(GetCustomFieldsInProgress());
       final CustomFieldsResponse result = await _addressRepository
-          .fetchCustomFields(addressId: addressId);
+          .fetchCustomFields(
+            addressId: addressId,
+            latitude: latitude,
+            longitude: longitude,
+          );
       emit(
         GetCustomFieldsSuccess(
           fields: result.fields,

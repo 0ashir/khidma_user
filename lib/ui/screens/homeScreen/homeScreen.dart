@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:e_demand/ui/screens/homeScreen/widgets/homeCategoryShowcase.dart';
 import 'package:e_demand/ui/screens/homeScreen/widgets/homeHeader.dart';
 import 'widgets/homeScreenShimmer.dart';
+import 'widgets/locationPickerSheet.dart';
 import 'widgets/homeSections.dart';
 import 'widgets/sliderImageWidget.dart';
 
@@ -87,26 +88,101 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void locationOnTap() {
+  /// Talabat-style location sheet: saved addresses apply at once; current
+  /// location / search / add-address continue on their own screens.
+  Future<void> locationOnTap() async {
+    final Object? result = await UiUtils.showBottomSheet(
+      context: context,
+      enableDrag: true,
+      isScrollControlled: true,
+      useSafeArea: true,
+      child: const LocationPickerSheet(),
+    );
+    if (!mounted || result is! LocationPickerResult) return;
+    switch (result.action) {
+      case LocationPickerAction.applied:
+        setState(() {});
+      case LocationPickerAction.openMap:
+        _openLocationMap(
+          latitude: result.latitude ?? '',
+          longitude: result.longitude ?? '',
+        );
+      case LocationPickerAction.search:
+        _openLocationSearch();
+      case LocationPickerAction.addAddress:
+        await _addNewAddress();
+    }
+  }
+
+  void _openLocationMap({
+    required final String latitude,
+    required final String longitude,
+    final Object? placeName,
+  }) {
+    Navigator.pushNamed(
+      context,
+      googleMapRoute,
+      arguments: {
+        "defaultLatitude": latitude,
+        "defaultLongitude": longitude,
+        'placeName': placeName,
+        'showAddressForm': false,
+        'screenType': GoogleMapScreenType.selectLocationOnMap,
+      },
+    );
+  }
+
+  void _openLocationSearch() {
     Navigator.pushNamed(context, setLocationRoute).then((final result) {
       final Map? value = result as Map?;
-      if (!mounted) return;
-      if (value != null) {
-        if (value['navigateToMap'] == true) {
-          Navigator.pushNamed(
-            context,
-            googleMapRoute,
-            arguments: {
-              "defaultLatitude": value['latitude'].toString(),
-              "defaultLongitude": value['longitude'].toString(),
-              'placeName': value['placeName'],
-              'showAddressForm': false,
-              'screenType': GoogleMapScreenType.selectLocationOnMap,
-            },
-          );
-        }
+      if (!mounted || value == null) return;
+      if (value['navigateToMap'] == true) {
+        _openLocationMap(
+          latitude: value['latitude'].toString(),
+          longitude: value['longitude'].toString(),
+          placeName: value['placeName'],
+        );
       }
     });
+  }
+
+  /// Map + Apartment/Villa/Office form; the new address then becomes the
+  /// selected location (the map already moved the coordinates to it).
+  Future<void> _addNewAddress() async {
+    await Navigator.pushNamed(
+      context,
+      googleMapRoute,
+      arguments: {
+        "defaultLatitude": HiveRepository.getLatitude,
+        "defaultLongitude": HiveRepository.getLongitude,
+        'showAddressForm': true,
+        'screenType': GoogleMapScreenType.selectLocationOnMap,
+      },
+    );
+    if (!mounted) return;
+    final GetAddressCubit addressCubit = context.read<GetAddressCubit>();
+    await addressCubit.fetchAddress();
+    if (!mounted) return;
+    final GetAddressState state = addressCubit.state;
+    final double? lat = double.tryParse(HiveRepository.getLatitude ?? '');
+    final double? lng = double.tryParse(HiveRepository.getLongitude ?? '');
+    if (state is GetAddressSuccess && lat != null && lng != null) {
+      final GetAddressModel? added = state.data
+          .where(
+            (a) =>
+                ((double.tryParse(a.lattitude ?? '') ?? 999) - lat).abs() <
+                    1e-6 &&
+                ((double.tryParse(a.longitude ?? '') ?? 999) - lng).abs() <
+                    1e-6,
+          )
+          .lastOrNull;
+      if (added != null) {
+        LocationPickerSheet.applySavedAddress(context, added);
+        setState(() {});
+        return;
+      }
+    }
+    context.read<HomeScreenCubit>().fetchHomeScreenData();
   }
 
   Widget _buildErrorContainer(final String errorMessage) => ErrorContainer(

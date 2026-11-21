@@ -9,7 +9,12 @@ class ConfirmAddressCard extends StatelessWidget {
     required this.isResolvingAddress,
     required this.showAddressForm,
     required this.onConfirm,
+    this.isCameraMoving,
   });
+
+  /// True while the map moves under the centre pin: the address is stale,
+  /// so it shows the loading state and Confirm is disabled.
+  final ValueNotifier<bool>? isCameraMoving;
 
   final ValueNotifier selectedAddress;
   final ValueNotifier<bool> isResolvingAddress;
@@ -45,7 +50,7 @@ class ConfirmAddressCard extends StatelessWidget {
       );
     }
     return ValueListenableBuilder<bool>(
-      valueListenable: isResolvingAddress,
+      valueListenable: _busy,
       builder: (context, resolving, child) => resolving
           ? Column(
               mainAxisSize: MainAxisSize.min,
@@ -87,6 +92,11 @@ class ConfirmAddressCard extends StatelessWidget {
     );
   }
 
+  /// Resolving the address, or the pin is still moving.
+  ValueListenable<bool> get _busy => isCameraMoving == null
+      ? isResolvingAddress
+      : _AnyTrue([isResolvingAddress, isCameraMoving!]);
+
   Widget _buildConfirmButton(
     final BuildContext context,
     final Map value,
@@ -96,19 +106,27 @@ class ConfirmAddressCard extends StatelessWidget {
         builder: (context, fetchCurrentLocationState) {
           final bool isFetchingCurrentLocation =
               fetchCurrentLocationState is FetchUserCurrentLocationInProgress;
-          return CustomRoundedButton(
-            onTap: isFetchingCurrentLocation ? null : () => onConfirm(value),
-            widthPercentage: 1,
-            radius: 12,
-            height: 48,
-            textSize: isTablet ? 16 : null,
-            fontWeight: isTablet ? FontWeight.w500 : null,
-            titleColor: context.colors.textInverseLight,
-            backgroundColor: isFetchingCurrentLocation
-                ? context.colors.backgroundBrandDisabled
-                : context.colors.backgroundBrand,
-            buttonTitle: "confirmAddress".translate(context: context),
-            showBorder: false,
+          return ValueListenableBuilder<bool>(
+            valueListenable: _busy,
+            builder: (context, busy, _) {
+              final bool disabled = isFetchingCurrentLocation || busy;
+              return CustomRoundedButton(
+                onTap: disabled ? null : () => onConfirm(value),
+                widthPercentage: 1,
+                radius: 12,
+                height: 48,
+                textSize: isTablet ? 16 : null,
+                fontWeight: isTablet ? FontWeight.w500 : null,
+                titleColor: context.colors.textInverseLight,
+                backgroundColor: disabled
+                    ? context.colors.backgroundBrandDisabled
+                    : context.colors.backgroundBrand,
+                buttonTitle: showAddressForm
+                    ? trOr(context, 'confirmLocation', 'Confirm location')
+                    : "confirmAddress".translate(context: context),
+                showBorder: false,
+              );
+            },
           );
         },
       );
@@ -258,4 +276,28 @@ class ConfirmAddressCard extends StatelessWidget {
           );
         },
       );
+}
+
+/// True while any of [sources] is true.
+class _AnyTrue extends ChangeNotifier implements ValueListenable<bool> {
+  _AnyTrue(this.sources);
+
+  final List<ValueListenable<bool>> sources;
+
+  @override
+  bool get value => sources.any((s) => s.value);
+
+  @override
+  void addListener(final VoidCallback listener) {
+    for (final ValueListenable<bool> s in sources) {
+      s.addListener(listener);
+    }
+  }
+
+  @override
+  void removeListener(final VoidCallback listener) {
+    for (final ValueListenable<bool> s in sources) {
+      s.removeListener(listener);
+    }
+  }
 }

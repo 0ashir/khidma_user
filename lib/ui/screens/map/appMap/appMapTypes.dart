@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart' show BitmapDescriptor;
+import 'package:google_maps_flutter/google_maps_flutter.dart'
+    show BitmapDescriptor;
 
 class AppLatLng {
   const AppLatLng(this.latitude, this.longitude);

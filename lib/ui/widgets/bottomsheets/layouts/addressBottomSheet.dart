@@ -8,7 +8,17 @@ class AddressSheet extends StatefulWidget {
     this.addressId,
     this.isUpdateAddress,
     this.isBilling = false,
+    this.pinParts,
+    this.onChangeLocation,
   }) : super(key: key);
+
+  /// Reverse-geocoded street / area / city of the map pin. When set (and the
+  /// country's fields have address roles) the sheet shows the pin-first
+  /// Apartment / Villa / Office form ([TypedAddressForm]).
+  final Map<String, String>? pinParts;
+
+  /// Closes the sheet and goes back to the map to move the pin.
+  final VoidCallback? onChangeLocation;
 
   /// Billing mode (checkout): the same form, but Save returns the entered
   /// address as a [GetAddressModel] via `Navigator.pop` instead of saving it
@@ -32,6 +42,17 @@ class _AddressSheetState extends State<AddressSheet> {
   // Key to access CustomFieldsForm state for getValues()
   final GlobalKey<CustomFieldsFormState> _customFieldsFormKey =
       GlobalKey<CustomFieldsFormState>();
+  final GlobalKey<TypedAddressFormState> _typedFormKey =
+      GlobalKey<TypedAddressFormState>();
+
+  /// [AddressKind] of the pin-first form.
+  late String _kind = AddressKind.fromApiType(widget.addressDataModel.type);
+
+  bool _isTypedMode(final GetCustomFieldsState state) =>
+      !widget.isBilling &&
+      widget.pinParts != null &&
+      state is GetCustomFieldsSuccess &&
+      TypedAddressForm.supports(state.fields);
 
   late final TextEditingController mobileNumberFieldController =
       TextEditingController(text: addressDataModel.mobile);
@@ -314,6 +335,29 @@ class _AddressSheetState extends State<AddressSheet> {
     ),
   );
 
+  Widget _kindChips() => Row(
+    children: [
+      for (final (String kind, String icon, String key, String fallback) in [
+        (AddressKind.villa, AppAssets.homeAdd, 'villa', 'Villa'),
+        (
+          AddressKind.apartment,
+          AppAssets.apartmentAdd,
+          'apartment',
+          'Apartment',
+        ),
+        (AddressKind.office, AppAssets.officeAdd, 'office', 'Office'),
+      ]) ...[
+        if (kind != AddressKind.villa) const CustomSizedBox(width: 8),
+        FlatOutlinedButton(
+          icon: icon,
+          isSelected: _kind == kind,
+          name: trOr(context, key, fallback),
+          onTap: () => setState(() => _kind = kind),
+        ),
+      ],
+    ],
+  );
+
   @override
   Widget build(final BuildContext context) => CustomContainer(
     color: context.colors.backgroundPrimary,
@@ -367,118 +411,150 @@ class _AddressSheetState extends State<AddressSheet> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // --- Address Type (Home / Office / Other) ---
-                    StatefulBuilder(
-                      builder: (final context, final setState) {
-                        addressDataModel = addressDataModel.copyWith(
-                          type: locationType[locationTypeAddressIndex],
-                        );
-                        return Row(
-                          children: <Widget>[
-                            FlatOutlinedButton(
-                              icon: AppAssets.homeAdd,
-                              isSelected: locationTypeAddressIndex == 0,
-                              name: 'home'.translate(context: context),
-                              onTap: () {
+                    BlocBuilder<GetCustomFieldsCubit, GetCustomFieldsState>(
+                      builder: (context, state) {
+                        if (_isTypedMode(state)) {
+                          state as GetCustomFieldsSuccess;
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _kindChips(),
+                              const CustomSizedBox(height: 16),
+                              TypedAddressForm(
+                                key: _typedFormKey,
+                                fields: state.fields,
+                                kind: _kind,
+                                pinParts: widget.pinParts!,
+                                initialValues: state.savedValues,
+                                onChangeLocation:
+                                    widget.onChangeLocation ??
+                                    () => Navigator.pop(context),
+                              ),
+                            ],
+                          );
+                        }
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // --- Address Type (Home / Office / Other) ---
+                            StatefulBuilder(
+                              builder: (final context, final setState) {
                                 addressDataModel = addressDataModel.copyWith(
-                                  type: 'Home',
+                                  type: locationType[locationTypeAddressIndex],
                                 );
-                                locationTypeAddressIndex = 0;
-                                setState(() {});
+                                return Row(
+                                  children: <Widget>[
+                                    FlatOutlinedButton(
+                                      icon: AppAssets.homeAdd,
+                                      isSelected: locationTypeAddressIndex == 0,
+                                      name: 'home'.translate(context: context),
+                                      onTap: () {
+                                        addressDataModel = addressDataModel
+                                            .copyWith(type: 'Home');
+                                        locationTypeAddressIndex = 0;
+                                        setState(() {});
+                                      },
+                                    ),
+                                    const CustomSizedBox(width: 8),
+                                    FlatOutlinedButton(
+                                      icon: AppAssets.officeAdd,
+                                      isSelected: locationTypeAddressIndex == 1,
+                                      name: 'office'.translate(
+                                        context: context,
+                                      ),
+                                      onTap: () {
+                                        addressDataModel = addressDataModel
+                                            .copyWith(type: 'Office');
+                                        locationTypeAddressIndex = 1;
+                                        setState(() {});
+                                      },
+                                    ),
+                                    const CustomSizedBox(width: 8),
+                                    FlatOutlinedButton(
+                                      icon: AppAssets.mapPinArea,
+                                      isSelected: locationTypeAddressIndex == 2,
+                                      name: 'other'.translate(context: context),
+                                      onTap: () {
+                                        addressDataModel = addressDataModel
+                                            .copyWith(type: 'Other');
+                                        locationTypeAddressIndex = 2;
+                                        setState(() {});
+                                      },
+                                    ),
+                                  ],
+                                );
                               },
                             ),
-                            const CustomSizedBox(width: 8),
-                            FlatOutlinedButton(
-                              icon: AppAssets.officeAdd,
-                              isSelected: locationTypeAddressIndex == 1,
-                              name: 'office'.translate(context: context),
-                              onTap: () {
-                                addressDataModel = addressDataModel.copyWith(
-                                  type: 'Office',
-                                );
-                                locationTypeAddressIndex = 1;
-                                setState(() {});
-                              },
+
+                            const CustomSizedBox(height: 16),
+
+                            // --- Country / region (optional) ---
+                            if (_isLoadingCountries || _countries.isNotEmpty)
+                              _buildPickerField(
+                                controller: _countryController,
+                                labelKey: 'country',
+                                onTap: _pickCountry,
+                                isLoading: _isLoadingCountries,
+                              ),
+                            // Region slides in (spinner first) instead of popping in.
+                            AnimatedSize(
+                              duration: const Duration(milliseconds: 200),
+                              alignment: Alignment.topCenter,
+                              child:
+                                  _selectedCountry != null &&
+                                      (_isLoadingRegions || _regions.isNotEmpty)
+                                  ? _buildPickerField(
+                                      controller: _regionController,
+                                      labelKey: 'region',
+                                      onTap: _pickRegion,
+                                      isLoading: _isLoadingRegions,
+                                    )
+                                  : const SizedBox(width: double.infinity),
                             ),
-                            const CustomSizedBox(width: 8),
-                            FlatOutlinedButton(
-                              icon: AppAssets.mapPinArea,
-                              isSelected: locationTypeAddressIndex == 2,
-                              name: 'other'.translate(context: context),
-                              onTap: () {
-                                addressDataModel = addressDataModel.copyWith(
-                                  type: 'Other',
-                                );
-                                locationTypeAddressIndex = 2;
-                                setState(() {});
+
+                            // --- Dynamic custom fields (replaces address + area) ---
+                            BlocBuilder<
+                              GetCustomFieldsCubit,
+                              GetCustomFieldsState
+                            >(
+                              builder: (context, state) {
+                                if (state is GetCustomFieldsInProgress) {
+                                  return const Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 20),
+                                    child: Center(
+                                      child: CustomCircularProgressIndicator(),
+                                    ),
+                                  );
+                                } else if (state is GetCustomFieldsSuccess &&
+                                    state.fields.isNotEmpty) {
+                                  return CustomFieldsForm(
+                                    key: _customFieldsFormKey,
+                                    fields: state.fields,
+                                    initialValues: state.savedValues,
+                                  );
+                                } else if (state is GetCustomFieldsFail) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 20),
+                                    child: ErrorContainer(
+                                      errorMessage: state.error,
+                                      showErrorImage: false,
+                                      errorMessageFontSize: 12,
+                                      onTapRetry: () {
+                                        context
+                                            .read<GetCustomFieldsCubit>()
+                                            .fetchCustomFields(
+                                              addressId: widget.addressId,
+                                            );
+                                      },
+                                    ),
+                                  );
+                                }
+                                return const SizedBox.shrink();
                               },
                             ),
                           ],
                         );
-                      },
-                    ),
-
-                    const CustomSizedBox(height: 16),
-
-                    // --- Country / region (optional) ---
-                    if (_isLoadingCountries || _countries.isNotEmpty)
-                      _buildPickerField(
-                        controller: _countryController,
-                        labelKey: 'country',
-                        onTap: _pickCountry,
-                        isLoading: _isLoadingCountries,
-                      ),
-                    // Region slides in (spinner first) instead of popping in.
-                    AnimatedSize(
-                      duration: const Duration(milliseconds: 200),
-                      alignment: Alignment.topCenter,
-                      child:
-                          _selectedCountry != null &&
-                              (_isLoadingRegions || _regions.isNotEmpty)
-                          ? _buildPickerField(
-                              controller: _regionController,
-                              labelKey: 'region',
-                              onTap: _pickRegion,
-                              isLoading: _isLoadingRegions,
-                            )
-                          : const SizedBox(width: double.infinity),
-                    ),
-
-                    // --- Dynamic custom fields (replaces address + area) ---
-                    BlocBuilder<GetCustomFieldsCubit, GetCustomFieldsState>(
-                      builder: (context, state) {
-                        if (state is GetCustomFieldsInProgress) {
-                          return const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 20),
-                            child: Center(
-                              child: CustomCircularProgressIndicator(),
-                            ),
-                          );
-                        } else if (state is GetCustomFieldsSuccess &&
-                            state.fields.isNotEmpty) {
-                          return CustomFieldsForm(
-                            key: _customFieldsFormKey,
-                            fields: state.fields,
-                            initialValues: state.savedValues,
-                          );
-                        } else if (state is GetCustomFieldsFail) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 20),
-                            child: ErrorContainer(
-                              errorMessage: state.error,
-                              showErrorImage: false,
-                              errorMessageFontSize: 12,
-                              onTapRetry: () {
-                                context
-                                    .read<GetCustomFieldsCubit>()
-                                    .fetchCustomFields(
-                                      addressId: widget.addressId,
-                                    );
-                              },
-                            ),
-                          );
-                        }
-                        return const SizedBox.shrink();
                       },
                     ),
 
@@ -628,12 +704,18 @@ class _AddressSheetState extends State<AddressSheet> {
                           return;
                         }
                         // Collect custom field values (if form is active)
-                        final customValues = _customFieldsFormKey.currentState
-                            ?.getValues();
+                        final TypedAddressFormState? typedForm =
+                            _typedFormKey.currentState;
+                        final customValues =
+                            typedForm?.getValues() ??
+                            _customFieldsFormKey.currentState?.getValues();
 
                         addressDataModel = addressDataModel.copyWith(
                           mobile: mobileNumberFieldController.value.text.trim(),
                           customFieldValues: customValues,
+                          type: typedForm == null
+                              ? null
+                              : AddressKind.toApiType(_kind),
                         );
 
                         if (widget.isUpdateAddress ?? false) {

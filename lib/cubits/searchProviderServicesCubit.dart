@@ -36,10 +36,9 @@ class SearchProviderServicesFailure extends SearchProviderServicesState {
   SearchProviderServicesFailure({required this.errorMessage});
 }
 
-class SearchProviderServicesCubit
-    extends Cubit<SearchProviderServicesState> {
+class SearchProviderServicesCubit extends Cubit<SearchProviderServicesState> {
   SearchProviderServicesCubit({required this.serviceRepository})
-      : super(SearchProviderServicesInitial());
+    : super(SearchProviderServicesInitial());
 
   final ServiceRepository serviceRepository;
   String _currentSearch = '';
@@ -62,10 +61,7 @@ class SearchProviderServicesCubit
         merged.add(incoming);
       } else {
         merged[existingIndex] = merged[existingIndex].copyWith(
-          services: [
-            ...merged[existingIndex].services,
-            ...incoming.services,
-          ],
+          services: [...merged[existingIndex].services, ...incoming.services],
         );
       }
     }

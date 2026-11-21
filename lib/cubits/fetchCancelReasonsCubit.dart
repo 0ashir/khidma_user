@@ -19,7 +19,7 @@ class FetchCancelReasonsFailure extends FetchCancelReasonsState {
 
 class FetchCancelReasonsCubit extends Cubit<FetchCancelReasonsState> {
   FetchCancelReasonsCubit({required this.bookingRepository})
-      : super(FetchCancelReasonsInitial());
+    : super(FetchCancelReasonsInitial());
 
   final BookingRepository bookingRepository;
 

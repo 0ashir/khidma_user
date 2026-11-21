@@ -21,7 +21,8 @@ class FetchCustomPageDetailsFailure extends FetchCustomPageDetailsState {
 class FetchCustomPageDetailsCubit extends Cubit<FetchCustomPageDetailsState> {
   final CustomPageRepository customPageRepository;
 
-  FetchCustomPageDetailsCubit(this.customPageRepository) : super(FetchCustomPageDetailsInitial());
+  FetchCustomPageDetailsCubit(this.customPageRepository)
+    : super(FetchCustomPageDetailsInitial());
 
   Future<void> fetchCustomPageDetails({required String pageKey}) async {
     try {

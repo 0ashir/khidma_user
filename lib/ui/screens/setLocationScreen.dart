@@ -80,7 +80,8 @@ class _SetLocationScreenState extends State<SetLocationScreen> {
               context
                   .read<GooglePlaceAutocompleteCubit>()
                   .searchLocationFromPlacesAPI(
-                    text: _searchLocation.text.trim(), // Dio encodes query params
+                    text: _searchLocation.text
+                        .trim(), // Dio encodes query params
                   );
               searchedTextLength = Uri.encodeComponent(
                 _searchLocation.text,

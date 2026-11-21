@@ -376,6 +376,8 @@ class UiUtils {
       await FirebaseAuth.instance.signOut();
 
       HiveRepository.setUserLoggedIn = false;
+      // Cached pages may hold the signed-out account's data.
+      await ApiResponseCache.clear();
 
       await HiveRepository.clearBoxValues(
         boxName: HiveRepository.userDetailBoxKey,

@@ -44,9 +44,7 @@ class SaveHandymanReviewCubit extends Cubit<SaveHandymanReviewState> {
         deletedPastReviewImages: deletedPastReviewImages,
       );
       if (response['error'] == true) {
-        emit(
-          SaveHandymanReviewFailure(response['message']?.toString() ?? ''),
-        );
+        emit(SaveHandymanReviewFailure(response['message']?.toString() ?? ''));
       } else {
         emit(
           SaveHandymanReviewSuccess(

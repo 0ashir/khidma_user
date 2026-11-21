@@ -41,15 +41,12 @@ class CustomCachedNetworkImage extends StatelessWidget {
             colorFilter: defaultColourFilter
                 ? ColorFilter.mode(context.colors.textBrand, BlendMode.srcIn)
                 : null,
-            placeholderBuilder: (final BuildContext context) => Center(
-              child: CustomSvgPicture(
-                avoideResponsive: avoideResponsive,
-                svgImage: AppAssets.placeHolder,
-                width: width,
-                height: height,
-                boxFit: BoxFit.contain,
-              ),
-            ),
+            placeholderBuilder: (final BuildContext context) =>
+                ImageLoadingPlaceholder(
+                  width: width,
+                  height: height,
+                  avoideResponsive: avoideResponsive,
+                ),
           )
         : CachedNetworkImage(
             imageUrl: networkImageUrl,
@@ -82,14 +79,10 @@ class CustomCachedNetworkImage extends StatelessWidget {
                   ),
                 ),
             placeholder: (final BuildContext context, final String url) =>
-                Center(
-                  child: CustomSvgPicture(
-                    avoideResponsive: avoideResponsive,
-                    svgImage: AppAssets.placeHolder,
-                    width: width,
-                    height: height,
-                    boxFit: BoxFit.cover,
-                  ),
+                ImageLoadingPlaceholder(
+                  width: width,
+                  height: height,
+                  avoideResponsive: avoideResponsive,
                 ),
           );
   }

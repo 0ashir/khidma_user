@@ -12,9 +12,6 @@ class ChatQuestion {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'question': question,
-    };
+    return {'id': id, 'question': question};
   }
 }

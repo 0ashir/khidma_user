@@ -20,7 +20,8 @@ class CustomFieldsFormState extends State<CustomFieldsForm> {
   void initState() {
     super.initState();
     for (final field in widget.fields) {
-      final initial = widget.initialValues?[field.id.toString()]?.toString() ?? '';
+      final initial =
+          widget.initialValues?[field.id.toString()]?.toString() ?? '';
       _controllers[field.id.toString()] = TextEditingController(text: initial);
     }
   }

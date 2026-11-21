@@ -105,10 +105,7 @@ class _EmailOrPhoneFieldState extends State<EmailOrPhoneField> {
     keyboardType: widget.isPhoneAuthEnabled && widget.isEmailAuthEnabled
         ? TextInputType.text
         : (isEmailMode ? TextInputType.emailAddress : TextInputType.phone),
-    style: TextStyle(
-      fontSize: 16,
-      color: context.colors.textPrimary,
-    ),
+    style: TextStyle(fontSize: 16, color: context.colors.textPrimary),
     readOnly: widget.isReadOnly,
     inputFormatters: widget.isPhoneAuthEnabled && !widget.isEmailAuthEnabled
         ? [FilteringTextInputFormatter.digitsOnly]
@@ -129,10 +126,7 @@ class _EmailOrPhoneFieldState extends State<EmailOrPhoneField> {
       ),
       filled: true,
       fillColor: context.colors.surfaceElevated,
-      hintStyle: TextStyle(
-        fontSize: 16,
-        color: context.colors.textSecondary,
-      ),
+      hintStyle: TextStyle(fontSize: 16, color: context.colors.textSecondary),
       focusedBorder: OutlineInputBorder(
         borderSide: BorderSide(
           color: widget.borderColor ?? context.colors.backgroundBrand,
@@ -143,8 +137,7 @@ class _EmailOrPhoneFieldState extends State<EmailOrPhoneField> {
       ),
       enabledBorder: OutlineInputBorder(
         borderSide: BorderSide(
-          color:
-              widget.borderColor ?? context.colors.backgroundBrand,
+          color: widget.borderColor ?? context.colors.backgroundBrand,
         ),
         borderRadius: const BorderRadius.all(
           Radius.circular(UiUtils.borderRadiusOf10),

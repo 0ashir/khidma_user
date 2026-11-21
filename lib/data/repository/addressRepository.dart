@@ -59,11 +59,38 @@ class AddressRepository {
   }
 
   /// [addressId] fetches a single address; [search] filters the list.
+  /// Cache key of the full (unfiltered) saved-address list of this user.
+  static String get _addressListCacheKey => ApiResponseCache.keyFor(
+    ApiUrl.getAddress,
+    {ApiParam.limit: 100, ApiParam.offset: 0},
+  );
+
+  /// Last saved address list of this user (shown instantly), or null.
+  List<GetAddressModel>? cachedAddresses() {
+    final Map<String, dynamic>? cached = ApiResponseCache.read(
+      _addressListCacheKey,
+    );
+    if (cached == null || cached['data'] is! List) return null;
+    try {
+      return (cached['data'] as List)
+          .map(
+            (final entry) =>
+                GetAddressModel.fromJson(Map<String, dynamic>.from(entry)),
+          )
+          .toList();
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<List<GetAddressModel>> fetchAddress({
     final String? addressId,
     final String? search,
   }) async {
     try {
+      final bool isFullList =
+          (addressId == null || addressId.isEmpty) &&
+          (search == null || search.isEmpty);
       final Map<String, dynamic> response = await ApiClient.post(
         url: ApiUrl.getAddress,
         parameter: {
@@ -83,6 +110,11 @@ class AddressRepository {
             return getAddressModel;
           }).toList();
 
+      if (isFullList) {
+        ApiResponseCache.write(_addressListCacheKey, {
+          'data': response['data'],
+        });
+      }
       return mappedResponse;
     } catch (e) {
       throw ApiException(e.toString());
@@ -144,11 +176,17 @@ class AddressRepository {
     }
   }
 
-  Future<CustomFieldsResponse> fetchCustomFields({String? addressId}) async {
+  /// [latitude]/[longitude] pick the country's fields for a new address
+  /// (the map pin); they default to the saved home-screen location.
+  Future<CustomFieldsResponse> fetchCustomFields({
+    String? addressId,
+    String? latitude,
+    String? longitude,
+  }) async {
     try {
       final Map<String, dynamic> parameter = {
-        ApiParam.latitude: HiveRepository.getLatitude,
-        ApiParam.longitude: HiveRepository.getLongitude,
+        ApiParam.latitude: latitude ?? HiveRepository.getLatitude,
+        ApiParam.longitude: longitude ?? HiveRepository.getLongitude,
       };
       if (addressId != null && addressId.isNotEmpty) {
         parameter[ApiParam.addressId] = addressId;

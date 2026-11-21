@@ -21,8 +21,6 @@ class CustomLoadingMoreContainer extends StatelessWidget {
             textColor: context.colors.textBrand,
             child: CustomText("retry".translate(context: context)),
           )
-        : CustomCircularProgressIndicator(
-            color: context.colors.textBrand,
-          );
+        : CustomCircularProgressIndicator(color: context.colors.textBrand);
   }
 }

@@ -1,6 +1,114 @@
 import 'package:e_demand/app/generalImports.dart';
 
 class ProviderRepository {
+  /// Request parameters of [fetchProviderList]; also the cache key input.
+  static Map<String, dynamic> providerListParameter({
+    final String? categoryId,
+    final String? providerIdOrSlug,
+    final String? subCategoryId,
+    final String? filter,
+    final String? promocode,
+    final ProviderDetailsParamType? type,
+    final int? availableToday,
+    final int? maxDuration,
+    final String? providerType,
+    final String? sortBy,
+    final double? ratingMin,
+    final double? priceMax,
+    final String? search,
+    final String? offset,
+    final String? limit,
+  }) {
+    final Map<String, dynamic> parameter = <String, dynamic>{
+      ApiParam.latitude: HiveRepository.getLatitude,
+      ApiParam.longitude: HiveRepository.getLongitude,
+      if (search != null && search.isNotEmpty) ApiParam.search: search.trim(),
+      if (offset != null) ApiParam.offset: offset,
+      if (limit != null) ApiParam.limit: limit,
+    };
+
+    if (categoryId != '' && categoryId != null) {
+      parameter[ApiParam.categoryId] = categoryId;
+    }
+    if (providerIdOrSlug != '' && providerIdOrSlug != null) {
+      if (type == ProviderDetailsParamType.slug) {
+        parameter[ApiParam.slug] = providerIdOrSlug;
+      } else {
+        parameter[ApiParam.partnerId] = providerIdOrSlug;
+      }
+    }
+    if (subCategoryId != '' && subCategoryId != null) {
+      parameter[ApiParam.subCategoryId] = subCategoryId;
+    }
+    if (filter != '' && filter != null) {
+      parameter[ApiParam.filter] = filter;
+      // parameter[Api.order] = "desc";
+    }
+    if (promocode != '' && promocode != null) {
+      parameter[ApiParam.promocode] = promocode;
+    }
+    if (availableToday != null) {
+      parameter[ApiParam.availableToday] = availableToday;
+    }
+    if (maxDuration != null) {
+      parameter[ApiParam.maxDuration] = maxDuration;
+    }
+    if (providerType != null && providerType.isNotEmpty) {
+      parameter[ApiParam.providerType] = providerType;
+    }
+    if (sortBy != null && sortBy.isNotEmpty) {
+      parameter[ApiParam.sortBy] = sortBy;
+    }
+    if (ratingMin != null) {
+      parameter[ApiParam.ratingMin] = ratingMin;
+    }
+    if (priceMax != null) {
+      parameter[ApiParam.priceMax] = priceMax;
+    }
+    return parameter;
+  }
+
+  /// Parsed provider list (+ `fingerprint` of the raw response).
+  static Map<String, dynamic> _parseProviderList(
+    final Map<String, dynamic> providers,
+  ) {
+    final String fingerprint = ApiResponseCache.fingerprint(providers);
+    if (providers['data'] == null || providers['data'] == []) {
+      return {
+        'totalProviders': "0",
+        'providerList': [],
+        'serviceMinPrice': null,
+        'serviceMaxPrice': null,
+        'fingerprint': fingerprint,
+      };
+    }
+    return {
+      'totalProviders': providers['total'].toString(),
+      'providerList': (providers['data'] as List).map((providerData) {
+        return Providers.fromJson(providerData);
+      }).toList(),
+      'serviceMinPrice': providers['service_min_price']?.toString(),
+      'serviceMaxPrice': providers['service_max_price']?.toString(),
+      'fingerprint': fingerprint,
+    };
+  }
+
+  /// Last saved provider list for [parameter] (from [providerListParameter]),
+  /// in the same shape as [fetchProviderList]; null when not cached.
+  Map<String, dynamic>? cachedProviderList(
+    final Map<String, dynamic> parameter,
+  ) {
+    final Map<String, dynamic>? raw = ApiResponseCache.read(
+      ApiResponseCache.keyFor(ApiUrl.getProviders, parameter),
+    );
+    if (raw == null) return null;
+    try {
+      return _parseProviderList(raw);
+    } catch (_) {
+      return null;
+    }
+  }
+
   /// This method is used to fetch Provider List
   Future<Map<String, dynamic>> fetchProviderList({
     required final bool isAuthTokenRequired,
@@ -19,77 +127,45 @@ class ProviderRepository {
     final String? search,
     final String? offset,
     final String? limit,
+
+    /// Save the response for [cachedProviderList] (category providers page).
+    final bool saveToCache = false,
   }) async {
     try {
-      final Map<String, dynamic> parameter = <String, dynamic>{
-        ApiParam.latitude: HiveRepository.getLatitude,
-        ApiParam.longitude: HiveRepository.getLongitude,
-        if (search != null && search.isNotEmpty) ApiParam.search: search.trim(),
-        if (offset != null) ApiParam.offset: offset,
-        if (limit != null) ApiParam.limit: limit,
-      };
-
-      if (categoryId != '' && categoryId != null) {
-        parameter[ApiParam.categoryId] = categoryId;
-      }
-      if (providerIdOrSlug != '' && providerIdOrSlug != null) {
-        if (type == ProviderDetailsParamType.slug) {
-          parameter[ApiParam.slug] = providerIdOrSlug;
-        } else {
-          parameter[ApiParam.partnerId] = providerIdOrSlug;
-        }
-      }
-      if (subCategoryId != '' && subCategoryId != null) {
-        parameter[ApiParam.subCategoryId] = subCategoryId;
-      }
-      if (filter != '' && filter != null) {
-        parameter[ApiParam.filter] = filter;
-        // parameter[Api.order] = "desc";
-      }
-      if (promocode != '' && promocode != null) {
-        parameter[ApiParam.promocode] = promocode;
-      }
-      if (availableToday != null) {
-        parameter[ApiParam.availableToday] = availableToday;
-      }
-      if (maxDuration != null) {
-        parameter[ApiParam.maxDuration] = maxDuration;
-      }
-      if (providerType != null && providerType.isNotEmpty) {
-        parameter[ApiParam.providerType] = providerType;
-      }
-      if (sortBy != null && sortBy.isNotEmpty) {
-        parameter[ApiParam.sortBy] = sortBy;
-      }
-      if (ratingMin != null) {
-        parameter[ApiParam.ratingMin] = ratingMin;
-      }
-      if (priceMax != null) {
-        parameter[ApiParam.priceMax] = priceMax;
-      }
-
-      final providers = await ApiClient.post(
-        url: ApiUrl.getProviders,
-        parameter: parameter,
-        useAuthToken: isAuthTokenRequired && HiveRepository.getUserToken != '',
+      final Map<String, dynamic> parameter = providerListParameter(
+        categoryId: categoryId,
+        providerIdOrSlug: providerIdOrSlug,
+        subCategoryId: subCategoryId,
+        filter: filter,
+        promocode: promocode,
+        type: type,
+        availableToday: availableToday,
+        maxDuration: maxDuration,
+        providerType: providerType,
+        sortBy: sortBy,
+        ratingMin: ratingMin,
+        priceMax: priceMax,
+        search: search,
+        offset: offset,
+        limit: limit,
       );
-      if (providers['data'] == null || providers['data'] == []) {
-        return {
-          'totalProviders': "0",
-          'providerList': [],
-          'serviceMinPrice': null,
-          'serviceMaxPrice': null,
-        };
-      } else {
-        return {
-          'totalProviders': providers['total'].toString(),
-          'providerList': (providers['data'] as List).map((providerData) {
-            return Providers.fromJson(providerData);
-          }).toList(),
-          'serviceMinPrice': providers['service_min_price']?.toString(),
-          'serviceMaxPrice': providers['service_max_price']?.toString(),
-        };
+
+      final Map<String, dynamic> providers = Map<String, dynamic>.from(
+        await ApiClient.post(
+          url: ApiUrl.getProviders,
+          parameter: parameter,
+          useAuthToken:
+              isAuthTokenRequired && HiveRepository.getUserToken != '',
+        ),
+      );
+      final Map<String, dynamic> parsed = _parseProviderList(providers);
+      if (saveToCache) {
+        ApiResponseCache.write(
+          ApiResponseCache.keyFor(ApiUrl.getProviders, parameter),
+          providers,
+        );
       }
+      return parsed;
     } catch (e) {
       throw ApiException(e.toString());
     }

@@ -26,6 +26,31 @@ class SettingRepository {
 
   ///This method is used to fetch the currency and date/time formats of the
   ///country covering the given coordinates (public endpoint)
+  String _countrySettingsCacheKey(
+    final String latitude,
+    final String longitude,
+  ) => ApiResponseCache.keyFor(ApiUrl.getCountrySettings, {
+    ApiParam.latitude: latitude,
+    ApiParam.longitude: longitude,
+  });
+
+  /// Last saved country settings for these coordinates (shown instantly by
+  /// cached screens until the fresh ones arrive).
+  CountrySettings? cachedCountrySettings({
+    required final String latitude,
+    required final String longitude,
+  }) {
+    final Map<String, dynamic>? data = ApiResponseCache.read(
+      _countrySettingsCacheKey(latitude, longitude),
+    );
+    if (data == null) return null;
+    try {
+      return CountrySettings.fromJson(data);
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<CountrySettings> getCountrySettings({
     required final String latitude,
     required final String longitude,
@@ -39,9 +64,15 @@ class SettingRepository {
         useAuthToken: HiveRepository.getUserToken.isNotEmpty,
       );
 
-      return CountrySettings.fromJson(
-        Map<String, dynamic>.from(response['data']),
+      final Map<String, dynamic> data = Map<String, dynamic>.from(
+        response['data'],
       );
+      final CountrySettings settings = CountrySettings.fromJson(data);
+      ApiResponseCache.write(
+        _countrySettingsCacheKey(latitude, longitude),
+        data,
+      );
+      return settings;
     } catch (e) {
       throw ApiException(e.toString());
     }

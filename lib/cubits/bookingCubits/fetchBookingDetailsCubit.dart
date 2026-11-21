@@ -22,9 +22,7 @@ class FetchBookingDetailsCubit extends Cubit<FetchBookingDetailsState> {
   FetchBookingDetailsCubit() : super(FetchBookingDetailsInitial());
   final BookingRepository _bookingsRepository = BookingRepository();
 
-  Future<void> fetchBookingDetails({
-    required String bookingId,
-  }) async {
+  Future<void> fetchBookingDetails({required String bookingId}) async {
     try {
       emit(FetchBookingDetailsInProgress());
 

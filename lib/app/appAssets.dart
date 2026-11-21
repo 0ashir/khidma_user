@@ -120,6 +120,7 @@ abstract class AppAssets {
   static const String noImageFound = "$_brandingAssetsPath/app_logo.png";
   static const String notification = "$_generalAssetsPath/notification.svg";
   static const String officeAdd = "$_generalAssetsPath/officeadd.svg";
+  static const String apartmentAdd = "$_generalAssetsPath/apartmentadd.svg";
   static const String search = "$_generalAssetsPath/search.svg";
   static const String sendMessage = "$_generalAssetsPath/send_message.svg";
   static const String polygon = "$_generalAssetsPath/polygon.svg";

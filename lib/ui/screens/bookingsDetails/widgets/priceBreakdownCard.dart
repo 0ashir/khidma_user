@@ -106,13 +106,11 @@ class _PriceBreakdownCardState extends State<PriceBreakdownCard> {
     ),
   );
 
-  String _money(final double amount) => amount
-      .toString()
-      .priceFormat(
-        context,
-        currencySymbol: widget.bookingDetails.currencySymbol,
-        decimalPlaces: widget.bookingDetails.currencyDecimalPlaces,
-      );
+  String _money(final double amount) => amount.toString().priceFormat(
+    context,
+    currencySymbol: widget.bookingDetails.currencySymbol,
+    decimalPlaces: widget.bookingDetails.currencyDecimalPlaces,
+  );
 
   // A charge row; when it carries tax its arrow opens base price + each tax.
   Widget _buildTaxGroupRow(

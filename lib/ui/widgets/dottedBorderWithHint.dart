@@ -43,11 +43,7 @@ class DottedBorderWithHint extends StatelessWidget {
           ),
           const CustomSizedBox(width: 8),
           if (needToShowHintText)
-            CustomText(
-              hint,
-              color: context.colors.textSecondary,
-              fontSize: 14,
-            ),
+            CustomText(hint, color: context.colors.textSecondary, fontSize: 14),
         ],
       ),
     ],

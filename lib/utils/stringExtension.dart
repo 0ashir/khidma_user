@@ -337,7 +337,13 @@ extension StringExtension on String {
     final SystemSettingCubit systemSetting = context.read<SystemSettingCubit>();
 
     return NumberFormat.currency(
-      locale: Platform.localeName,
+      // Device locales such as "ars_US" (Najdi Arabic) are unknown to intl and
+      // throw "Invalid locale"; fall back to the base language, then English.
+      locale: Intl.verifiedLocale(
+        Platform.localeName,
+        NumberFormat.localeExists,
+        onFailure: (_) => 'en',
+      ),
       name: systemSetting.systemCurrencyCountryCode,
       symbol: (currencySymbol ?? '').isNotEmpty
           ? currencySymbol

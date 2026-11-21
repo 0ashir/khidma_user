@@ -106,10 +106,7 @@ class _MiniMapWidgetState extends State<MiniMapWidget> {
     assetPath,
     height: 36,
     width: 36,
-    colorFilter: ColorFilter.mode(
-      context.colors.textBrand,
-      BlendMode.srcIn,
-    ),
+    colorFilter: ColorFilter.mode(context.colors.textBrand, BlendMode.srcIn),
   );
 
   @override

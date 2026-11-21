@@ -117,11 +117,12 @@ class _ManageAddressState extends State<ManageAddress> {
                               borderRadius: UiUtils.borderRadiusOf8,
                               padding: const EdgeInsets.all(8),
                               child: CustomSvgPicture(
-                                svgImage: addressData.type == 'Home'
-                                    ? AppAssets.homeAdd
-                                    : addressData.type == 'Other'
-                                    ? AppAssets.icLocation
-                                    : AppAssets.officeAdd,
+                                svgImage: switch (addressData.type) {
+                                  'Home' || 'Villa' => AppAssets.homeAdd,
+                                  'Apartment' => AppAssets.apartmentAdd,
+                                  'Other' => AppAssets.icLocation,
+                                  _ => AppAssets.officeAdd,
+                                },
                                 color: context.colors.iconPrimary,
                                 height: 24,
                                 width: 24,

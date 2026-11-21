@@ -26,8 +26,8 @@ class GetChatQuestionsCubit extends Cubit<GetChatQuestionsState> {
   Future<void> fetchChatQuestions({required String type}) async {
     emit(GetChatQuestionsInProgress());
     try {
-      final List<ChatQuestion> questions =
-          await chatRepository.fetchChatQuestions(type: type);
+      final List<ChatQuestion> questions = await chatRepository
+          .fetchChatQuestions(type: type);
       emit(GetChatQuestionsSuccess(questions: questions));
     } catch (e) {
       emit(GetChatQuestionsFailure(errorMessage: e.toString()));
